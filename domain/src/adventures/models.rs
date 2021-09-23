@@ -51,19 +51,6 @@ pub struct Adventures {
     pub district: String,
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct AdventuresUpdate {
-    pub id: u64,
-    pub title: String,
-    pub image_url: String,
-}
-
-#[derive(Clone, Debug, Serialize, PartialEq)]
-pub struct AdventureContent {
-    pub title: String,
-    pub image_url: String,
-}
-
 #[derive(Clone, Debug)]
 pub struct PlayListQuery {
     pub play_list: String,

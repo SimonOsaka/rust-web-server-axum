@@ -27,41 +27,6 @@ pub struct MyAdventures {
     pub district: String,
 }
 
-// #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-// pub struct NewMyAdventures {
-//     pub title: String,
-//     pub image_url: String,
-// }
-
-// impl From<domain::AdventureContent> for NewMyAdventures {
-//     fn from(content: domain::AdventureContent) -> Self {
-//         Self {
-//             title: content.title,
-//             image_url: content.image_url,
-//         }
-//     }
-// }
-
-// #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-// pub struct UpdateMyAdventures {
-//     pub id: ID,
-//     pub title: String,
-//     pub image_url: String,
-// }
-
-// impl From<domain::AdventuresUpdate> for UpdateMyAdventures {
-//     fn from(update: domain::AdventuresUpdate) -> Self {
-//         Self {
-//             #[cfg(any(feature = "postgres"))]
-//             id: update.id as i64,
-//             #[cfg(any(feature = "mysql"))]
-//             id: update.id,
-//             title: update.title,
-//             image_url: update.image_url,
-//         }
-//     }
-// }
-
 #[derive(Clone, Debug)]
 pub struct AdventuresWhere {
     pub item_id: u8,
