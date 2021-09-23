@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "command": [
+                "RUST_LOG=debug cargo run"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
+            "label": "RUST_LOG=debug cargo run - rust-warp-sqlx-backend"
+        },
+        {
+            "type": "shell",
+            "command": [
+                "cargo build"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
+            "label": "cargo build - rust-warp-sqlx-backend"
+        },
+        {
+            "type": "shell",
+            "command": [
+                "OPENSSL_DIR=/usr/local/opt/openssl@1.1 CC_x86_64_unknown_linux_musl=x86_64-linux-musl-gcc cargo build --release --target=x86_64-unknown-linux-musl"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
+            "label": "cargo build --release --target=x86_64-unknown-linux-musl"
+        }
+    ]
+}

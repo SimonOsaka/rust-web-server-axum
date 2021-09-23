@@ -1,0 +1,28 @@
+{
+    "editor.fontFamily": "'Jetbrains Mono', 'Courier New'",
+    "workbench.colorCustomizations": {
+        "editor.background": "#C7EDCC",
+    },
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "variable.key.table",
+                "settings": {
+                    "foreground": "#ff000d",
+                },
+            },
+            {
+                "scope": "variable.key.array",
+                "settings": {
+                    "foreground": "#569CD6",
+                }
+            },
+            {
+                "scope": "constant.other.time",
+                "settings": {
+                    "foreground": "#DCDCAA",
+                }
+            }
+        ]
+    }
+}
