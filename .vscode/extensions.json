@@ -4,9 +4,12 @@
     "recommendations": [
         "matklad.rust-analyzer",
         "serayuzgur.crates",
-        "bungcip.better-toml",
+        "tamasfe.even-better-toml",
         "vadimcn.vscode-lldb",
         "gsppvo.vscode-commandbar",
-        "alphabotsec.vscode-eclipse-keybindings"
+        "alphabotsec.vscode-eclipse-keybindings",
+        "ms-ceintl.vscode-language-pack-zh-hans",
+        "mhutchie.git-graph",
+        "pkief.material-icon-theme"
     ]
 }
