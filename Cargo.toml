@@ -3,6 +3,16 @@ name = "rust-sqlx-warp-server"
 version = "0.1.0"
 edition = "2018"
 autotests = false
+authors = ["Simon Osaka <geniusmickymouse@qq.com>"]
+include = ["src/**/*", "Cargo.toml", "README.md"]
+description = "A example of rust web server to develop api"
+repository = "https://github.com/SimonOsaka/rust-web-server-example"
+documentation = ""
+homepage = ""
+keywords = ["web", "api", "db"]
+categories = []
+license = "MIT"
+readme = "README.md"
 
 [[bin]]
 bench = false
