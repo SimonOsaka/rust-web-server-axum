@@ -1,5 +1,5 @@
 [package]
-name = "rust-sqlx-warp-server"
+name = "rust-web-server-example"
 version = "0.1.0"
 edition = "2018"
 autotests = false
@@ -21,6 +21,8 @@ name = "app"
 
 [dependencies]
 api = { path = "./api", features = ["postgres"] }
+redis = { path = "./redis" }
+repository = { path = "./repository" }
 async-trait = "0.1"
 flexi_logger = "0.19.3"
 log = "0.4"
@@ -28,4 +30,4 @@ dotenv = "0.15.0"
 tokio = { version = "1", features = ["macros"] }
 
 [workspace]
-members = ["api", "repository", "domain", "types"]
+members = ["api", "repository", "domain", "types", "redis"]

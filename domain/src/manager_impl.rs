@@ -1,6 +1,7 @@
 use crate::{Adventures, AdventuresQuery, DatabaseError, GetAdventureError, PlayListQuery};
 use anyhow::Error as OpaqueError;
 use anyhow::Result;
+
 use repository::SqlxError;
 use types::ID;
 pub fn to_db_error(e: SqlxError) -> DatabaseError {

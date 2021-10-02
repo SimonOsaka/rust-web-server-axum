@@ -1,5 +1,3 @@
-use flexi_logger::{Age, Cleanup, Criterion, Duplicate, FileSpec, Logger, Naming, WriteMode};
-
 #[macro_use]
 extern crate log;
 
@@ -9,24 +7,11 @@ mod logger;
 async fn main() {
     dotenv::dotenv().ok();
 
-    Logger::try_with_env()
-        .unwrap()
-        .log_to_file(FileSpec::default().directory("/apps/log/rust"))
-        .write_mode(WriteMode::BufferAndFlush)
-        .print_message()
-        .duplicate_to_stdout(Duplicate::All)
-        .duplicate_to_stderr(Duplicate::Warn)
-        .format(crate::logger::logger_format)
-        .rotate(
-            Criterion::Age(Age::Day),
-            Naming::Timestamps,
-            Cleanup::KeepLogFiles(7),
-        )
-        .append()
-        .start()
-        .unwrap();
+    logger::create();
 
-    debug!("log file path: /apps/log/rust");
+    repository::db::Repo::create().await;
+
+    redis::connection::RedisConnection::create().await;
 
     api::start().await;
 }

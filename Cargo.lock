@@ -54,6 +54,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "arc-swap"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6df5aef5c5830360ce5218cecb8f018af3438af5686ae945094affc86fdec63"
+
+[[package]]
 name = "async-trait"
 version = "0.1.51"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -63,12 +69,6 @@ dependencies = [
  "quote",
  "syn",
 ]
-
-[[package]]
-name = "async_once"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58f8f7a882f8fffee0bdbb0580033b01613b50781e03c02713da0599ed90b595"
 
 [[package]]
 name = "atoi"
@@ -216,6 +216,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "combine"
+version = "4.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a909e4d93292cd8e9c42e189f61681eff9d67b6541f96b8a1a737f23737bd001"
+dependencies = [
+ "bytes",
+ "futures-core",
+ "memchr",
+ "pin-project-lite",
+ "tokio",
+ "tokio-util",
+]
+
+[[package]]
 name = "cpufeatures"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -304,6 +318,7 @@ dependencies = [
  "flexi_logger",
  "itertools 0.9.0",
  "log",
+ "redis 0.1.0",
  "repository",
  "serde",
  "thiserror",
@@ -315,6 +330,12 @@ name = "dotenv"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
+
+[[package]]
+name = "dtoa"
+version = "0.4.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56899898ce76aaf4a0f24d914c97ea6ed976d42fec6ad33fcbb0a1103e07b2b0"
 
 [[package]]
 name = "either"
@@ -1159,6 +1180,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "redis"
+version = "0.1.0"
+dependencies = [
+ "flexi_logger",
+ "log",
+ "once_cell",
+ "redis 0.21.2",
+]
+
+[[package]]
+name = "redis"
+version = "0.21.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "202c5bf92cad3d57605c366e644a7fbf305a83f19754fc66678c6265dcc9b8b4"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "bytes",
+ "combine",
+ "dtoa",
+ "futures",
+ "futures-util",
+ "itoa",
+ "percent-encoding",
+ "pin-project-lite",
+ "sha1",
+ "tokio",
+ "tokio-util",
+ "url",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1209,11 +1262,10 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "async_once",
  "chrono",
  "flexi_logger",
- "lazy_static",
  "log",
+ "once_cell",
  "serde",
  "sql-builder",
  "sqlx",
@@ -1256,7 +1308,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-sqlx-warp-server"
+name = "rust-web-server-example"
 version = "0.1.0"
 dependencies = [
  "api",
@@ -1264,6 +1316,8 @@ dependencies = [
  "dotenv",
  "flexi_logger",
  "log",
+ "redis 0.1.0",
+ "repository",
  "tokio",
 ]
 
@@ -1375,6 +1429,12 @@ dependencies = [
  "digest",
  "opaque-debug",
 ]
+
+[[package]]
+name = "sha1"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2579985fda508104f7587689507983eadd6a6e84dd35d6d115361f530916fa0d"
 
 [[package]]
 name = "sha2"

@@ -1,5 +1,5 @@
 pub mod adventures;
-mod db;
+pub mod db;
 
 pub use adventures::*;
 pub use sqlx::Error as SqlxError;
