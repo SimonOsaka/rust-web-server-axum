@@ -8,6 +8,7 @@
 - db: wrap database operation & sql
 - types: type for all module
 - server: boot & logger
+- search: search engine
 
 #### LICENSE
 MIT
