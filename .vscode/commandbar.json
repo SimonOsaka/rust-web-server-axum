@@ -4,34 +4,53 @@
     "skipErrorMessage": false,
     "commands": [
         {
-            "text": "▶︎ cargo run",
+            "text": "▶︎ run",
             "color": "lightgreen",
-            "tooltip": "workbench.action.tasks.runTask|RUST_LOG=debug cargo run - rust-warp-sqlx-backend",
+            "tooltip": "cargo run",
             "language": "rust",
             "commandType": "palette",
-            "command": "workbench.action.tasks.runTask|RUST_LOG=debug cargo run - rust-warp-sqlx-backend",
+            "command": "workbench.action.tasks.runTask|cargo run",
             "alignment": "left",
             "priority": 10
         },
         {
-            "text": "▷ cargo build",
+            "text": "▷ build",
             "color": "yellow",
-            "tooltip": "workbench.action.tasks.runTask|cargo build - rust-warp-sqlx-backend",
+            "tooltip": "cargo build",
             "language": "rust",
             "commandType": "palette",
-            "command": "workbench.action.tasks.runTask|cargo build - rust-warp-sqlx-backend",
+            "command": "workbench.action.tasks.runTask|cargo build",
             "alignment": "left",
             "priority": 9
         },
         {
-            "text": "⚡︎ cargo build --release linux",
+            "text": "⚡︎ release",
+            "color": "LightSteelBlue",
+            "tooltip": "cargo build --release",
+            "language": "rust",
+            "commandType": "palette",
+            "command": "workbench.action.tasks.runTask|cargo build --release",
+            "alignment": "left",
+            "priority": 8
+        },
+        {
+            "text": "⚡︎ release linux",
             "color": "pink",
-            "tooltip": "workbench.action.tasks.runTask|cargo build --release --target=x86_64-unknown-linux-musl",
+            "tooltip": "cargo build --release --target=x86_64-unknown-linux-musl",
             "language": "rust",
             "commandType": "palette",
             "command": "workbench.action.tasks.runTask|cargo build --release --target=x86_64-unknown-linux-musl",
             "alignment": "left",
             "priority": 8
+        },
+        {
+            "text": "Terminal",
+            "color": "orange",
+            "tooltip": "open a terminal in vscode",
+            "commandType": "palette",
+            "command": "workbench.action.terminal.toggleTerminal",
+            "alignment": "right",
+            "priority": 1000
         }
     ]
 }

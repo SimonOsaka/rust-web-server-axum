@@ -2,7 +2,16 @@ use crate::{Adventures, AdventuresQuery, DatabaseError, GetAdventureError, PlayL
 use anyhow::Error as OpaqueError;
 use anyhow::Result;
 
+use log::debug;
+use meilisearch_sdk::errors::Error;
+use meilisearch_sdk::search::SearchResult;
+use repository::models::MyAdventures;
 use repository::SqlxError;
+use search::operation::Condition;
+use search::operation::Page;
+use search::operation::Sort;
+use search::operation::SortDirect;
+use search::operation::SortProperty;
 use types::ID;
 pub fn to_db_error(e: SqlxError) -> DatabaseError {
     DatabaseError::from(OpaqueError::from(e))
@@ -17,27 +26,36 @@ impl crate::manager::Manager for Manager {
         &self,
         query: AdventuresQuery,
     ) -> Result<Vec<Adventures>, DatabaseError> {
-        let my_list_result = repository::adventures::find_latest(query.into()).await;
-        let result: Vec<Adventures> = my_list_result
-            .map_err(to_db_error)
+        let mut filter = vec!["is_deleted = 0".to_string()];
+        if query.item_id != 0 {
+            filter.push(format!("item_type = {}", query.item_id));
+        }
+        if let Some(pv) = query.province_key {
+            filter.push(format!("journey_destiny = {:?}", pv))
+        }
+
+        debug!("filter: {:?}", filter);
+
+        let mut condition = Condition::new();
+        condition.filter = Some(filter.join(" AND "));
+        condition.sort = Some(Sort {
+            property: SortProperty::ID,
+            direct: SortDirect::DESC,
+        });
+        condition.page = Some(Page::from(
+            query.limit.unwrap_or(10),
+            query.offset.unwrap_or(0),
+        ));
+
+        let search_results =
+            search::operation::search_documents_with_filter::<MyAdventures>(condition).await;
+
+        let result: Vec<Adventures> = search_results
             .unwrap()
             .into_iter()
-            .map(|m| Adventures {
-                id: m.id,
-                title: m.title,
-                image_url: m.image_url,
-                created_at: m.created_at,
-                item_type: m.item_type,
-                link: m.link,
-                source: m.source,
-                journey_destiny: m.journey_destiny,
-                script_content: m.script_content,
-                play_list: m.play_list,
-                address: m.address,
-                shop_name: m.shop_name,
-                province: m.province,
-                city: m.city,
-                district: m.district,
+            .map(|sr| {
+                let my = sr.result;
+                Adventures::from(my)
             })
             .collect();
         Ok(result)
@@ -47,65 +65,71 @@ impl crate::manager::Manager for Manager {
         &self,
         query: PlayListQuery,
     ) -> Result<Vec<Adventures>, DatabaseError> {
-        let my_list_result = repository::adventures::find_by_play_list(query.into()).await;
-        let result: Vec<Adventures> = my_list_result
-            .map_err(to_db_error)
+        let mut condition = Condition::new();
+        condition.filter = Some(format!(
+            "play_list = {} AND is_deleted = 0",
+            query.play_list
+        ));
+        condition.page = Some(Page::of(1));
+        let search_results: Result<Vec<SearchResult<MyAdventures>>, Error> =
+            search::operation::search_documents_with_filter::<MyAdventures>(condition).await;
+
+        let result: Vec<Adventures> = search_results
             .unwrap()
             .into_iter()
-            .map(|m| Adventures {
-                id: m.id,
-                title: m.title,
-                image_url: m.image_url,
-                created_at: m.created_at,
-                item_type: m.item_type,
-                link: m.link,
-                source: m.source,
-                journey_destiny: m.journey_destiny,
-                script_content: m.script_content,
-                play_list: m.play_list,
-                address: m.address,
-                shop_name: m.shop_name,
-                province: m.province,
-                city: m.city,
-                district: m.district,
+            .map(|sr| {
+                let my = sr.result;
+                Adventures::from(my)
             })
             .collect();
+
         Ok(result)
     }
 
     async fn get_adventure_by_id(&self, id: ID) -> Result<Option<Adventures>, GetAdventureError> {
-        let my = repository::adventures::find_one(id)
-            .await
-            .map_err(|e| match e {
-                e @ repository::SqlxError::RowNotFound => GetAdventureError::NotFound {
-                    adventure_id: id,
-                    source: to_db_error(e),
-                },
-                e => to_db_error(e).into(),
-            })
-            .unwrap();
+        let mut condition = Condition::new();
+        condition.filter = Some(format!("id = {} AND is_deleted = 0", id));
+        condition.page = Some(Page::one());
+        let search_results: Result<Vec<SearchResult<MyAdventures>>, Error> =
+            search::operation::search_documents_with_filter::<MyAdventures>(condition).await;
 
-        let result = match my {
-            Some(ad) => Some(Adventures {
-                id: ad.id,
-                title: ad.title,
-                image_url: ad.image_url,
-                created_at: ad.created_at,
-                item_type: ad.item_type,
-                link: ad.link,
-                source: ad.source,
-                journey_destiny: ad.journey_destiny,
-                script_content: ad.script_content,
-                play_list: ad.play_list,
-                address: ad.address,
-                shop_name: ad.shop_name,
-                province: ad.province,
-                city: ad.city,
-                district: ad.district,
-            }),
-            _ => None,
-        };
+        let result;
+        if search_results.as_ref().unwrap().len() == 1 {
+            let mut sr_my: Vec<Adventures> = search_results
+                .unwrap()
+                .into_iter()
+                .map(|sr| {
+                    let my = sr.result;
+                    Adventures::from(my)
+                })
+                .collect();
 
+            result = sr_my.pop();
+
+            debug!("get result after search: {:?}", result);
+        } else {
+            let my = repository::adventures::find_one(id)
+                .await
+                .map_err(|e| match e {
+                    e @ repository::SqlxError::RowNotFound => GetAdventureError::NotFound {
+                        adventure_id: id,
+                        source: to_db_error(e),
+                    },
+                    e => to_db_error(e).into(),
+                })
+                .unwrap();
+
+            if let Some(ref m) = my {
+                search::operation::add_documents(vec![m.clone()]).await;
+            }
+
+            result = match my {
+                Some(ad) => Some(Adventures::from(ad)),
+                _ => None,
+            };
+
+            debug!("get result after db: {:?}", result);
+        }
         Ok(result)
     }
 }

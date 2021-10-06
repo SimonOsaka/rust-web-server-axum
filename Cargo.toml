@@ -23,6 +23,7 @@ name = "app"
 api = { path = "./api", features = ["postgres"] }
 redis = { path = "./redis" }
 repository = { path = "./repository" }
+search = { path = "./search" }
 async-trait = "0.1"
 flexi_logger = "0.19.3"
 log = "0.4"
@@ -30,4 +31,4 @@ dotenv = "0.15.0"
 tokio = { version = "1", features = ["macros"] }
 
 [workspace]
-members = ["api", "repository", "domain", "types", "redis"]
+members = ["api", "repository", "domain", "types", "redis", "search"]

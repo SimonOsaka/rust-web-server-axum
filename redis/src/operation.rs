@@ -2,9 +2,11 @@ use redis::{aio::ConnectionManager, FromRedisValue, RedisError, ToRedisArgs};
 
 /// Set redis key and value async
 ///
-/// Example:
+/// # Example:
 ///
+/// ```rust
 /// set<&str, String>("imkey", "imvalue").await
+/// ```
 pub async fn set<K, V>(key: K, value: V) -> String
 where
     K: ToRedisArgs,
@@ -22,9 +24,11 @@ where
 
 /// Set redis key and value async
 ///
-/// Example:
+/// # Example:
 ///
+/// ```rust
 /// set<&str, String>("imkey", "imvalue").await
+/// ```
 pub async fn set_ex<K, S, V>(key: K, seconds: S, value: V) -> String
 where
     K: ToRedisArgs,
@@ -45,9 +49,11 @@ where
 
 /// Get key's value async
 ///
-/// Example:
+/// # Example:
 ///
+/// ```rust
 /// get<&str, String>("imkey").await
+/// ```
 pub async fn get<K, V>(key: K) -> Result<Option<V>, RedisError>
 where
     K: ToRedisArgs,
@@ -69,9 +75,11 @@ where
 
 /// Del key's value async
 ///
-/// Example:
+/// # Example:
 ///
+/// ```rust
 /// del<&str>("imkey").await
+/// ```
 pub async fn del<K>(key: K) -> Result<bool, RedisError>
 where
     K: ToRedisArgs,
@@ -92,9 +100,11 @@ where
 
 /// If key exist, Async
 ///
-/// Example:
+/// # Example:
 ///
+/// ```rust
 /// exist<&str>("imkey").await
+/// ```
 pub async fn exist<K>(key: K) -> Result<bool, RedisError>
 where
     K: ToRedisArgs,

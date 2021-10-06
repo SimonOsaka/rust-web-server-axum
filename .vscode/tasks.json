@@ -4,13 +4,13 @@
         {
             "type": "shell",
             "command": [
-                "RUST_LOG=debug cargo run"
+                "cargo run"
             ],
             "problemMatcher": [
                 "$rustc"
             ],
             "group": "build",
-            "label": "RUST_LOG=debug cargo run - rust-warp-sqlx-backend"
+            "label": "cargo run"
         },
         {
             "type": "shell",
@@ -21,7 +21,18 @@
                 "$rustc"
             ],
             "group": "build",
-            "label": "cargo build - rust-warp-sqlx-backend"
+            "label": "cargo build"
+        },
+        {
+            "type": "shell",
+            "command": [
+                "cargo build --release"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
+            "label": "cargo build --release"
         },
         {
             "type": "shell",

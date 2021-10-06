@@ -1,4 +1,4 @@
-use repository::models::PlayListWhere;
+use repository::models::{AdventuresWhere, MyAdventures, PlayListWhere};
 use serde::Serialize;
 use types::{DateTime, ID, U8I16};
 
@@ -10,8 +10,8 @@ pub struct AdventuresQuery {
     pub province_key: Option<String>,
 }
 
-impl From<repository::models::AdventuresWhere> for AdventuresQuery {
-    fn from(w: repository::models::AdventuresWhere) -> Self {
+impl From<AdventuresWhere> for AdventuresQuery {
+    fn from(w: AdventuresWhere) -> Self {
         Self {
             item_id: w.item_id,
             limit: w.limit,
@@ -21,9 +21,9 @@ impl From<repository::models::AdventuresWhere> for AdventuresQuery {
     }
 }
 
-impl Into<repository::models::AdventuresWhere> for AdventuresQuery {
-    fn into(self) -> repository::models::AdventuresWhere {
-        repository::models::AdventuresWhere {
+impl Into<AdventuresWhere> for AdventuresQuery {
+    fn into(self) -> AdventuresWhere {
+        AdventuresWhere {
             item_id: (self.item_id),
             limit: (self.limit),
             offset: (self.offset),
@@ -49,6 +49,28 @@ pub struct Adventures {
     pub province: String,
     pub city: String,
     pub district: String,
+}
+
+impl From<MyAdventures> for Adventures {
+    fn from(my: MyAdventures) -> Self {
+        Adventures {
+            id: my.id,
+            title: my.title,
+            image_url: my.image_url,
+            created_at: my.created_at,
+            item_type: my.item_type,
+            link: my.link,
+            source: my.source,
+            journey_destiny: my.journey_destiny,
+            script_content: my.script_content,
+            play_list: my.play_list,
+            address: my.address,
+            shop_name: my.shop_name,
+            province: my.province,
+            city: my.city,
+            district: my.district,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]

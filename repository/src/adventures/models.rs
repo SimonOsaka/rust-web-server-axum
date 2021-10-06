@@ -1,3 +1,4 @@
+use meilisearch_sdk::document::Document;
 use serde::{Deserialize, Serialize};
 
 use types::{DateTime, ID, U8I16};
@@ -25,6 +26,13 @@ pub struct MyAdventures {
     pub province: String,
     pub city: String,
     pub district: String,
+}
+
+impl Document for MyAdventures {
+    type UIDType = ID;
+    fn get_uid(&self) -> &Self::UIDType {
+        &self.id
+    }
 }
 
 #[derive(Clone, Debug)]
