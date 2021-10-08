@@ -11,7 +11,9 @@ async fn main() {
 
     repository::db::Repo::create().await;
 
-    redis::connection::RedisConnection::create().await;
+    if cfg!(feature = "redis_module") {
+        redis::connection::RedisConnection::create().await;
+    }
 
     search::connection::MeiliSearch::create().await;
 

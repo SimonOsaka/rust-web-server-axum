@@ -19,6 +19,10 @@ bench = false
 path = "server/src/main.rs"
 name = "app"
 
+[features]
+# default = ["redis_module"]
+redis_module = []
+
 [dependencies]
 api = { path = "./api", features = ["postgres"] }
 redis = { path = "./redis" }
