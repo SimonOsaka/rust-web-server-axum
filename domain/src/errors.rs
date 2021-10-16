@@ -1,6 +1,6 @@
 #[derive(thiserror::Error, Debug)]
 #[error("Something went wrong.")]
-pub struct DatabaseError {
+pub struct DomainError {
     #[from]
     source: anyhow::Error,
 }

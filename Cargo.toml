@@ -20,13 +20,15 @@ path = "server/src/main.rs"
 name = "app"
 
 [features]
-# default = ["redis_module"]
-redis_module = []
+default = ["database_lib", "search_lib"]
+redis_lib = []
+database_lib = []
+search_lib = []
 
 [dependencies]
 api = { path = "./api", features = ["postgres"] }
 redis = { path = "./redis" }
-repository = { path = "./repository" }
+repository = { path = "./repository", features = ["postgres"] }
 search = { path = "./search" }
 async-trait = "0.1"
 flexi_logger = "0.19.3"

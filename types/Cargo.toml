@@ -12,3 +12,11 @@ mysql = []
 [dependencies]
 chrono = { version = "0.4.19", features = ["serde"] }
 serde = { version = "1.0.125", features = ["derive"] }
+sqlx = { version = "0.5", default-features = false, features = [
+    "runtime-tokio-rustls",
+    "macros",
+    "chrono",
+] }
+meilisearch-sdk = { version = "0.10", default-features = false, features = [
+    "sync",
+] }

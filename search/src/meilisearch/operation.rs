@@ -16,6 +16,7 @@ where
     index.add_documents(&vec, Some("id")).await.unwrap();
 }
 
+#[derive(Debug)]
 pub struct Condition {
     pub filter: Option<String>,
     pub sort: Option<Sort>,
@@ -33,20 +34,22 @@ impl Condition {
         }
     }
 }
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Sort {
     pub property: SortProperty,
     pub direct: SortDirect,
 }
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum SortProperty {
     ID,
 }
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum SortDirect {
     ASC,
     DESC,
 }
+
+#[derive(Debug)]
 pub struct Page {
     pub limit: usize,
     pub offset: usize,
@@ -98,9 +101,6 @@ where
     if let Some(page) = condition.page {
         query.with_limit(page.limit).with_offset(page.offset);
     }
-    let search_results = query.execute().await.unwrap();
-
-    let results = search_results.hits;
-
-    Ok(results)
+    let search_results = query.execute().await?;
+    Ok(search_results.hits)
 }

@@ -1,7 +1,7 @@
-pub mod connection;
-pub mod operation;
+pub mod adventures;
+pub mod meilisearch;
 
-use connection::MeiliSearch;
+use meilisearch::MeiliSearch;
 use once_cell::sync::OnceCell;
 
 #[macro_use]

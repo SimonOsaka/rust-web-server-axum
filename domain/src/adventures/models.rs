@@ -1,6 +1,7 @@
-use repository::models::{AdventuresWhere, MyAdventures, PlayListWhere};
+use repository::models::{AdventuresWhere, PlayListWhere};
+use search::adventures::model::{AdventuresFilter, PlayListFilter};
 use serde::Serialize;
-use types::{DateTime, ID, U8I16};
+use types::{DateTime, MyAdventures, ID, U8I16};
 
 #[derive(Clone, Debug)]
 pub struct AdventuresQuery {
@@ -24,6 +25,17 @@ impl From<AdventuresWhere> for AdventuresQuery {
 impl Into<AdventuresWhere> for AdventuresQuery {
     fn into(self) -> AdventuresWhere {
         AdventuresWhere {
+            item_id: (self.item_id),
+            limit: (self.limit),
+            offset: (self.offset),
+            province_key: (self.province_key),
+        }
+    }
+}
+
+impl Into<AdventuresFilter> for AdventuresQuery {
+    fn into(self) -> AdventuresFilter {
+        AdventuresFilter {
             item_id: (self.item_id),
             limit: (self.limit),
             offset: (self.offset),
@@ -81,6 +93,14 @@ pub struct PlayListQuery {
 impl Into<PlayListWhere> for PlayListQuery {
     fn into(self) -> PlayListWhere {
         PlayListWhere {
+            play_list: (self.play_list),
+        }
+    }
+}
+
+impl Into<PlayListFilter> for PlayListQuery {
+    fn into(self) -> PlayListFilter {
+        PlayListFilter {
             play_list: (self.play_list),
         }
     }

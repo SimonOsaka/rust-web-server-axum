@@ -9,13 +9,17 @@ async fn main() {
 
     logger::create();
 
-    repository::db::Repo::create().await;
+    if cfg!(feature = "database_lib") {
+        repository::db::Repo::create().await;
+    }
 
-    if cfg!(feature = "redis_module") {
+    if cfg!(feature = "redis_lib") {
         redis::connection::RedisConnection::create().await;
     }
 
-    search::connection::MeiliSearch::create().await;
+    if cfg!(feature = "search_lib") {
+        search::meilisearch::MeiliSearch::create().await;
+    }
 
     api::start().await;
 }

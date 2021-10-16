@@ -1,8 +1,10 @@
-use domain::manager::Manager;
-use serde::Deserialize;
 use std::convert::Infallible;
 
-use crate::{adventures::response::AdventuresResponse, AppState};
+use domain::manager::Manager;
+use serde::Deserialize;
+use warp::Reply;
+
+use crate::{adventures::response::AdventuresResponse, response::ErrorResponse, AppState};
 
 #[derive(Default, Deserialize, Debug, Clone)]
 pub struct AdventuresQueryReq {
@@ -30,9 +32,12 @@ pub async fn list_adventures(
 ) -> Result<impl warp::Reply, Infallible> {
     debug!("token: {:?}, query: {:?}, state: {:?}", token, query, state);
     let manager = &state.manager;
-    let adventures = manager.find_adventures(query.into()).await.unwrap();
-    let response = AdventuresResponse::from(adventures);
-
-    debug!("response: {:?}", &response);
-    Ok(warp::reply::json(&response))
+    match manager.find_adventures(query.into()).await {
+        Ok(adventures) => {
+            let response = AdventuresResponse::from(adventures);
+            debug!("response: {:?}", &response);
+            Ok(warp::reply::json(&response).into_response())
+        }
+        Err(e) => Ok(ErrorResponse::from(e).into_response()),
+    }
 }

@@ -6,6 +6,7 @@ use warp::{Filter, Rejection};
 use crate::get::get_adventure;
 use crate::index::index;
 use crate::play_list::play_list_adventures;
+use crate::sync::sync_adventure;
 use crate::tabs::tabs_adventures;
 use crate::version::version_update_adventures;
 use crate::{list::list_adventures, AppState};
@@ -38,6 +39,12 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             .and(warp::header::optional("Authorization"))
             .and(with_state(state.clone()))
             .and_then(play_list_adventures))
+        //
+        .or(warp::path!("api" / "sync" / ID)
+            .and(warp::get())
+            .and(warp::header::optional("Authorization"))
+            .and(with_state(state.clone()))
+            .and_then(sync_adventure))
 }
 
 fn with_state(

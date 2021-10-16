@@ -12,11 +12,11 @@ pub struct AppStateRaw {
     pub manager: Manager,
 }
 
-pub type AppState = std::sync::Arc<AppStateRaw>;
+pub type AppState = AppStateRaw;
 
 pub async fn start() {
     let manager = Manager;
-    let app_state = std::sync::Arc::new(AppStateRaw { manager });
+    let app_state = AppStateRaw { manager };
     let bind_address: SocketAddr = env::var("BIND_ADDRESS")
         .expect("BIND_ADDRESS is not set")
         .parse()

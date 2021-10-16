@@ -1,8 +1,9 @@
 use std::convert::Infallible;
 
-use domain::manager::Manager;
+use domain::{manager::Manager, PlayListQuery};
+use warp::Reply;
 
-use crate::{adventures::response::AdventuresResponse, AppState};
+use crate::{adventures::response::AdventuresResponse, response::ErrorResponse, AppState};
 
 pub async fn play_list_adventures(
     play_list: String,
@@ -14,10 +15,13 @@ pub async fn play_list_adventures(
         token, play_list, state
     );
     let manager = &state.manager;
-    let query = domain::PlayListQuery { play_list };
-    let adventures = manager.find_adventures_by_play_list(query).await.unwrap();
-    let response = AdventuresResponse::from(adventures);
-
-    debug!("response: {:?}", &response);
-    Ok(warp::reply::json(&response))
+    let query = PlayListQuery { play_list };
+    match manager.find_adventures_by_play_list(query).await {
+        Ok(adventures) => {
+            let response = AdventuresResponse::from(adventures);
+            debug!("response: {:?}", &response);
+            Ok(warp::reply::json(&response).into_response())
+        }
+        Err(e) => Ok(ErrorResponse::from(e).into_response()),
+    }
 }

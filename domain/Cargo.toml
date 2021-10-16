@@ -16,7 +16,7 @@ mysql = []
 types = { path = "../types", features = ["postgres"] }
 repository = { path = "../repository", features = ["postgres"] }
 redis = { path = "../redis" }
-search = { path = "../search" }
+search = { path = "../search", features = ["postgres"] }
 serde = { version = "1.0.125", features = ["derive"] }
 serde_json = "1.0"
 chrono = { version = "0.4.19", features = ["serde"] }

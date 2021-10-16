@@ -1,8 +1,8 @@
 use crate::db::{query_list, query_one, SqlBuilder, SqlParam};
-use crate::models::{AdventuresWhere, MyAdventures, PlayListWhere};
+use crate::models::{AdventuresWhere, PlayListWhere};
 use anyhow::Result;
 
-use types::ID;
+use types::{MyAdventures, ID};
 
 #[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn find_latest(query: AdventuresWhere) -> Result<Vec<MyAdventures>, sqlx::Error> {

@@ -1,7 +1,7 @@
-use serde::Deserialize;
 use std::convert::Infallible;
 
 use crate::adventures::response::VersionUpdateResponse;
+use serde::Deserialize;
 
 #[derive(Default, Deserialize, Debug, Clone)]
 pub struct VersionUpdateReq {
