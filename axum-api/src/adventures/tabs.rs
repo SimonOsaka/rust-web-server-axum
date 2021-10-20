@@ -1,11 +1,13 @@
-use std::convert::Infallible;
+use axum::Json;
+use types::my_item_type_format::to_item_type_name;
 
 use crate::{
     adventures::response::{Tabs, TabsResponse},
-    consts::my_item_type_format::to_item_type_name,
+    app_request::JwtToken,
+    app_response::AppError,
 };
 
-pub async fn tabs_adventures(token: Option<String>) -> Result<impl warp::Reply, Infallible> {
+pub async fn tabs_adventures(JwtToken(token): JwtToken) -> Result<Json<TabsResponse>, AppError> {
     debug!("token: {:?}", token);
 
     let tabs: Vec<Tabs> = vec![
@@ -44,5 +46,5 @@ pub async fn tabs_adventures(token: Option<String>) -> Result<impl warp::Reply, 
     ];
     let response = TabsResponse { tab_list: tabs };
     debug!("response: {:?}", &response);
-    Ok(warp::reply::json(&response))
+    Ok(response.into())
 }

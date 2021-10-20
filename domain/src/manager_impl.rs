@@ -60,6 +60,19 @@ impl crate::manager::Manager for Manager {
         }
     }
 
+    async fn get_adventure(&self, id: ID) -> Result<Adventures, GetAdventureError> {
+        let search_results = find_one(id).await.map_err(to_domain_error);
+
+        match search_results? {
+            Some(my) => {
+                let result = Adventures::from(my);
+                debug!("get_adventure result: {:?}", result);
+                Ok(result)
+            }
+            None => Err(GetAdventureError::NotFound { adventure_id: id }),
+        }
+    }
+
     async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError> {
         let result = find_one(id).await;
         match result {

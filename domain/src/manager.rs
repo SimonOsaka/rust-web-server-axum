@@ -17,5 +17,7 @@ pub trait Manager {
     /// one adventure
     async fn get_adventure_by_id(&self, id: ID) -> Result<Option<Adventures>, GetAdventureError>;
 
+    async fn get_adventure(&self, id: ID) -> Result<Adventures, GetAdventureError>;
+
     async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError>;
 }

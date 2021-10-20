@@ -24,9 +24,11 @@ default = ["database_lib", "search_lib"]
 redis_lib = []
 database_lib = []
 search_lib = []
+api_warp_lib = []
 
 [dependencies]
-api = { path = "./api", features = ["postgres"] }
+axum-api = { path = "./axum-api", features = ["postgres"] }
+warp-api = { path = "./warp-api", features = ["postgres"] }
 redis = { path = "./redis" }
 repository = { path = "./repository", features = ["postgres"] }
 search = { path = "./search" }
@@ -37,4 +39,12 @@ dotenv = "0.15.0"
 tokio = { version = "1", features = ["macros"] }
 
 [workspace]
-members = ["api", "repository", "domain", "types", "redis", "search"]
+members = [
+    "warp-api",
+    "repository",
+    "domain",
+    "types",
+    "redis",
+    "search",
+    "axum-api",
+]

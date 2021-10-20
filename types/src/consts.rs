@@ -1,5 +1,5 @@
 pub mod my_item_type_format {
-    use types::U8I16;
+    use crate::types::U8I16;
 
     const ALL: &str = "全部";
 
@@ -29,7 +29,7 @@ pub mod my_item_type_format {
 }
 
 pub mod my_source {
-    use types::U8I16;
+    use crate::types::U8I16;
 
     const DOUYIN: &str = "抖音";
     const BILIBILI: &str = "哔哩哔哩";
