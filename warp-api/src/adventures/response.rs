@@ -42,6 +42,12 @@ impl From<Vec<domain::Adventures>> for AdventuresResponse {
     }
 }
 
+impl warp::Reply for AdventuresResponse {
+    fn into_response(self) -> warp::reply::Response {
+        warp::reply::json(&self).into_response()
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AdventureResponse {
@@ -71,6 +77,12 @@ impl From<domain::Adventures> for AdventureResponse {
             district: ad.district,
         };
         Self { adventure }
+    }
+}
+
+impl warp::Reply for AdventureResponse {
+    fn into_response(self) -> warp::reply::Response {
+        warp::reply::json(&self).into_response()
     }
 }
 

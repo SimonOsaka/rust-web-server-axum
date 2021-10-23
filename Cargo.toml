@@ -1,43 +1,3 @@
-[package]
-name = "rust-web-server-example"
-version = "0.1.0"
-edition = "2018"
-autotests = false
-authors = ["Simon Osaka <geniusmickymouse@qq.com>"]
-include = ["src/**/*", "Cargo.toml", "README.md"]
-description = "A example of rust web server to develop api"
-repository = "https://github.com/SimonOsaka/rust-web-server-example"
-documentation = ""
-homepage = ""
-keywords = ["web", "api", "db"]
-categories = []
-license = "MIT"
-readme = "README.md"
-
-[[bin]]
-bench = false
-path = "server/src/main.rs"
-name = "app"
-
-[features]
-default = ["database_lib", "search_lib"]
-redis_lib = []
-database_lib = []
-search_lib = []
-api_warp_lib = []
-
-[dependencies]
-axum-api = { path = "./axum-api", features = ["postgres"] }
-warp-api = { path = "./warp-api", features = ["postgres"] }
-redis = { path = "./redis" }
-repository = { path = "./repository", features = ["postgres"] }
-search = { path = "./search" }
-async-trait = "0.1"
-flexi_logger = "0.19.3"
-log = "0.4"
-dotenv = "0.15.0"
-tokio = { version = "1", features = ["macros"] }
-
 [workspace]
 members = [
     "warp-api",
@@ -47,4 +7,12 @@ members = [
     "redis",
     "search",
     "axum-api",
+    "server",
 ]
+
+[profile.dev]
+codegen-units = 16
+
+[profile.release]
+lto = true
+opt-level = 'z'

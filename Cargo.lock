@@ -1593,22 +1593,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-web-server-example"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "axum-api",
- "dotenv",
- "flexi_logger",
- "log",
- "redis 0.1.0",
- "repository",
- "search",
- "tokio",
- "warp-api",
-]
-
-[[package]]
 name = "rustls"
 version = "0.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1725,6 +1709,22 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "server"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "axum-api",
+ "dotenv",
+ "flexi_logger",
+ "log",
+ "redis 0.1.0",
+ "repository",
+ "search",
+ "tokio",
+ "warp-api",
 ]
 
 [[package]]
@@ -2468,6 +2468,7 @@ dependencies = [
  "once_cell",
  "serde",
  "serde_derive",
+ "serde_json",
  "types",
  "warp",
 ]
