@@ -3,12 +3,12 @@ use types::my_item_type_format::to_item_type_name;
 
 use crate::{
     adventures::response::{Tabs, TabsResponse},
-    app_request::JwtToken,
+    app_request::AuthUser,
     app_response::AppError,
 };
 
-pub async fn tabs_adventures(JwtToken(token): JwtToken) -> Result<Json<TabsResponse>, AppError> {
-    debug!("token: {:?}", token);
+pub async fn tabs_adventures(AuthUser(user): AuthUser) -> Result<Json<TabsResponse>, AppError> {
+    debug!("user: {:?}", user);
 
     let tabs: Vec<Tabs> = vec![
         Tabs {

@@ -2,11 +2,11 @@ use axum::{
     extract::{Extension, Query},
     Json,
 };
-use domain::manager::Manager;
+use domain::{manager::Manager, AdventuresQuery};
 use serde::Deserialize;
 
 use crate::{
-    app_request::JwtToken, app_response::AppError, response::AdventuresResponse, AppState,
+    app_request::AuthUser, app_response::AppError, response::AdventuresResponse, AppState,
 };
 
 #[derive(Default, Deserialize, Debug, Clone)]
@@ -17,7 +17,7 @@ pub struct AdventuresQueryReq {
     pub province_key: Option<String>,
 }
 
-impl From<AdventuresQueryReq> for domain::AdventuresQuery {
+impl From<AdventuresQueryReq> for AdventuresQuery {
     fn from(ad: AdventuresQueryReq) -> Self {
         Self {
             item_id: ad.item_id,
@@ -29,11 +29,11 @@ impl From<AdventuresQueryReq> for domain::AdventuresQuery {
 }
 
 pub async fn list_adventures(
-    JwtToken(token): JwtToken,
+    AuthUser(user): AuthUser,
     Query(query): Query<AdventuresQueryReq>,
     Extension(state): Extension<AppState>,
 ) -> Result<Json<AdventuresResponse>, AppError> {
-    debug!("token: {:?}, query: {:?}, state: {:?}", token, query, state);
+    debug!("user: {:?}, query: {:?}, state: {:?}", user, query, state);
     let manager = &state.manager;
     let adventures = manager.find_adventures(query.into()).await?;
     let response = AdventuresResponse::from(adventures);

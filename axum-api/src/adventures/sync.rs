@@ -5,14 +5,14 @@ use axum::{
 use domain::manager::Manager;
 use types::ID;
 
-use crate::{app_request::JwtToken, app_response::AppError, AppState};
+use crate::{app_request::AuthUser, app_response::AppError, AppState};
 
 pub async fn sync_adventure(
     Path(_id): Path<ID>,
-    JwtToken(token): JwtToken,
+    AuthUser(user): AuthUser,
     Extension(state): Extension<AppState>,
 ) -> Result<Json<bool>, AppError> {
-    debug!("token: {:?}, _id: {:?}, state: {:?}", token, _id, state);
+    debug!("user: {:?}, _id: {:?}, state: {:?}", user, _id, state);
     let manager = &state.manager;
     let result = manager.sync_db_to_documents(_id).await?;
     Ok(result.into())

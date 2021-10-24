@@ -14,7 +14,8 @@ const TOKEN_PREFIX: &str = "Token ";
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Claims {
     sub: ID,
-    exp: u64, // seconds since the epoch
+    exp: u64,           // seconds since the epoch
+    roles: Vec<String>, // user role [user, view]
 }
 
 impl Claims {
@@ -22,11 +23,16 @@ impl Claims {
         Self {
             sub: id,
             exp: (Utc::now() + Duration::days(30)).timestamp() as u64,
+            roles: vec!["user".into()],
         }
     }
 
-    pub fn id(&self) -> ID {
+    pub fn get_id(&self) -> ID {
         self.sub
+    }
+
+    pub fn has_role(&self, role: &str) -> bool {
+        self.roles.contains(&role.to_string())
     }
 }
 
@@ -48,29 +54,20 @@ pub fn decode_token(token: &str) -> Result<Claims> {
     .map(|token_data| token_data.claims)
 }
 
-#[cfg(test)]
-mod tests {
-    use std::env;
-
-    use super::*;
-
-    #[test]
-    fn encode_decode_token() {
-        env::set_var("JWT_SECRET", "yes");
-
-        let sub = 333;
-        let token = encode_token(sub);
-        println!("{}", token);
-        let decoded = decode::<Claims>(
-            &token,
-            &DecodingKey::from_secret(TOKEN_SECRET.as_ref()),
-            &Validation::default(),
-        );
-        if let Err(e) = &decoded {
-            println!("decode err: {}", e);
-        }
-
-        println!("{}", decode_token(&token).unwrap().id());
-        assert!(decoded.is_ok());
+pub fn role_view() -> Claims {
+    Claims {
+        sub: i64::MAX,
+        exp: u64::MAX,
+        roles: vec!["view".into()],
     }
 }
+
+#[derive(thiserror::Error, Clone, Debug)]
+pub enum JWTError {
+    #[error("Missing authorization key")]
+    Missing,
+    #[error("Authorization wrong")]
+    Invalid,
+}
+
+impl warp::reject::Reject for JWTError {}

@@ -1,7 +1,9 @@
 use domain::manager::Manager;
 use serde::Deserialize;
 
-use crate::{adventures::response::AdventuresResponse, response::ErrorResponse, AppState};
+use crate::{
+    adventures::response::AdventuresResponse, response::ErrorResponse, routes::AuthUser, AppState,
+};
 
 #[derive(Default, Deserialize, Debug, Clone)]
 pub struct AdventuresQueryReq {
@@ -23,11 +25,11 @@ impl From<AdventuresQueryReq> for domain::AdventuresQuery {
 }
 
 pub async fn list_adventures(
-    token: Option<String>,
+    AuthUser(user): AuthUser,
     query: AdventuresQueryReq,
     state: AppState,
 ) -> Result<impl warp::Reply, ErrorResponse> {
-    debug!("token: {:?}, query: {:?}, state: {:?}", token, query, state);
+    debug!("user: {:?}, query: {:?}, state: {:?}", user, query, state);
     let manager = &state.manager;
     let adventures = manager.find_adventures(query.into()).await?;
     let response = AdventuresResponse::from(adventures);

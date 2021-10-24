@@ -1,14 +1,16 @@
 use domain::manager::Manager;
 use types::ID;
 
-use crate::{adventures::response::AdventureResponse, response::ErrorResponse, AppState};
+use crate::{
+    adventures::response::AdventureResponse, response::ErrorResponse, routes::AuthUser, AppState,
+};
 
 pub async fn get_adventure(
     _id: ID,
-    token: Option<String>,
+    user: AuthUser,
     state: AppState,
 ) -> Result<impl warp::Reply, ErrorResponse> {
-    debug!("token: {:?}, _id: {:?}, state: {:?}", token, _id, state);
+    debug!("user: {:?}, _id: {:?}, state: {:?}", user, _id, state);
 
     let manager = &state.manager;
     let adventure = manager.get_adventure(_id).await?;

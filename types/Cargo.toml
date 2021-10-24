@@ -17,6 +17,6 @@ sqlx = { version = "0.5", default-features = false, features = [
     "macros",
     "chrono",
 ] }
-meilisearch-sdk = { version = "0.10", default-features = false, features = [
+meilisearch-sdk = { version = "0.11.0", default-features = false, features = [
     "sync",
 ] }

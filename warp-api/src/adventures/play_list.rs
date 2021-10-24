@@ -1,15 +1,17 @@
 use domain::{manager::Manager, PlayListQuery};
 
-use crate::{adventures::response::AdventuresResponse, response::ErrorResponse, AppState};
+use crate::{
+    adventures::response::AdventuresResponse, response::ErrorResponse, routes::AuthUser, AppState,
+};
 
 pub async fn play_list_adventures(
     play_list: String,
-    token: Option<String>,
+    user: AuthUser,
     state: AppState,
 ) -> Result<impl warp::Reply, ErrorResponse> {
     debug!(
-        "token: {:?}, play_list: {:?}, state: {:?}",
-        token, play_list, state
+        "user: {:?}, play_list: {:?}, state: {:?}",
+        user, play_list, state
     );
     let manager = &state.manager;
     let query = PlayListQuery { play_list };

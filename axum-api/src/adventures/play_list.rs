@@ -5,17 +5,17 @@ use axum::{
 use domain::{manager::Manager, PlayListQuery};
 
 use crate::{
-    app_request::JwtToken, app_response::AppError, response::AdventuresResponse, AppState,
+    app_request::AuthUser, app_response::AppError, response::AdventuresResponse, AppState,
 };
 
 pub async fn play_list_adventures(
     Path(play_list): Path<String>,
-    JwtToken(token): JwtToken,
+    AuthUser(user): AuthUser,
     Extension(state): Extension<AppState>,
 ) -> Result<Json<AdventuresResponse>, AppError> {
     debug!(
-        "token: {:?}, play_list: {:?}, state: {:?}",
-        token, play_list, state
+        "user: {:?}, play_list: {:?}, state: {:?}",
+        user, play_list, state
     );
     let manager = &state.manager;
     let query = PlayListQuery { play_list };

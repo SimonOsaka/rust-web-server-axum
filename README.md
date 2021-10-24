@@ -16,6 +16,8 @@
     - redis
 - search: search engine
     - meilisearch
+- auth: jwt token auth
+    - jwt web token
 
 ## Docker
 ```shell

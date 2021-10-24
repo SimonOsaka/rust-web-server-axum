@@ -1,25 +1,32 @@
+use auth::{decode_token, role_view, Claims, JWTError};
 use axum::{
     async_trait,
     extract::{FromRequest, RequestParts},
-    http::StatusCode,
 };
 
-pub struct JwtToken(pub Option<String>);
+use crate::app_response::AppError;
+
+pub struct AuthUser(pub Claims);
 
 #[async_trait]
-impl<B> FromRequest<B> for JwtToken
+impl<B> FromRequest<B> for AuthUser
 where
     B: Send,
 {
-    type Rejection = (StatusCode, String);
+    type Rejection = AppError;
 
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
-        match req.headers() {
-            Some(headers) => match headers.get("Authorization") {
-                Some(token) => Ok(Self(Some(token.to_str().unwrap().to_string()))),
-                None => Ok(Self(None)),
-            },
-            None => Ok(Self(None)),
+        if let Some(headers) = req.headers() {
+            match headers.get("Authorization") {
+                Some(k) => match k.to_str().ok().and_then(|x| decode_token(x).ok()) {
+                    Some(k) => Ok(Self(k)),
+                    None => Err(AppError::from(JWTError::Invalid)),
+                },
+                // for no login user
+                None => Ok(Self(role_view())),
+            }
+        } else {
+            Ok(Self(role_view()))
         }
     }
 }

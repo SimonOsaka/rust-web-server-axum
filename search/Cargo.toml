@@ -11,9 +11,10 @@ mysql = []
 
 [dependencies]
 types = { path = "../types", features = ["postgres"] }
-meilisearch-sdk = { version = "0.10", default-features = false, features = [
+meilisearch-sdk = { version = "0.11.0", default-features = false, features = [
     "sync",
 ] }
+
 once_cell = "1.8.0"
 flexi_logger = "0.19.3"
 log = "0.4"

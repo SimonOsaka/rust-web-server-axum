@@ -1,3 +1,4 @@
+use auth::JWTError;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use domain::{DomainError, GetAdventureError};
 use serde_json::json;
@@ -38,6 +39,33 @@ impl From<GetAdventureError> for AppError {
                     Json(json!(ErrorMessage {
                         message: e.to_string(),
                         code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
+                    })),
+                )
+                    .into_response(),
+            ),
+        }
+    }
+}
+
+impl From<JWTError> for AppError {
+    fn from(e: JWTError) -> AppError {
+        match &e {
+            JWTError::Invalid => AppError(
+                (
+                    StatusCode::UNAUTHORIZED,
+                    Json(json!(ErrorMessage {
+                        message: e.to_string(),
+                        code: StatusCode::UNAUTHORIZED.as_u16(),
+                    })),
+                )
+                    .into_response(),
+            ),
+            JWTError::Missing => AppError(
+                (
+                    StatusCode::UNAUTHORIZED,
+                    Json(json!(ErrorMessage {
+                        message: e.to_string(),
+                        code: StatusCode::UNAUTHORIZED.as_u16(),
                     })),
                 )
                     .into_response(),

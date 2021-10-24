@@ -1,3 +1,4 @@
+use auth::JWTError;
 use domain::{DomainError, GetAdventureError};
 use warp::hyper::StatusCode;
 
@@ -31,6 +32,27 @@ impl From<GetAdventureError> for ErrorResponse {
                     code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
                 },
                 StatusCode::INTERNAL_SERVER_ERROR,
+            ),
+        }
+    }
+}
+
+impl From<JWTError> for ErrorResponse {
+    fn from(e: JWTError) -> Self {
+        match &e {
+            JWTError::Invalid => ErrorResponse(
+                ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::UNAUTHORIZED.as_u16(),
+                },
+                StatusCode::UNAUTHORIZED,
+            ),
+            JWTError::Missing => ErrorResponse(
+                ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::UNAUTHORIZED.as_u16(),
+                },
+                StatusCode::UNAUTHORIZED,
             ),
         }
     }
