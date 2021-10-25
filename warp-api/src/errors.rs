@@ -1,5 +1,6 @@
 use auth::JWTError;
 use domain::{DomainError, GetAdventureError};
+use validator::ValidationErrors;
 use warp::hyper::StatusCode;
 
 use crate::response::{ErrorMessage, ErrorResponse};
@@ -53,6 +54,25 @@ impl From<JWTError> for ErrorResponse {
                     code: StatusCode::UNAUTHORIZED.as_u16(),
                 },
                 StatusCode::UNAUTHORIZED,
+            ),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum ValidateError {
+    InvalidParam(ValidationErrors),
+}
+
+impl From<ValidateError> for ErrorResponse {
+    fn from(e: ValidateError) -> Self {
+        match &e {
+            ValidateError::InvalidParam(v) => ErrorResponse(
+                ErrorMessage {
+                    message: v.to_string().replace("\n", " , "),
+                    code: StatusCode::BAD_REQUEST.as_u16(),
+                },
+                StatusCode::BAD_REQUEST,
             ),
         }
     }

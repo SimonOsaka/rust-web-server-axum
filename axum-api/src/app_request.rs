@@ -1,10 +1,14 @@
 use auth::{decode_token, role_view, Claims, JWTError};
 use axum::{
     async_trait,
-    extract::{FromRequest, RequestParts},
+    extract::{FromRequest, Query, RequestParts},
+    BoxError,
 };
+use http_body::Body;
+use serde::de::DeserializeOwned;
+use validator::Validate;
 
-use crate::app_response::AppError;
+use crate::{app_error::ValidateError, app_response::AppError};
 
 pub struct AuthUser(pub Claims);
 
@@ -28,5 +32,29 @@ where
         } else {
             Ok(Self(role_view()))
         }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct ValidatedQuery<T>(pub T);
+
+#[async_trait]
+impl<T, B> FromRequest<B> for ValidatedQuery<T>
+where
+    T: DeserializeOwned + Validate,
+    B: Body + Send,
+    B::Data: Send,
+    B::Error: Into<BoxError>,
+{
+    type Rejection = AppError;
+
+    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
+        let Query(value) = Query::<T>::from_request(req)
+            .await
+            .map_err(|e| AppError::from(ValidateError::AxumQueryRejection(e)))?;
+        value
+            .validate()
+            .map_err(|e| AppError::from(ValidateError::InvalidParam(e)))?;
+        Ok(ValidatedQuery(value))
     }
 }

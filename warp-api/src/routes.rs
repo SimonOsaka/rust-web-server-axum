@@ -3,19 +3,19 @@ use types::ID;
 use warp::header::headers_cloned;
 use warp::hyper::header::AUTHORIZATION;
 use warp::hyper::HeaderMap;
-use warp::{self, get, query, Reply};
+use warp::{self, get, Reply};
 use warp::{Filter, Rejection};
 
 use crate::get::get_adventure;
 use crate::index::index;
-use crate::list::AdventuresQueryReq;
+use crate::list::{list_adventures, with_query_validate, AdventuresQueryReq};
 use crate::login;
 use crate::play_list::play_list_adventures;
 use crate::response::ErrorResponse;
 use crate::sync::sync_adventure;
 use crate::tabs::tabs_adventures;
 use crate::version::version_update_adventures;
-use crate::{list::list_adventures, AppState};
+use crate::AppState;
 
 pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
     warp::path::end()
@@ -23,7 +23,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
         .or(warp::path!("api" / "adventures")
             .and(get())
             .and(with_auth())
-            .and(query())
+            .and(with_query_validate())
             .and(with_state(state.clone()))
             .and_then(
                 |user: AuthUser, query: AdventuresQueryReq, state: AppState| async move {
