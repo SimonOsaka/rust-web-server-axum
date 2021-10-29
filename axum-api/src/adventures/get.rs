@@ -13,7 +13,7 @@ pub async fn get_adventure(
 ) -> Result<Json<AdventureResponse>, AppError> {
     debug!("_id: {:?}, user: {:?}, state: {:?}", _id, user, state);
 
-    let manager = &state.manager;
+    let manager = &state.adventures_manager;
     let adventure = manager.get_adventure(_id).await?;
     let response = AdventureResponse::from(adventure);
     debug!("response: {:?}", &response);

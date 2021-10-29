@@ -109,6 +109,13 @@ impl From<GetUserError> for ErrorResponse {
                 },
                 StatusCode::NOT_FOUND,
             ),
+            GetUserError::PasswordNotCorrect { .. } => ErrorResponse(
+                ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::FORBIDDEN.as_u16(),
+                },
+                StatusCode::FORBIDDEN,
+            ),
             GetUserError::DomainError(_) => ErrorResponse(
                 ErrorMessage {
                     message: e.to_string(),

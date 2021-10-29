@@ -1,10 +1,43 @@
 use auth::JWTError;
-use axum::{extract::rejection::QueryRejection, http::StatusCode, response::IntoResponse, Json};
-use domain::{DomainError, GetAdventureError};
+use axum::{
+    extract::rejection::{JsonRejection, QueryRejection},
+    http::StatusCode,
+    response::IntoResponse,
+    Json,
+};
+use domain::{DomainError, GetAdventureError, GetUserError};
 use serde_json::json;
+use thiserror::Error;
 use validator::ValidationErrors;
 
 use crate::app_response::{AppError, ErrorMessage};
+
+#[derive(Debug)]
+pub enum ValidateError {
+    InvalidParam(ValidationErrors),
+    AxumQueryRejection(QueryRejection),
+    AxumJsonRejection(JsonRejection),
+}
+
+#[derive(Error, Debug)]
+pub enum LoginError {
+    #[error("Password is not correct")]
+    WrongPassword,
+    #[error("Login user doesn't exist")]
+    UserNotExist,
+}
+
+#[derive(Error, Debug)]
+pub enum RegistryError {
+    #[error("Registry user exist")]
+    UserExist,
+}
+
+#[derive(Error, Debug)]
+pub enum ChangeUsernameError {
+    #[error("Username exist")]
+    UsernameExist,
+}
 
 impl From<DomainError> for AppError {
     fn from(e: DomainError) -> AppError {
@@ -75,12 +108,6 @@ impl From<JWTError> for AppError {
     }
 }
 
-#[derive(Debug)]
-pub enum ValidateError {
-    InvalidParam(ValidationErrors),
-    AxumQueryRejection(QueryRejection),
-}
-
 impl From<ValidateError> for AppError {
     fn from(e: ValidateError) -> Self {
         match &e {
@@ -103,6 +130,93 @@ impl From<ValidateError> for AppError {
                     })),
                 )
                     .into_response(),
+            ),
+            ValidateError::AxumJsonRejection(v) => AppError(
+                (
+                    StatusCode::BAD_REQUEST,
+                    Json(json!(ErrorMessage {
+                        message: v.to_string(),
+                        code: StatusCode::BAD_REQUEST.as_u16(),
+                    })),
+                )
+                    .into_response(),
+            ),
+        }
+    }
+}
+
+impl From<GetUserError> for AppError {
+    fn from(e: GetUserError) -> Self {
+        match &e {
+            GetUserError::NotFound { .. } => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::NOT_FOUND.as_u16(),
+                }))
+                .into_response(),
+            ),
+            GetUserError::PasswordNotCorrect { .. } => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::FORBIDDEN.as_u16(),
+                }))
+                .into_response(),
+            ),
+            GetUserError::DomainError(_) => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
+                }))
+                .into_response(),
+            ),
+        }
+    }
+}
+
+impl From<LoginError> for AppError {
+    fn from(e: LoginError) -> Self {
+        match &e {
+            LoginError::WrongPassword => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::FORBIDDEN.as_u16(),
+                }))
+                .into_response(),
+            ),
+            LoginError::UserNotExist => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::UNAUTHORIZED.as_u16(),
+                }))
+                .into_response(),
+            ),
+        }
+    }
+}
+
+impl From<RegistryError> for AppError {
+    fn from(e: RegistryError) -> Self {
+        match &e {
+            RegistryError::UserExist => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::FORBIDDEN.as_u16(),
+                }))
+                .into_response(),
+            ),
+        }
+    }
+}
+
+impl From<ChangeUsernameError> for AppError {
+    fn from(e: ChangeUsernameError) -> Self {
+        match &e {
+            ChangeUsernameError::UsernameExist => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::FORBIDDEN.as_u16(),
+                }))
+                .into_response(),
             ),
         }
     }

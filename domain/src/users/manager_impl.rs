@@ -1,8 +1,7 @@
 use std::num::NonZeroU32;
 
 use repository::{
-    find_user, find_user_by_username, update_user_password, update_username,
-    users::models::InsertMyUsers,
+    find_user_by_username, update_user_password, update_username, users::models::InsertMyUsers,
 };
 use ring::{digest, pbkdf2};
 
@@ -49,11 +48,19 @@ impl super::UsersManager for UsersManagerImpl {
     }
 
     async fn get_user(&self, username: String, password: String) -> Result<Users, GetUserError> {
-        let user = find_user(username.clone(), hash_password(password.clone()))
+        let user = find_user_by_username(username.clone())
             .await
             .map_err(database_to_domain_error)?;
         match user {
-            Some(u) => Ok(Users::from(u)),
+            Some(u) => {
+                if u.password == hash_password(password) {
+                    Ok(Users::from(u))
+                } else {
+                    Err(GetUserError::PasswordNotCorrect {
+                        username: username.clone(),
+                    })
+                }
+            }
             None => Err(GetUserError::NotFound {
                 username: username.clone(),
             }),

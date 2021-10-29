@@ -48,7 +48,7 @@ pub async fn list_adventures(
     Extension(state): Extension<AppState>,
 ) -> Result<Json<AdventuresResponse>, AppError> {
     debug!("user: {:?}, query: {:?}, state: {:?}", user, query, state);
-    let manager = &state.manager;
+    let manager = &state.adventures_manager;
     let adventures = manager.find_adventures(query.into()).await?;
     let response = AdventuresResponse::from(adventures);
     debug!("response: {:?}", &response);

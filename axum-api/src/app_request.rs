@@ -1,8 +1,9 @@
 use auth::{decode_token, role_view, Claims, JWTError};
 use axum::{
     async_trait,
+    body::HttpBody,
     extract::{FromRequest, Query, RequestParts},
-    BoxError,
+    BoxError, Json,
 };
 use http_body::Body;
 use serde::de::DeserializeOwned;
@@ -56,5 +57,29 @@ where
             .validate()
             .map_err(|e| AppError::from(ValidateError::InvalidParam(e)))?;
         Ok(ValidatedQuery(value))
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct ValidatedJson<T>(pub T);
+
+#[async_trait]
+impl<T, B> FromRequest<B> for ValidatedJson<T>
+where
+    T: DeserializeOwned + Validate,
+    B: HttpBody + Send,
+    B::Data: Send,
+    B::Error: Into<BoxError>,
+{
+    type Rejection = AppError;
+
+    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
+        let Json(value) = Json::<T>::from_request(req)
+            .await
+            .map_err(|e| AppError::from(ValidateError::AxumJsonRejection(e)))?;
+        value
+            .validate()
+            .map_err(|e| AppError::from(ValidateError::InvalidParam(e)))?;
+        Ok(ValidatedJson(value))
     }
 }

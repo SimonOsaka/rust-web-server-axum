@@ -1,11 +1,12 @@
 use crate::{
-    adventures::get::get_adventure, app_index::index, list::list_adventures,
-    play_list::play_list_adventures, sync::sync_adventure, tabs::tabs_adventures,
-    version::version_update_adventures,
+    adventures::get::get_adventure, app_index::index, change_password::change_password,
+    change_username::change_username, list::list_adventures, login::login, me::me,
+    play_list::play_list_adventures, registry::registry, sync::sync_adventure,
+    tabs::tabs_adventures, version::version_update_adventures,
 };
 use axum::{
     body::{Body, BoxBody},
-    handler::get,
+    handler::{get, post, put},
     http::{Request, Response},
     routing::BoxRoute,
     AddExtensionLayer, Router,
@@ -29,6 +30,7 @@ pub fn routes(
 
     let r = Router::new()
         .route("/", get(index))
+        // adventures
         .route("/api/adventures/:id", get(get_adventure))
         .route("/api/adventures", get(list_adventures))
         .route(
@@ -38,6 +40,12 @@ pub fn routes(
         .route("/api/adventures/update", get(version_update_adventures))
         .route("/api/adventures/tabs", get(tabs_adventures))
         .route("/api/sync/:id", get(sync_adventure))
+        // users
+        .route("/api/users/registry", post(registry))
+        .route("/api/users/login", post(login))
+        .route("/api/users/me", get(me))
+        .route("/api/users/password", put(change_password))
+        .route("/api/users/username", put(change_username))
         .layer(middleware_stack)
         .boxed();
 

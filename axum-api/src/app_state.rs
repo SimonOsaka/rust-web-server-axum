@@ -1,19 +1,24 @@
 use std::{env, net::SocketAddr, sync::Arc};
 
-use domain::adventures::AdventuresManagerImpl;
+use domain::{adventures::AdventuresManagerImpl, UsersManagerImpl};
 
 use crate::app_routes;
 
 #[derive(Clone, Debug)]
 pub struct AppStateRaw {
-    pub manager: AdventuresManagerImpl,
+    pub adventures_manager: AdventuresManagerImpl,
+    pub users_manager: UsersManagerImpl,
 }
 
 pub type AppState = Arc<AppStateRaw>;
 
 pub async fn start() {
-    let manager = AdventuresManagerImpl;
-    let app_state = Arc::new(AppStateRaw { manager });
+    let adventures_manager = AdventuresManagerImpl;
+    let users_manager = UsersManagerImpl;
+    let app_state = Arc::new(AppStateRaw {
+        adventures_manager,
+        users_manager,
+    });
     let bind_address: SocketAddr = env::var("BIND_ADDRESS")
         .expect("BIND_ADDRESS is not set")
         .parse()

@@ -47,27 +47,6 @@ pub async fn find_user_by_username(username: String) -> Result<Option<MyUsers>, 
 }
 
 #[cfg(any(feature = "postgres", feature = "mysql"))]
-pub async fn find_user(username: String, password: String) -> Result<Option<MyUsers>, Error> {
-    let mut param = SqlParam::new();
-    let sql = SqlBuilder::select_from("my_users")
-        .fields(&[
-            "id",
-            "username",
-            "created_at",
-            "password",
-            "roles",
-            "is_deleted",
-        ])
-        .and_where_eq("is_deleted", 0)
-        .and_where_eq("username", param.value(username))
-        .and_where_eq("password", param.value(password))
-        .sql()
-        .unwrap();
-    let my_users = query_one(&sql, param.fetch_args()).await?;
-    Ok(my_users)
-}
-
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn update_user_password(username: String, password: String) -> Result<bool, Error> {
     let mut param = SqlParam::new();
     let sql = SqlBuilder::update_table("my_users")
