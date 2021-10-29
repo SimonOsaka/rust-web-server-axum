@@ -15,15 +15,17 @@ const TOKEN_PREFIX: &str = "Token ";
 pub struct Claims {
     sub: ID,
     exp: u64,           // seconds since the epoch
+    name: String,       // username
     roles: Vec<String>, // user role [user, view]
 }
 
 impl Claims {
-    fn new(id: ID) -> Self {
+    fn new(id: ID, name: String, roles: Vec<String>) -> Self {
         Self {
             sub: id,
             exp: (Utc::now() + Duration::days(30)).timestamp() as u64,
-            roles: vec!["user".into()],
+            name,
+            roles,
         }
     }
 
@@ -31,15 +33,19 @@ impl Claims {
         self.sub
     }
 
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
     pub fn has_role(&self, role: &str) -> bool {
         self.roles.contains(&role.to_string())
     }
 }
 
-pub fn encode_token(sub: ID) -> String {
+pub fn encode_token(sub: ID, name: String, roles: Vec<String>) -> String {
     encode(
         &Header::default(),
-        &Claims::new(sub),
+        &Claims::new(sub, name, roles),
         &EncodingKey::from_secret(TOKEN_SECRET.as_ref()),
     )
     .unwrap()
@@ -58,6 +64,7 @@ pub fn role_view() -> Claims {
     Claims {
         sub: i64::MAX,
         exp: u64::MAX,
+        name: "viewer".to_string(),
         roles: vec!["view".into()],
     }
 }

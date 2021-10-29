@@ -3,7 +3,7 @@ use axum::{
     extract::{Extension, Path},
     Json,
 };
-use domain::manager::Manager;
+use domain::AdventuresManager;
 use types::ID;
 
 pub async fn get_adventure(

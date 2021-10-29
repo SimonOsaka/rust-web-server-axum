@@ -1,4 +1,4 @@
-use repository::models::{AdventuresWhere, PlayListWhere};
+use repository::adventures::models::{AdventuresWhere, PlayListWhere};
 use search::adventures::model::{AdventuresFilter, PlayListFilter};
 use serde::Serialize;
 use types::{DateTime, MyAdventures, ID, U8I16};

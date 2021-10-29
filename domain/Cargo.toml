@@ -28,3 +28,5 @@ anyhow = "1.0.44"
 meilisearch-sdk = { version = "0.11.0", default-features = false, features = [
     "sync",
 ] }
+base64 = "0.13"
+ring = "0.16"

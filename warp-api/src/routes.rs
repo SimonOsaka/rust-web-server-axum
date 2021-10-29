@@ -1,4 +1,4 @@
-use auth::{decode_token, role_view, Claims, JWTError};
+use auth::{decode_token, Claims, JWTError};
 use types::ID;
 use warp::header::headers_cloned;
 use warp::hyper::header::AUTHORIZATION;
@@ -9,13 +9,15 @@ use warp::{Filter, Rejection};
 use crate::get::get_adventure;
 use crate::index::index;
 use crate::list::{list_adventures, with_query_validate, AdventuresQueryReq};
-use crate::login;
 use crate::play_list::play_list_adventures;
 use crate::response::ErrorResponse;
 use crate::sync::sync_adventure;
 use crate::tabs::tabs_adventures;
 use crate::version::version_update_adventures;
-use crate::AppState;
+use crate::{
+    change_password, change_username, login, me, registry, AppState, ChangePasswordForm,
+    ChangeUsernameForm, LoginForm, RegistryForm,
+};
 
 pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
     warp::path::end()
@@ -74,7 +76,57 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
         //users
         .or(warp::path!("api" / "users" / "login")
             .and(warp::post())
-            .and_then(login))
+            .and(crate::login::with_json_validate())
+            .and(with_state(state.clone()))
+            .and_then(|login_form: LoginForm, state: AppState| async move {
+                login(login_form, state)
+                    .await
+                    .map_err(|e| warp::reject::custom(e))
+            }))
+        .or(warp::path!("api" / "users" / "registry")
+            .and(warp::post())
+            .and(crate::registry::with_json_validate())
+            .and(with_state(state.clone()))
+            .and_then(|registry_form: RegistryForm, state: AppState| async move {
+                registry(registry_form, state)
+                    .await
+                    .map_err(|e| warp::reject::custom(e))
+            }))
+        .or(warp::path!("api" / "users" / "password")
+            .and(warp::put())
+            .and(with_auth())
+            .and(crate::change_password::with_json_validate())
+            .and(with_state(state.clone()))
+            .and_then(
+                |user: AuthUser,change_password_form: ChangePasswordForm, state: AppState| async move {
+                    change_password(user,change_password_form, state)
+                        .await
+                        .map_err(|e| warp::reject::custom(e))
+                },
+            ))
+            .or(warp::path!("api" / "users" / "username")
+            .and(warp::put())
+            .and(with_auth())
+            .and(crate::change_username::with_json_validate())
+            .and(with_state(state.clone()))
+            .and_then(
+                |user: AuthUser,change_username_form: ChangeUsernameForm, state: AppState| async move {
+                    change_username(user,change_username_form, state)
+                        .await
+                        .map_err(|e| warp::reject::custom(e))
+                },
+            ))
+            .or(warp::path!("api" / "users" / "me")
+            .and(warp::get())
+            .and(with_auth())
+            .and(with_state(state.clone()))
+            .and_then(
+                |user: AuthUser,state: AppState| async move {
+                    me(user, state)
+                        .await
+                        .map_err(|e| warp::reject::custom(e))
+                },
+            ))
         .recover(handle_rejection)
 }
 
@@ -95,7 +147,11 @@ fn with_auth() -> impl Filter<Extract = (AuthUser,), Error = Rejection> + Clone 
                 None => Err(warp::reject::custom(ErrorResponse::from(JWTError::Invalid))),
             },
             // for no login user
-            None => Ok(AuthUser(role_view())), //Err(warp::reject::custom(ErrorResponse::from(JWTError::Missing))),
+            None =>
+            //Ok(AuthUser(role_view())),
+            {
+                Err(warp::reject::custom(ErrorResponse::from(JWTError::Missing)))
+            }
         }
     })
 }

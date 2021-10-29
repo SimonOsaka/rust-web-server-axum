@@ -1,5 +1,5 @@
+use crate::adventures::models::{AdventuresWhere, PlayListWhere};
 use crate::db::{query_list, query_one, SqlBuilder, SqlParam};
-use crate::models::{AdventuresWhere, PlayListWhere};
 use anyhow::Result;
 
 use types::{MyAdventures, ID};

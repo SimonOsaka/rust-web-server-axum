@@ -1,28 +1,26 @@
+use crate::search_to_domain_error;
 use crate::{Adventures, AdventuresQuery, DomainError, GetAdventureError, PlayListQuery};
-use anyhow::Error as OpaqueError;
+
 use anyhow::Result;
 
 use log::debug;
-use meilisearch_sdk::errors::Error;
+
 use search::adventures::{find_by_play_list, find_latest, find_one};
 use search::meilisearch::operation::add_documents;
 use types::ID;
-pub fn to_domain_error(e: Error) -> DomainError {
-    DomainError::from(OpaqueError::from(e))
-}
 
 #[derive(Clone, Debug)]
-pub struct Manager;
+pub struct AdventuresManagerImpl;
 
 #[async_trait]
-impl crate::manager::Manager for Manager {
+impl super::AdventuresManager for AdventuresManagerImpl {
     async fn find_adventures(
         &self,
         query: AdventuresQuery,
     ) -> Result<Vec<Adventures>, DomainError> {
         let search_results = find_latest(query.into()).await;
         let result = search_results
-            .map_err(to_domain_error)?
+            .map_err(search_to_domain_error)?
             .into_iter()
             .map(|my| Adventures::from(my))
             .collect();
@@ -38,7 +36,7 @@ impl crate::manager::Manager for Manager {
         let search_results = find_by_play_list(query.into()).await;
 
         let result = search_results
-            .map_err(to_domain_error)?
+            .map_err(search_to_domain_error)?
             .into_iter()
             .map(|my| Adventures::from(my))
             .collect();
@@ -48,7 +46,7 @@ impl crate::manager::Manager for Manager {
     }
 
     async fn get_adventure_by_id(&self, id: ID) -> Result<Option<Adventures>, GetAdventureError> {
-        let search_results = find_one(id).await.map_err(to_domain_error);
+        let search_results = find_one(id).await.map_err(search_to_domain_error);
 
         match search_results? {
             Some(my) => {
@@ -61,7 +59,7 @@ impl crate::manager::Manager for Manager {
     }
 
     async fn get_adventure(&self, id: ID) -> Result<Adventures, GetAdventureError> {
-        let search_results = find_one(id).await.map_err(to_domain_error);
+        let search_results = find_one(id).await.map_err(search_to_domain_error);
 
         match search_results? {
             Some(my) => {

@@ -2,7 +2,7 @@ use axum::{
     extract::{Extension, Path},
     Json,
 };
-use domain::{manager::Manager, PlayListQuery};
+use domain::{AdventuresManager, PlayListQuery};
 
 use crate::{
     app_request::AuthUser, app_response::AppError, response::AdventuresResponse, AppState,

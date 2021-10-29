@@ -1,2 +1,10 @@
+pub mod change_password;
+pub mod change_username;
 pub mod login;
+pub mod me;
+pub mod registry;
+pub use change_password::*;
+pub use change_username::*;
 pub use login::*;
+pub use me::*;
+pub use registry::*;

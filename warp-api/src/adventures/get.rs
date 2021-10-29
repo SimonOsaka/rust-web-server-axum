@@ -1,4 +1,4 @@
-use domain::manager::Manager;
+use domain::AdventuresManager;
 use types::ID;
 
 use crate::{
@@ -12,7 +12,7 @@ pub async fn get_adventure(
 ) -> Result<impl warp::Reply, ErrorResponse> {
     debug!("user: {:?}, _id: {:?}, state: {:?}", user, _id, state);
 
-    let manager = &state.manager;
+    let manager = &state.adventures_manager;
     let adventure = manager.get_adventure(_id).await?;
     let response = AdventureResponse::from(adventure);
     debug!("response: {:?}", &response);

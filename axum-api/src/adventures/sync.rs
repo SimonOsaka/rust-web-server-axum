@@ -2,7 +2,7 @@ use axum::{
     extract::{Extension, Path},
     Json,
 };
-use domain::manager::Manager;
+use domain::AdventuresManager;
 use types::ID;
 
 use crate::{app_request::AuthUser, app_response::AppError, AppState};

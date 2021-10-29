@@ -37,6 +37,7 @@ impl Repo {
             .expect("init database error");
 
         debug!("connection pool inited...");
+        debug!("database_url: {}", database_url);
         Repo { connection_pool }
     }
 

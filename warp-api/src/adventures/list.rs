@@ -1,4 +1,4 @@
-use domain::manager::Manager;
+use domain::AdventuresManager;
 use serde::Deserialize;
 use types::my_item_type_format::to_item_type_name;
 use validator::{Validate, ValidationError};
@@ -56,7 +56,7 @@ pub async fn list_adventures(
     state: AppState,
 ) -> Result<impl warp::Reply, ErrorResponse> {
     debug!("user: {:?}, query: {:?}, state: {:?}", user, query, state);
-    let manager = &state.manager;
+    let manager = &state.adventures_manager;
     let adventures = manager.find_adventures(query.into()).await?;
     let response = AdventuresResponse::from(adventures);
     debug!("response: {:?}", &response);
