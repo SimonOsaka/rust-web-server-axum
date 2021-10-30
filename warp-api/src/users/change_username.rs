@@ -2,9 +2,8 @@ use domain::UsersManager;
 use serde::Deserialize;
 use validator::Validate;
 use warp::hyper::StatusCode;
-use warp::{reject::custom, Filter, Rejection};
 
-use crate::errors::{ChangeUsernameError, ValidateError};
+use crate::errors::ChangeUsernameError;
 use crate::response::ErrorResponse;
 use crate::routes::AuthUser;
 use crate::AppState;
@@ -13,18 +12,6 @@ use crate::AppState;
 pub struct ChangeUsernameForm {
     #[validate(length(min = 2, max = 20, message = "new username length(2-20)"))]
     new_username: String,
-}
-
-pub fn with_json_validate(
-) -> impl Filter<Extract = (ChangeUsernameForm,), Error = Rejection> + Clone {
-    warp::body::content_length_limit(1024 * 16).and(warp::body::json().and_then(
-        |val: ChangeUsernameForm| async move {
-            match val.validate() {
-                Ok(_) => Ok(val),
-                Err(e) => Err(custom(ErrorResponse::from(ValidateError::InvalidParam(e)))),
-            }
-        },
-    ))
 }
 
 pub async fn change_username(

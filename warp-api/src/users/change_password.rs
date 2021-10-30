@@ -2,9 +2,7 @@ use domain::UsersManager;
 use serde::Deserialize;
 use validator::Validate;
 use warp::hyper::StatusCode;
-use warp::{reject::custom, Filter, Rejection};
 
-use crate::errors::ValidateError;
 use crate::response::ErrorResponse;
 use crate::routes::AuthUser;
 use crate::AppState;
@@ -15,18 +13,6 @@ pub struct ChangePasswordForm {
     old_password: String,
     #[validate(length(min = 8, max = 32, message = "new password length(8-32)"))]
     new_password: String,
-}
-
-pub fn with_json_validate(
-) -> impl Filter<Extract = (ChangePasswordForm,), Error = Rejection> + Clone {
-    warp::body::content_length_limit(1024 * 16).and(warp::body::json().and_then(
-        |val: ChangePasswordForm| async move {
-            match val.validate() {
-                Ok(_) => Ok(val),
-                Err(e) => Err(custom(ErrorResponse::from(ValidateError::InvalidParam(e)))),
-            }
-        },
-    ))
 }
 
 pub async fn change_password(

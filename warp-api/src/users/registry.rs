@@ -2,10 +2,8 @@ use domain::RegistryUsers;
 use domain::UsersManager;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
-use warp::{reject::custom, Filter, Rejection};
 
 use crate::errors::RegistryError;
-use crate::errors::ValidateError;
 use crate::response::ErrorResponse;
 use crate::AppState;
 
@@ -15,17 +13,6 @@ pub struct RegistryForm {
     username: String,
     #[validate(length(min = 8, max = 32, message = "password length(8-32)"))]
     password: String,
-}
-
-pub fn with_json_validate() -> impl Filter<Extract = (RegistryForm,), Error = Rejection> + Clone {
-    warp::body::content_length_limit(1024 * 16).and(warp::body::json().and_then(
-        |json: RegistryForm| async move {
-            match json.validate() {
-                Ok(_) => Ok(json),
-                Err(e) => Err(custom(ErrorResponse::from(ValidateError::InvalidParam(e)))),
-            }
-        },
-    ))
 }
 
 #[derive(Serialize)]

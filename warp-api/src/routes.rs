@@ -1,11 +1,15 @@
 use auth::{decode_token, Claims, JWTError};
+use serde::de::DeserializeOwned;
 use types::ID;
+use validator::Validate;
 use warp::header::headers_cloned;
 use warp::hyper::header::AUTHORIZATION;
 use warp::hyper::HeaderMap;
+use warp::reject::custom;
 use warp::{self, get, Reply};
 use warp::{Filter, Rejection};
 
+use crate::errors::ValidateError;
 use crate::get::get_adventure;
 use crate::index::index;
 use crate::list::{list_adventures, with_query_validate, AdventuresQueryReq};
@@ -76,7 +80,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
         //users
         .or(warp::path!("api" / "users" / "login")
             .and(warp::post())
-            .and(crate::login::with_json_validate())
+            .and(with_json_validate())
             .and(with_state(state.clone()))
             .and_then(|login_form: LoginForm, state: AppState| async move {
                 login(login_form, state)
@@ -85,7 +89,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             }))
         .or(warp::path!("api" / "users" / "registry")
             .and(warp::post())
-            .and(crate::registry::with_json_validate())
+            .and(with_json_validate())
             .and(with_state(state.clone()))
             .and_then(|registry_form: RegistryForm, state: AppState| async move {
                 registry(registry_form, state)
@@ -95,7 +99,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
         .or(warp::path!("api" / "users" / "password")
             .and(warp::put())
             .and(with_auth())
-            .and(crate::change_password::with_json_validate())
+            .and(with_json_validate())
             .and(with_state(state.clone()))
             .and_then(
                 |user: AuthUser,change_password_form: ChangePasswordForm, state: AppState| async move {
@@ -107,7 +111,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             .or(warp::path!("api" / "users" / "username")
             .and(warp::put())
             .and(with_auth())
-            .and(crate::change_username::with_json_validate())
+            .and(with_json_validate())
             .and(with_state(state.clone()))
             .and_then(
                 |user: AuthUser,change_username_form: ChangeUsernameForm, state: AppState| async move {
@@ -154,6 +158,20 @@ fn with_auth() -> impl Filter<Extract = (AuthUser,), Error = Rejection> + Clone 
             }
         }
     })
+}
+
+fn with_json_validate<T>() -> impl Filter<Extract = (T,), Error = Rejection> + Clone
+where
+    T: Validate + std::marker::Send + DeserializeOwned,
+{
+    warp::body::content_length_limit(1024 * 16).and(warp::body::json().and_then(
+        |val: T| async move {
+            match val.validate() {
+                Ok(_) => Ok(val),
+                Err(e) => Err(custom(ErrorResponse::from(ValidateError::InvalidParam(e)))),
+            }
+        },
+    ))
 }
 
 async fn handle_rejection(
