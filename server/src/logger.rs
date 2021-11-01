@@ -1,8 +1,16 @@
 use flexi_logger::{
     Age, Cleanup, Criterion, DeferredNow, Duplicate, FileSpec, Logger, Naming, Record, WriteMode,
 };
+use once_cell::sync::Lazy;
+use time::{format_description, UtcOffset};
 
 use std::thread;
+
+const TS_S: &str = "[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:6] \
+                    [offset_hour sign:mandatory]:[offset_minute]";
+
+static TS: Lazy<Vec<format_description::FormatItem<'static>>> =
+    Lazy::new(|| format_description::parse(TS_S).unwrap());
 
 fn logger_format(
     w: &mut dyn std::io::Write,
@@ -12,7 +20,10 @@ fn logger_format(
     write!(
         w,
         "{} {} --- [{}-{:?}] {}:{} > {}",
-        now.now().format("%Y-%m-%d %H:%M:%S%.6f %:z"),
+        now.now()
+            .to_offset(UtcOffset::from_hms(8, 0, 0).unwrap())
+            .format(&TS)
+            .unwrap_or_else(|_| "Timestamping failed".to_string()),
         record.level(),
         thread::current().name().unwrap_or("<unnamed>"),
         thread::current().id(),

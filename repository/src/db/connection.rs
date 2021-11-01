@@ -26,7 +26,7 @@ impl Repo {
                     if cfg!(feature = "mysql") {
                         conn.execute("SET time_zone = '+08:00';").await?;
                     } else if cfg!(feature = "postgres") {
-                        conn.execute("SET TIME ZONE '+08:00';").await?;
+                        conn.execute("SET TIME ZONE 'Asia/Shanghai';").await?;
                     }
 
                     Ok(())

@@ -1,24 +1,51 @@
+use sql_builder::SqlBuilder;
 use sqlx::{Error, FromRow};
 
+use crate::db::SqlRow;
 use crate::db::REPOSITORY;
-use crate::db::{SqlArguments, SqlRow};
 
-pub async fn query_list<T>(sql: &str, args: SqlArguments) -> Result<Vec<T>, Error>
-where
-    T: for<'r> FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin,
-{
-    let pool = &REPOSITORY.get().unwrap().connection_pool;
-    let result: Vec<T> = sqlx::query_as_with(&sql, args).fetch_all(pool).await?;
+use super::SqlParams;
 
-    Ok(result)
+#[async_trait]
+pub trait SqlReader {
+    async fn query_list<T>(&self, args: SqlParams) -> Result<Vec<T>, Error>
+    where
+        T: for<'r> FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin;
+
+    async fn query_one_optinal<T>(&self, args: SqlParams) -> Result<Option<T>, Error>
+    where
+        T: for<'r> sqlx::FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin;
 }
 
-pub async fn query_one<T>(sql: &str, args: SqlArguments) -> Result<Option<T>, Error>
-where
-    T: for<'r> sqlx::FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin,
-{
-    let pool = &REPOSITORY.get().unwrap().connection_pool;
-    let result: Option<T> = sqlx::query_as_with(&sql, args).fetch_optional(pool).await?;
+#[async_trait]
+impl SqlReader for SqlBuilder {
+    async fn query_list<T>(&self, args: SqlParams) -> Result<Vec<T>, Error>
+    where
+        T: for<'r> FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin,
+    {
+        let sql = &self.sql().unwrap();
+        debug!("query_list sql: {}", sql);
 
-    Ok(result)
+        let pool = &REPOSITORY.get().unwrap().connection_pool;
+        let result: Vec<T> = sqlx::query_as_with(&sql, args.fetch())
+            .fetch_all(pool)
+            .await?;
+
+        Ok(result)
+    }
+
+    async fn query_one_optinal<T>(&self, args: SqlParams) -> Result<Option<T>, Error>
+    where
+        T: for<'r> sqlx::FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin,
+    {
+        let sql = &self.sql().unwrap();
+        debug!("query_one sql: {}", sql);
+
+        let pool = &REPOSITORY.get().unwrap().connection_pool;
+        let result: Option<T> = sqlx::query_as_with(&sql, args.fetch())
+            .fetch_optional(pool)
+            .await?;
+
+        Ok(result)
+    }
 }

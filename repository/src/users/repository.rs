@@ -1,26 +1,24 @@
 use super::models::{InsertMyUsers, MyUsers};
-use crate::db::{insert_one, query_one, update_one, SqlParam};
+use crate::db::{SqlParams, SqlReader, SqlWriter};
 use sql_builder::SqlBuilder;
 use sqlx::Error;
 use types::ID;
 
 #[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn insert(u: InsertMyUsers) -> Result<ID, Error> {
-    let mut param = SqlParam::new();
+    let mut param = SqlParams::new();
 
     let mut sql_builder = SqlBuilder::insert_into("my_users");
     sql_builder
         .fields(&["username", "password", "roles"])
         .values(&[
-            param.value(u.username),
-            param.value(u.password),
-            param.value(u.roles),
+            param.add_value(u.username),
+            param.add_value(u.password),
+            param.add_value(u.roles),
         ])
         .returning_id();
-    let sql = sql_builder.sql().unwrap();
-    debug!("insert sql: {}", sql);
 
-    let id = insert_one(&sql, param.fetch_args()).await?;
+    let id = sql_builder.insert_one(param).await?;
     debug!("insert id: {:?}", id);
 
     Ok(id)
@@ -28,8 +26,9 @@ pub async fn insert(u: InsertMyUsers) -> Result<ID, Error> {
 
 #[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn find_user_by_username(username: String) -> Result<Option<MyUsers>, Error> {
-    let mut param = SqlParam::new();
-    let sql = SqlBuilder::select_from("my_users")
+    let mut param = SqlParams::new();
+    let mut sql_builder = SqlBuilder::select_from("my_users");
+    sql_builder
         .fields(&[
             "id",
             "username",
@@ -39,35 +38,35 @@ pub async fn find_user_by_username(username: String) -> Result<Option<MyUsers>, 
             "is_deleted",
         ])
         .and_where_eq("is_deleted", 0)
-        .and_where_eq("username", param.value(username))
-        .sql()
-        .unwrap();
-    let my_users = query_one(&sql, param.fetch_args()).await?;
+        .and_where_eq("username", param.add_value(username));
+
+    let my_users = sql_builder.query_one_optinal(param).await?;
     Ok(my_users)
 }
 
 #[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn update_user_password(username: String, password: String) -> Result<bool, Error> {
-    let mut param = SqlParam::new();
-    let sql = SqlBuilder::update_table("my_users")
-        .set("password", param.value(password))
+    let mut param = SqlParams::new();
+    let mut sql_builder = SqlBuilder::update_table("my_users");
+    sql_builder
+        .set("password", param.add_value(password))
         .and_where_eq("is_deleted", 0)
-        .and_where_eq("username", param.value(username))
-        .sql()
-        .unwrap();
-    let affect = update_one(&sql, param.fetch_args()).await?;
+        .and_where_eq("username", param.add_value(username));
+
+    let affect = sql_builder.update_one(param).await?;
     Ok(affect > 0)
 }
 
 #[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn update_username(old_username: String, new_username: String) -> Result<bool, Error> {
-    let mut param = SqlParam::new();
-    let sql = SqlBuilder::update_table("my_users")
-        .set("username", param.value(new_username))
+    let mut param = SqlParams::new();
+    let mut sql_builder = SqlBuilder::update_table("my_users");
+    sql_builder
+        .set("username", param.add_value(new_username))
         .and_where_eq("is_deleted", 0)
-        .and_where_eq("username", param.value(old_username))
+        .and_where_eq("username", param.add_value(old_username))
         .sql()
         .unwrap();
-    let affect = update_one(&sql, param.fetch_args()).await?;
+    let affect = sql_builder.update_one(param).await?;
     Ok(affect > 0)
 }
