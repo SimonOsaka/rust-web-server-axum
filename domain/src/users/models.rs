@@ -1,4 +1,5 @@
-use repository::users::models::{InsertMyUsers, MyUsers};
+use crate::{DomainError, UsersManager};
+use repository::users::models::{MyUsers, NewMyUsers};
 use serde::Serialize;
 use types::ID;
 
@@ -21,7 +22,29 @@ impl From<MyUsers> for Users {
     }
 }
 
-impl From<Users> for InsertMyUsers {
+impl Users {
+    pub async fn change_password(
+        &self,
+        new_password: String,
+        manager: &impl UsersManager,
+    ) -> Result<bool, DomainError> {
+        Ok(manager
+            .change_password(self.username.to_string(), new_password)
+            .await?)
+    }
+
+    pub async fn change_username(
+        &self,
+        new_username: String,
+        manager: &impl UsersManager,
+    ) -> Result<bool, DomainError> {
+        Ok(manager
+            .change_username(self.username.to_string(), new_username)
+            .await?)
+    }
+}
+
+impl From<Users> for NewMyUsers {
     fn from(u: Users) -> Self {
         Self {
             username: u.username,

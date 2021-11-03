@@ -29,8 +29,9 @@ pub async fn change_username(
         return Err(ErrorResponse::from(ChangeUsernameError::UsernameExist));
     }
 
-    manager
-        .change_username(auth_user.get_name(), change_username_form.new_username)
+    let user = manager.get_user_by_username(auth_user.get_name()).await?;
+
+    user.change_username(change_username_form.new_username, manager)
         .await?;
 
     Ok(StatusCode::OK)

@@ -1,11 +1,11 @@
-use super::models::{InsertMyUsers, MyUsers};
+use super::models::{MyUsers, NewMyUsers};
 use crate::db::{SqlParams, SqlReader, SqlWriter};
 use sql_builder::SqlBuilder;
 use sqlx::Error;
 use types::ID;
 
 #[cfg(any(feature = "postgres", feature = "mysql"))]
-pub async fn insert(u: InsertMyUsers) -> Result<ID, Error> {
+pub async fn insert(u: NewMyUsers) -> Result<ID, Error> {
     let mut param = SqlParams::new();
 
     let mut sql_builder = SqlBuilder::insert_into("my_users");

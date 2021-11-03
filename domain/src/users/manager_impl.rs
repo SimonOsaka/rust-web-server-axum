@@ -1,7 +1,7 @@
 use std::num::NonZeroU32;
 
 use repository::{
-    find_user_by_username, update_user_password, update_username, users::models::InsertMyUsers,
+    find_user_by_username, insert, update_user_password, update_username, users::models::NewMyUsers,
 };
 use ring::{digest, pbkdf2};
 
@@ -18,17 +18,16 @@ pub struct UsersManagerImpl;
 #[async_trait]
 impl super::UsersManager for UsersManagerImpl {
     async fn add_user(&self, reg_user: RegistryUsers) -> Result<Users, DomainError> {
-        let id = InsertMyUsers {
+        let inserted_my_user_id = insert(NewMyUsers {
             username: reg_user.username.clone(),
             password: hash_password(reg_user.password),
             roles: reg_user.roles.clone(),
-        }
-        .add_user()
+        })
         .await
         .map_err(database_to_domain_error)?;
 
         Ok(Users {
-            id,
+            id: inserted_my_user_id,
             username: reg_user.username,
             password: "".to_string(),
             roles: reg_user.roles,

@@ -22,12 +22,11 @@ pub async fn change_password(
 ) -> Result<impl warp::Reply, ErrorResponse> {
     let manager = &state.users_manager;
 
-    manager
+    let user = manager
         .get_user(auth_user.get_name(), change_password_form.old_password)
         .await?;
 
-    manager
-        .change_password(auth_user.get_name(), change_password_form.new_password)
+    user.change_password(change_password_form.new_password, manager)
         .await?;
 
     Ok(StatusCode::OK)
