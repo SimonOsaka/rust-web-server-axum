@@ -12,10 +12,10 @@ mysql = []
 types = { path = "../types", features = ["postgres"] }
 domain = { package = "domain", path = "../domain", features = ["postgres"] }
 auth = { path = "../auth" }
-axum = { version = "0.2.8" }
+axum = { version = "0.3" }
 tokio = { version = "1.0", features = ["full"] }
-tower = { version = "0.4", features = ["util", "filter"] }
-tower-http = { version = "0.1", features = ["trace"] }
+tower = { version = "0.4", features = ["util", "filter", "timeout"] }
+tower-http = { version = "0.1", features = ["trace", "add-extension"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 flexi_logger = "0.19"
@@ -23,8 +23,6 @@ log = "0.4"
 jsonwebtoken = "7"
 headers = "0.3"
 async-trait = "0.1"
-tracing = "0.1"
-tracing-subscriber = "0.3"
 hyper = { version = "0.14", features = ["full"] }
 validator = { version = "0.14.0", features = ["derive"] }
 http-body = "0.4"
