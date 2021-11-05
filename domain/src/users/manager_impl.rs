@@ -1,16 +1,12 @@
-use std::num::NonZeroU32;
-
 use repository::{
     find_user_by_username, insert, update_user_password, update_username, users::models::NewMyUsers,
 };
-use ring::{digest, pbkdf2};
 
-use crate::{database_to_domain_error, DomainError, GetUserError, RegistryUsers, Users};
-
-static PBKDF2_ALG: pbkdf2::Algorithm = pbkdf2::PBKDF2_HMAC_SHA256;
-const CREDENTIAL_LEN: usize = digest::SHA256_OUTPUT_LEN;
-const HASH_ROUNDS: NonZeroU32 = unsafe { NonZeroU32::new_unchecked(1_000) };
-pub type Credential = [u8; CREDENTIAL_LEN];
+use crate::{
+    database_to_domain_error,
+    utils::{hash, verify},
+    DomainError, GetUserError, RegistryUsers, Users,
+};
 
 #[derive(Clone, Debug)]
 pub struct UsersManagerImpl;
@@ -88,7 +84,7 @@ impl super::UsersManager for UsersManagerImpl {
 
         let user = result?;
         let password = &user.password;
-        let pass = verify(password.to_string(), login_password);
+        let pass = verify_password(password.to_string(), login_password);
         Ok((pass, user.clone()))
     }
 
@@ -117,27 +113,10 @@ impl super::UsersManager for UsersManagerImpl {
     }
 }
 
-fn verify(password: String, attemp_password: String) -> bool {
-    let my_password = base64::decode(&password).unwrap();
-
-    pbkdf2::verify(
-        PBKDF2_ALG,
-        HASH_ROUNDS,
-        &"asdf".as_bytes(),
-        attemp_password.as_bytes(),
-        my_password.as_slice(),
-    )
-    .is_ok()
+fn verify_password(password: String, attemp_password: String) -> bool {
+    verify(password, attemp_password)
 }
 
 fn hash_password(password: String) -> String {
-    let mut to_store: Credential = [0u8; CREDENTIAL_LEN];
-    pbkdf2::derive(
-        PBKDF2_ALG,
-        HASH_ROUNDS,
-        &"asdf".as_bytes(),
-        password.as_bytes(),
-        &mut to_store,
-    );
-    base64::encode(&to_store)
+    hash(password)
 }

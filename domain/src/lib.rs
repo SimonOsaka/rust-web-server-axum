@@ -1,6 +1,7 @@
 pub mod adventures;
 pub mod errors;
 pub mod users;
+pub mod utils;
 
 pub use adventures::*;
 pub use errors::*;

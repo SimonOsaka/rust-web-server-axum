@@ -186,12 +186,19 @@ impl From<CreateAdventureError> for ErrorResponse {
                 },
                 StatusCode::NOT_FOUND,
             ),
+            CreateAdventureError::Exist => ErrorResponse(
+                ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::FORBIDDEN.as_u16(),
+                },
+                StatusCode::FORBIDDEN,
+            ),
             CreateAdventureError::AddDocuments => ErrorResponse(
                 ErrorMessage {
                     message: e.to_string(),
                     code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
                 },
-                StatusCode::FORBIDDEN,
+                StatusCode::INTERNAL_SERVER_ERROR,
             ),
             CreateAdventureError::DomainError(_) => ErrorResponse(
                 ErrorMessage {

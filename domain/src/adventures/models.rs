@@ -6,7 +6,7 @@ use search::adventures::model::{AdventuresFilter, PlayListFilter};
 use serde::Serialize;
 use types::{DateTime, MyAdventures, ID, U8I16};
 
-use crate::Users;
+use crate::{utils::hash, Users};
 
 #[derive(Clone, Debug)]
 pub struct AdventuresQuery {
@@ -119,6 +119,12 @@ pub struct NewJourney {
     pub journey_destiny: String,
 }
 
+impl NewJourney {
+    pub fn crypto(&self) -> String {
+        hash(self.title.clone())
+    }
+}
+
 pub struct NewJourneyData {
     pub nj: NewJourney,
     pub u: Users,
@@ -127,7 +133,8 @@ pub struct NewJourneyData {
 impl From<NewJourneyData> for NewMyAdventuresJourney {
     fn from(data: NewJourneyData) -> Self {
         Self {
-            title: data.nj.title,
+            title: data.nj.title.to_owned(),
+            title_crypto: data.nj.crypto(),
             image_url: data.nj.image_url,
             item_type: 5,
             link: data.nj.link,

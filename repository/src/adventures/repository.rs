@@ -127,6 +127,7 @@ pub async fn create_journey(adventure: NewMyAdventuresJourney) -> Result<ID, sql
     sql_builder
         .fields(&[
             "title",
+            "title_crypto",
             "image_url",
             "item_type",
             "link",
@@ -136,6 +137,7 @@ pub async fn create_journey(adventure: NewMyAdventuresJourney) -> Result<ID, sql
         ])
         .values(&[
             param.add_value(adventure.title),
+            param.add_value(adventure.title_crypto),
             param.add_value(adventure.image_url),
             param.add_value(adventure.item_type),
             param.add_value(adventure.link),
@@ -149,4 +151,34 @@ pub async fn create_journey(adventure: NewMyAdventuresJourney) -> Result<ID, sql
     debug!("insert id: {:?}", id);
 
     Ok(id)
+}
+
+#[cfg(any(feature = "postgres", feature = "mysql"))]
+pub async fn find_title_crypto(title_crypto: String) -> Result<Option<MyAdventures>, sqlx::Error> {
+    let mut param = SqlParams::new();
+    let mut sql_builder = SqlBuilder::select_from("my_adventures");
+    sql_builder
+        .fields(&[
+            "id",
+            "title",
+            "created_at",
+            "is_deleted",
+            "image_url",
+            "item_type",
+            "link",
+            "source",
+            "journey_destiny",
+            "script_content",
+            "play_list",
+            "address",
+            "shop_name",
+            "province",
+            "city",
+            "district",
+        ])
+        .and_where_eq("is_deleted", 0)
+        .and_where_eq("title_crypto", param.add_value(title_crypto));
+
+    let my = sql_builder.query_one_optinal(param).await?;
+    Ok(my)
 }

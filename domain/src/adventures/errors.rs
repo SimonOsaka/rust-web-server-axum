@@ -20,6 +20,8 @@ pub enum CreateAdventureError {
         adventure_id: ID,
         // source: DomainError,
     },
+    #[error("Adventure exist")]
+    Exist,
     #[error("Add document error")]
     AddDocuments,
     #[error("Something went wrong.")]

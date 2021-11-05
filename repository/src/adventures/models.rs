@@ -16,6 +16,7 @@ pub struct PlayListWhere {
 #[derive(Debug)]
 pub struct NewMyAdventuresJourney {
     pub title: String,
+    pub title_crypto: String,
     pub image_url: String,
     pub item_type: U8I16,
     pub link: String,

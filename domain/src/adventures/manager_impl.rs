@@ -8,7 +8,7 @@ use anyhow::Result;
 use log::debug;
 
 use meilisearch_sdk::progress::UpdateStatus;
-use repository::{create_journey, find_one, NewMyAdventuresJourney};
+use repository::{create_journey, find_one, find_title_crypto, NewMyAdventuresJourney};
 use search::adventures::{search_by_play_list, search_latest, search_one};
 use search::meilisearch::operation::add_documents;
 use types::ID;
@@ -99,6 +99,13 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     async fn add_journey(&self, data: NewJourneyData) -> Result<ID, CreateAdventureError> {
+        let my_adventures_optional = find_title_crypto(data.nj.crypto())
+            .await
+            .map_err(database_to_domain_error)?;
+        if my_adventures_optional.is_some() {
+            return Err(CreateAdventureError::Exist);
+        }
+
         let id = create_journey(NewMyAdventuresJourney::from(data))
             .await
             .map_err(database_to_domain_error)?;
