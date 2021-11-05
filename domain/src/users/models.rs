@@ -1,4 +1,6 @@
-use crate::{DomainError, UsersManager};
+use crate::{
+    AdventuresManager, CreateAdventureError, DomainError, NewJourney, NewJourneyData, UsersManager,
+};
 use repository::users::models::{MyUsers, NewMyUsers};
 use serde::Serialize;
 use types::ID;
@@ -40,6 +42,19 @@ impl Users {
     ) -> Result<bool, DomainError> {
         Ok(manager
             .change_username(self.username.to_string(), new_username)
+            .await?)
+    }
+
+    pub async fn add_journey(
+        &self,
+        new_journey: NewJourney,
+        manager: &impl AdventuresManager,
+    ) -> Result<ID, CreateAdventureError> {
+        Ok(manager
+            .add_journey(NewJourneyData {
+                nj: new_journey,
+                u: self.to_owned(),
+            })
             .await?)
     }
 }

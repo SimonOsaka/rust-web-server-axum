@@ -6,13 +6,14 @@ use warp::header::headers_cloned;
 use warp::hyper::header::AUTHORIZATION;
 use warp::hyper::HeaderMap;
 use warp::reject::custom;
-use warp::{self, get, Reply};
+use warp::{self, get, query, Reply};
 use warp::{Filter, Rejection};
 
 use crate::errors::ValidateError;
 use crate::get::get_adventure;
 use crate::index::index;
-use crate::list::{list_adventures, with_query_validate, AdventuresQueryReq};
+use crate::journey::{journey, JourneyForm};
+use crate::list::{list_adventures, AdventuresQueryReq};
 use crate::play_list::play_list_adventures;
 use crate::response::ErrorResponse;
 use crate::sync::sync_adventure;
@@ -28,12 +29,11 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
         .map(index)
         .or(warp::path!("api" / "adventures")
             .and(get())
-            .and(with_auth())
             .and(with_query_validate())
             .and(with_state(state.clone()))
             .and_then(
-                |user: AuthUser, query: AdventuresQueryReq, state: AppState| async move {
-                    list_adventures(user, query, state)
+                |query: AdventuresQueryReq, state: AppState| async move {
+                    list_adventures(query, state)
                         .await
                         .map_err(|e| warp::reject::custom(e))
                 },
@@ -63,6 +63,18 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             .and_then(
                 |play_list: String, user: AuthUser, state: AppState| async move {
                     play_list_adventures(play_list, user, state)
+                        .await
+                        .map_err(|e| warp::reject::custom(e))
+                },
+            ))
+            .or(warp::path!("api" / "adventures")
+            .and(warp::post())
+            .and(with_json_validate())
+            .and(with_auth())
+            .and(with_state(state.clone()))
+            .and_then(
+                |form: JourneyForm,user: AuthUser,state: AppState| async move {
+                    journey(form,user, state)
                         .await
                         .map_err(|e| warp::reject::custom(e))
                 },
@@ -172,6 +184,18 @@ where
             }
         },
     ))
+}
+
+fn with_query_validate<T>() -> impl Filter<Extract = (T,), Error = Rejection> + Clone
+where
+    T: 'static + Validate + std::marker::Send + DeserializeOwned,
+{
+    query::<T>().and_then(|req: T| async move {
+        match req.validate() {
+            Ok(_) => Ok(req),
+            Err(e) => Err(custom(ErrorResponse::from(ValidateError::InvalidParam(e)))),
+        }
+    })
 }
 
 async fn handle_rejection(

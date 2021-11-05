@@ -1,5 +1,5 @@
 use auth::JWTError;
-use domain::{DomainError, GetAdventureError, GetUserError};
+use domain::{CreateAdventureError, DomainError, GetAdventureError, GetUserError};
 use thiserror::Error;
 use validator::ValidationErrors;
 use warp::hyper::StatusCode;
@@ -171,6 +171,34 @@ impl From<ChangeUsernameError> for ErrorResponse {
                     code: StatusCode::FORBIDDEN.as_u16(),
                 },
                 StatusCode::FORBIDDEN,
+            ),
+        }
+    }
+}
+
+impl From<CreateAdventureError> for ErrorResponse {
+    fn from(e: CreateAdventureError) -> Self {
+        match &e {
+            CreateAdventureError::AdventureNotFound { .. } => ErrorResponse(
+                ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::NOT_FOUND.as_u16(),
+                },
+                StatusCode::NOT_FOUND,
+            ),
+            CreateAdventureError::AddDocuments => ErrorResponse(
+                ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
+                },
+                StatusCode::FORBIDDEN,
+            ),
+            CreateAdventureError::DomainError(_) => ErrorResponse(
+                ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
+                },
+                StatusCode::INTERNAL_SERVER_ERROR,
             ),
         }
     }

@@ -12,3 +12,16 @@ pub enum GetAdventureError {
     #[error("Something went wrong.")]
     DomainError(#[from] DomainError),
 }
+
+#[derive(thiserror::Error, Debug)]
+pub enum CreateAdventureError {
+    #[error("There is no adventure with id {adventure_id:?}.")]
+    AdventureNotFound {
+        adventure_id: ID,
+        // source: DomainError,
+    },
+    #[error("Add document error")]
+    AddDocuments,
+    #[error("Something went wrong.")]
+    DomainError(#[from] DomainError),
+}

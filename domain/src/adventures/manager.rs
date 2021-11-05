@@ -1,7 +1,10 @@
 use anyhow::Result;
 use types::ID;
 
-use crate::{Adventures, AdventuresQuery, DomainError, GetAdventureError, PlayListQuery};
+use crate::{
+    Adventures, AdventuresQuery, CreateAdventureError, DomainError, GetAdventureError,
+    NewJourneyData, PlayListQuery,
+};
 #[async_trait]
 pub trait AdventuresManager {
     /// adventure list
@@ -20,4 +23,6 @@ pub trait AdventuresManager {
     async fn get_adventure(&self, id: ID) -> Result<Adventures, GetAdventureError>;
 
     async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError>;
+
+    async fn add_journey(&self, data: NewJourneyData) -> Result<ID, CreateAdventureError>;
 }

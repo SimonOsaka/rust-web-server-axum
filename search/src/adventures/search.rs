@@ -5,7 +5,7 @@ use crate::meilisearch::operation::{
 use meilisearch_sdk::errors::Error;
 use types::{MyAdventures, ID};
 
-pub async fn find_latest(query: AdventuresFilter) -> Result<Vec<MyAdventures>, Error> {
+pub async fn search_latest(query: AdventuresFilter) -> Result<Vec<MyAdventures>, Error> {
     let mut filter = vec!["is_deleted = 0".to_string()];
     if query.item_id != 0 {
         filter.push(format!("item_type = {}", query.item_id));
@@ -39,7 +39,7 @@ pub async fn find_latest(query: AdventuresFilter) -> Result<Vec<MyAdventures>, E
     Ok(result)
 }
 
-pub async fn find_by_play_list(query: PlayListFilter) -> Result<Vec<MyAdventures>, Error> {
+pub async fn search_by_play_list(query: PlayListFilter) -> Result<Vec<MyAdventures>, Error> {
     let mut condition = Condition::new();
     condition.filter = Some(format!(
         "play_list = {} AND is_deleted = 0",
@@ -62,7 +62,7 @@ pub async fn find_by_play_list(query: PlayListFilter) -> Result<Vec<MyAdventures
     Ok(result)
 }
 
-pub async fn find_one(id: ID) -> Result<Option<MyAdventures>, Error> {
+pub async fn search_one(id: ID) -> Result<Option<MyAdventures>, Error> {
     let mut condition = Condition::new();
     condition.filter = Some(format!("id = {} AND is_deleted = 0", id));
     condition.page = Some(Page::one());

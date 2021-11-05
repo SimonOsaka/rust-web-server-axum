@@ -1,2 +1,2 @@
 -- Add down migration script here
-delete from my_adventures;
+DELETE FROM my_adventures;

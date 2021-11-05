@@ -1,6 +1,6 @@
-use crate::adventures::models::{AdventuresWhere, PlayListWhere};
+use crate::adventures::models::{AdventuresWhere, NewMyAdventuresJourney, PlayListWhere};
+use crate::db::write::SqlWriter;
 use crate::db::{SqlBuilder, SqlParams, SqlReader};
-use anyhow::Result;
 
 use types::{MyAdventures, ID};
 
@@ -117,4 +117,36 @@ pub async fn find_one(id: ID) -> Result<Option<MyAdventures>, sqlx::Error> {
 
     let my = sql_builder.query_one_optinal(param).await?;
     Ok(my)
+}
+
+#[cfg(any(feature = "postgres", feature = "mysql"))]
+pub async fn create_journey(adventure: NewMyAdventuresJourney) -> Result<ID, sqlx::Error> {
+    let mut param = SqlParams::new();
+
+    let mut sql_builder = SqlBuilder::insert_into("my_adventures");
+    sql_builder
+        .fields(&[
+            "title",
+            "image_url",
+            "item_type",
+            "link",
+            "source",
+            "journey_destiny",
+            "user_id",
+        ])
+        .values(&[
+            param.add_value(adventure.title),
+            param.add_value(adventure.image_url),
+            param.add_value(adventure.item_type),
+            param.add_value(adventure.link),
+            param.add_value(adventure.source),
+            param.add_value(adventure.journey_destiny),
+            param.add_value(adventure.user_id),
+        ])
+        .returning_id();
+
+    let id = sql_builder.insert_one(param).await?;
+    debug!("insert id: {:?}", id);
+
+    Ok(id)
 }

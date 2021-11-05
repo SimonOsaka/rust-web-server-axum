@@ -42,6 +42,17 @@ sqlx migrate run
 # only the most recent can be revert at a time, it's like going out of the stack
 sqlx migrate revert
 ```
+#### sql raw
+```sql
+-- add column
+ALTER TABLE table_name ADD COLUMN IF NOT EXISTS column_name column_type NOT NULL DEFAULT default_value;
+-- add column comment
+COMMENT ON COLUMN table_name.column_name IS column_comment;
+-- drop column
+ALTER TABLE table_name DROP COLUMN column_name;
+-- modify column type
+ALTER TABLE table_name ALTER COLUMN column_name TYPE column_type;
+```
 
 ## How to run
 - Open `.env` file

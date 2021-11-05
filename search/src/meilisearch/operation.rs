@@ -1,11 +1,13 @@
 use std::convert::TryInto;
 
-use meilisearch_sdk::{document::Document, errors::Error, search::SearchResult};
+use meilisearch_sdk::{
+    document::Document, errors::Error, progress::Progress, search::SearchResult,
+};
 
 use crate::MEILISEARCH;
 
 /// add documents
-pub async fn add_documents<T>(vec: Vec<T>)
+pub async fn add_documents<T>(vec: Vec<T>) -> Result<Progress, Error>
 where
     T: Document,
 {
@@ -13,7 +15,7 @@ where
 
     let index = &meilisearch.adventures_index;
 
-    index.add_documents(&vec, Some("id")).await.unwrap();
+    Ok(index.add_documents(&vec, Some("id")).await?)
 }
 
 #[derive(Debug)]

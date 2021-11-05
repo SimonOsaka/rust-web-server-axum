@@ -1,7 +1,12 @@
-use repository::adventures::models::{AdventuresWhere, PlayListWhere};
+use repository::{
+    adventures::models::{AdventuresWhere, PlayListWhere},
+    NewMyAdventuresJourney,
+};
 use search::adventures::model::{AdventuresFilter, PlayListFilter};
 use serde::Serialize;
 use types::{DateTime, MyAdventures, ID, U8I16};
+
+use crate::Users;
 
 #[derive(Clone, Debug)]
 pub struct AdventuresQuery {
@@ -102,6 +107,33 @@ impl Into<PlayListFilter> for PlayListQuery {
     fn into(self) -> PlayListFilter {
         PlayListFilter {
             play_list: (self.play_list),
+        }
+    }
+}
+
+pub struct NewJourney {
+    pub title: String,
+    pub image_url: String,
+    pub link: String,
+    pub source: U8I16,
+    pub journey_destiny: String,
+}
+
+pub struct NewJourneyData {
+    pub nj: NewJourney,
+    pub u: Users,
+}
+
+impl From<NewJourneyData> for NewMyAdventuresJourney {
+    fn from(data: NewJourneyData) -> Self {
+        Self {
+            title: data.nj.title,
+            image_url: data.nj.image_url,
+            item_type: 5,
+            link: data.nj.link,
+            source: data.nj.source,
+            journey_destiny: data.nj.journey_destiny,
+            user_id: data.u.id,
         }
     }
 }
