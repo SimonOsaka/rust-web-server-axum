@@ -1,3 +1,4 @@
+pub mod favorite;
 pub mod get;
 pub mod journey;
 pub mod list;

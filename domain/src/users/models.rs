@@ -1,5 +1,6 @@
 use crate::{
-    AdventuresManager, CreateAdventureError, DomainError, NewJourney, NewJourneyData, UsersManager,
+    AddFavorite, AdventuresManager, CreateAdventureError, DelFavorite, DomainError, Favorite,
+    FavoriteError, FavoritesManager, NewJourney, NewJourneyData, UsersManager,
 };
 use repository::users::models::{MyUsers, NewMyUsers};
 use serde::Serialize;
@@ -54,6 +55,32 @@ impl Users {
             .add_journey(NewJourneyData {
                 nj: new_journey,
                 u: self.to_owned(),
+            })
+            .await?)
+    }
+
+    pub async fn favorite(
+        &self,
+        adventure_id: ID,
+        manager: &impl FavoritesManager,
+    ) -> Result<Favorite, FavoriteError> {
+        Ok(manager
+            .add_favorite(AddFavorite {
+                user_id: self.id,
+                adventure_id,
+            })
+            .await?)
+    }
+
+    pub async fn unfavorite(
+        &self,
+        adventure_id: ID,
+        manager: &impl FavoritesManager,
+    ) -> Result<bool, DomainError> {
+        Ok(manager
+            .del_favorite(DelFavorite {
+                user_id: self.id,
+                adventure_id,
             })
             .await?)
     }

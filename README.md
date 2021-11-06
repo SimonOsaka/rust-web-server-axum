@@ -52,6 +52,10 @@ COMMENT ON COLUMN table_name.column_name IS column_comment;
 ALTER TABLE table_name DROP COLUMN column_name;
 -- modify column type
 ALTER TABLE table_name ALTER COLUMN column_name TYPE column_type;
+-- add column constraint
+ALTER TABLE table_name ADD CONSTRAINT constraint_name UNIQUE(column_name);
+-- drop column constraint
+ALTER TABLE table_name DROP CONSTRAINT constraint_name;
 ```
 
 ## How to run

@@ -5,7 +5,7 @@ use axum::{
     response::IntoResponse,
     Json,
 };
-use domain::{CreateAdventureError, DomainError, GetAdventureError, GetUserError};
+use domain::{CreateAdventureError, DomainError, FavoriteError, GetAdventureError, GetUserError};
 use serde_json::json;
 use thiserror::Error;
 use validator::ValidationErrors;
@@ -247,6 +247,27 @@ impl From<CreateAdventureError> for AppError {
                 .into_response(),
             ),
             CreateAdventureError::DomainError(_) => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
+                }))
+                .into_response(),
+            ),
+        }
+    }
+}
+
+impl From<FavoriteError> for AppError {
+    fn from(e: FavoriteError) -> Self {
+        match &e {
+            FavoriteError::AlreadyExist { .. } => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::FORBIDDEN.as_u16(),
+                }))
+                .into_response(),
+            ),
+            FavoriteError::DomainError(_) => AppError(
                 Json(json!(ErrorMessage {
                     message: e.to_string(),
                     code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),

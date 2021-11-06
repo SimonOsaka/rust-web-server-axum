@@ -10,6 +10,7 @@ use warp::{self, get, query, Reply};
 use warp::{Filter, Rejection};
 
 use crate::errors::ValidateError;
+use crate::favorite::{FavoriteForm, favorite, unfavorite};
 use crate::get::get_adventure;
 use crate::index::index;
 use crate::journey::{journey, JourneyForm};
@@ -73,12 +74,32 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             .and(with_auth())
             .and(with_state(state.clone()))
             .and_then(
-                |form: JourneyForm,user: AuthUser,state: AppState| async move {
-                    journey(form,user, state)
+                |form: JourneyForm, user: AuthUser, state: AppState| async move {
+                    journey(form, user, state)
                         .await
                         .map_err(|e| warp::reject::custom(e))
                 },
             ))
+        .or(warp::path!("api" / "adventures" / "favorite")
+            .and(warp::post())
+            .and(with_json_validate())
+            .and(with_auth())
+            .and(with_state(state.clone()))
+            .and_then(|form: FavoriteForm, user: AuthUser, state: AppState| async move {
+                favorite(form, user, state) 
+                    .await
+                    .map_err(|e| warp::reject::custom(e))
+            }))
+        .or(warp::path!("api" / "adventures" / "unfavorite")
+            .and(warp::post())
+            .and(with_json_validate())
+            .and(with_auth())
+            .and(with_state(state.clone()))
+            .and_then(|form: FavoriteForm, user: AuthUser, state: AppState| async move {
+                unfavorite(form, user, state) 
+                    .await
+                    .map_err(|e| warp::reject::custom(e))
+            }))
         //sync
         .or(warp::path!("api" / "sync" / ID)
             .and(warp::get())
@@ -120,7 +141,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                         .map_err(|e| warp::reject::custom(e))
                 },
             ))
-            .or(warp::path!("api" / "users" / "username")
+        .or(warp::path!("api" / "users" / "username")
             .and(warp::put())
             .and(with_auth())
             .and(with_json_validate())
@@ -132,7 +153,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                         .map_err(|e| warp::reject::custom(e))
                 },
             ))
-            .or(warp::path!("api" / "users" / "me")
+        .or(warp::path!("api" / "users" / "me")
             .and(warp::get())
             .and(with_auth())
             .and(with_state(state.clone()))

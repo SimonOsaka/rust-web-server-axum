@@ -1,5 +1,5 @@
 use auth::JWTError;
-use domain::{CreateAdventureError, DomainError, GetAdventureError, GetUserError};
+use domain::{CreateAdventureError, DomainError, FavoriteError, GetAdventureError, GetUserError};
 use thiserror::Error;
 use validator::ValidationErrors;
 use warp::hyper::StatusCode;
@@ -201,6 +201,27 @@ impl From<CreateAdventureError> for ErrorResponse {
                 StatusCode::INTERNAL_SERVER_ERROR,
             ),
             CreateAdventureError::DomainError(_) => ErrorResponse(
+                ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
+                },
+                StatusCode::INTERNAL_SERVER_ERROR,
+            ),
+        }
+    }
+}
+
+impl From<FavoriteError> for ErrorResponse {
+    fn from(e: FavoriteError) -> Self {
+        match &e {
+            FavoriteError::AlreadyExist { .. } => ErrorResponse(
+                ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::FORBIDDEN.as_u16(),
+                },
+                StatusCode::FORBIDDEN,
+            ),
+            FavoriteError::DomainError(_) => ErrorResponse(
                 ErrorMessage {
                     message: e.to_string(),
                     code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),

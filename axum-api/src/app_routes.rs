@@ -4,6 +4,7 @@ use crate::{
     app_response::{AppError, ErrorMessage},
     change_password::change_password,
     change_username::change_username,
+    favorite::{favorite, unfavorite},
     journey::journey,
     list::list_adventures,
     login::login,
@@ -50,6 +51,9 @@ pub fn routes(state: AppState) -> Router {
         )
         .route("/api/adventures/update", get(version_update_adventures))
         .route("/api/adventures/tabs", get(tabs_adventures))
+        .route("/api/adventures/favorite", post(favorite))
+        .route("/api/adventures/unfavorite", post(unfavorite))
+        // sync
         .route("/api/sync/:id", get(sync_adventure))
         // users
         .route("/api/users/registry", post(registry))
