@@ -5,10 +5,7 @@ use types::my_item_type_format::to_item_type_name;
 use validator::{Validate, ValidationError};
 
 use crate::{
-    app_request::{AuthUser, ValidatedQuery},
-    app_response::AppError,
-    response::AdventuresResponse,
-    AppState,
+    app_request::ValidatedQuery, app_response::AppError, response::AdventuresResponse, AppState,
 };
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
@@ -43,11 +40,10 @@ fn validate_item_id(item_id: u8) -> Result<(), ValidationError> {
 }
 
 pub async fn list_adventures(
-    AuthUser(user): AuthUser,
     ValidatedQuery(query): ValidatedQuery<AdventuresQueryReq>,
     Extension(state): Extension<AppState>,
 ) -> Result<Json<AdventuresResponse>, AppError> {
-    debug!("user: {:?}, query: {:?}, state: {:?}", user, query, state);
+    debug!("query: {:?}, state: {:?}", query, state);
     let manager = &state.adventures_manager;
     let adventures = manager.find_adventures(query.into()).await?;
     let response = AdventuresResponse::from(adventures);

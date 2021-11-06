@@ -5,7 +5,7 @@ use axum::{
     response::IntoResponse,
     Json,
 };
-use domain::{DomainError, GetAdventureError, GetUserError};
+use domain::{CreateAdventureError, DomainError, GetAdventureError, GetUserError};
 use serde_json::json;
 use thiserror::Error;
 use validator::ValidationErrors;
@@ -215,6 +215,41 @@ impl From<ChangeUsernameError> for AppError {
                 Json(json!(ErrorMessage {
                     message: e.to_string(),
                     code: StatusCode::FORBIDDEN.as_u16(),
+                }))
+                .into_response(),
+            ),
+        }
+    }
+}
+
+impl From<CreateAdventureError> for AppError {
+    fn from(e: CreateAdventureError) -> Self {
+        match &e {
+            CreateAdventureError::AdventureNotFound { .. } => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::NOT_FOUND.as_u16(),
+                }))
+                .into_response(),
+            ),
+            CreateAdventureError::Exist => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::FORBIDDEN.as_u16(),
+                }))
+                .into_response(),
+            ),
+            CreateAdventureError::AddDocuments => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
+                }))
+                .into_response(),
+            ),
+            CreateAdventureError::DomainError(_) => AppError(
+                Json(json!(ErrorMessage {
+                    message: e.to_string(),
+                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
                 }))
                 .into_response(),
             ),

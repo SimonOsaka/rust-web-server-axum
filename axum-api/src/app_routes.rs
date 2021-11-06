@@ -4,6 +4,7 @@ use crate::{
     app_response::{AppError, ErrorMessage},
     change_password::change_password,
     change_username::change_username,
+    journey::journey,
     list::list_adventures,
     login::login,
     me::me,
@@ -42,7 +43,7 @@ pub fn routes(state: AppState) -> Router {
         .route("/", get(index))
         // adventures
         .route("/api/adventures/:id", get(get_adventure))
-        .route("/api/adventures", get(list_adventures))
+        .route("/api/adventures", get(list_adventures).post(journey))
         .route(
             "/api/adventures/playlist/:play_list",
             get(play_list_adventures),
@@ -82,7 +83,7 @@ where
 {
     let bytes = hyper::body::to_bytes(body).await.map_err(Into::into)?;
     if let Ok(body) = std::str::from_utf8(&bytes) {
-       debug!("{} body = {:?}", direction, body);
+        debug!("{} body = {:?}", direction, body);
     }
     Ok(bytes)
 }
