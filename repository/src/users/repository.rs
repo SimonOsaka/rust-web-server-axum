@@ -4,7 +4,6 @@ use sql_builder::SqlBuilder;
 use sqlx::Error;
 use types::ID;
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn insert(u: NewMyUsers) -> Result<ID, Error> {
     let mut param = SqlParams::new();
 
@@ -24,7 +23,6 @@ pub async fn insert(u: NewMyUsers) -> Result<ID, Error> {
     Ok(id)
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn find_user_by_username(username: String) -> Result<Option<MyUsers>, Error> {
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::select_from("my_users");
@@ -44,7 +42,6 @@ pub async fn find_user_by_username(username: String) -> Result<Option<MyUsers>, 
     Ok(my_users)
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn update_user_password(username: String, password: String) -> Result<bool, Error> {
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::update_table("my_users");
@@ -57,7 +54,6 @@ pub async fn update_user_password(username: String, password: String) -> Result<
     Ok(affect > 0)
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn update_username(old_username: String, new_username: String) -> Result<bool, Error> {
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::update_table("my_users");

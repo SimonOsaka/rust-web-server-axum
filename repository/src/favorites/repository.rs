@@ -4,7 +4,6 @@ use sql_builder::SqlBuilder;
 use sqlx::Error;
 use types::ID;
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn insert(fav: NewMyFavorite) -> Result<ID, Error> {
     let mut param = SqlParams::new();
 
@@ -23,7 +22,6 @@ pub async fn insert(fav: NewMyFavorite) -> Result<ID, Error> {
     Ok(id)
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn delete(del: DeleteMyFavorite) -> Result<bool, Error> {
     let mut param = SqlParams::new();
 
@@ -40,7 +38,6 @@ pub async fn delete(del: DeleteMyFavorite) -> Result<bool, Error> {
     Ok(affect_rows > 0)
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn get_favorite(del: GetMyFavorite) -> Result<Option<MyFavorites>, Error> {
     let mut param = SqlParams::new();
 

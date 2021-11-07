@@ -4,7 +4,6 @@ use crate::db::{SqlBuilder, SqlParams, SqlReader};
 
 use types::{MyAdventures, ID};
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn find_latest(query: AdventuresWhere) -> Result<Vec<MyAdventures>, sqlx::Error> {
     let mut pgsql_builder = SqlBuilder::select_from("my_adventures");
     pgsql_builder
@@ -61,7 +60,6 @@ pub async fn find_latest(query: AdventuresWhere) -> Result<Vec<MyAdventures>, sq
     Ok(my_adventures)
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn find_by_play_list(query: PlayListWhere) -> Result<Vec<MyAdventures>, sqlx::Error> {
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::select_from("my_adventures");
@@ -89,7 +87,6 @@ pub async fn find_by_play_list(query: PlayListWhere) -> Result<Vec<MyAdventures>
     Ok(my_adventures)
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn find_one(id: ID) -> Result<Option<MyAdventures>, sqlx::Error> {
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::select_from("my_adventures");
@@ -119,7 +116,6 @@ pub async fn find_one(id: ID) -> Result<Option<MyAdventures>, sqlx::Error> {
     Ok(my)
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn create_journey(adventure: NewMyAdventuresJourney) -> Result<ID, sqlx::Error> {
     let mut param = SqlParams::new();
 
@@ -153,7 +149,6 @@ pub async fn create_journey(adventure: NewMyAdventuresJourney) -> Result<ID, sql
     Ok(id)
 }
 
-#[cfg(any(feature = "postgres", feature = "mysql"))]
 pub async fn find_title_crypto(title_crypto: String) -> Result<Option<MyAdventures>, sqlx::Error> {
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::select_from("my_adventures");

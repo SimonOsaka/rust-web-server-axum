@@ -23,11 +23,7 @@ impl Repo {
             .connect_timeout(std::time::Duration::from_secs(30))
             .after_connect(|conn| {
                 Box::pin(async move {
-                    if cfg!(feature = "mysql") {
-                        conn.execute("SET time_zone = '+08:00';").await?;
-                    } else if cfg!(feature = "postgres") {
-                        conn.execute("SET TIME ZONE 'Asia/Shanghai';").await?;
-                    }
+                    conn.execute("SET TIME ZONE 'Asia/Shanghai';").await?;
 
                     Ok(())
                 })

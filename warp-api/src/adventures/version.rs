@@ -1,6 +1,6 @@
 use std::convert::Infallible;
 
-use crate::{adventures::response::VersionUpdateResponse, routes::AuthUser};
+use crate::adventures::response::VersionUpdateResponse;
 use serde::Deserialize;
 
 #[derive(Default, Deserialize, Debug, Clone)]
@@ -10,10 +10,9 @@ pub struct VersionUpdateReq {
 }
 
 pub async fn version_update_adventures(
-    user: AuthUser,
     query: VersionUpdateReq,
 ) -> Result<impl warp::Reply, Infallible> {
-    debug!("user: {:?}, query: {:?}", user, query);
+    debug!("query: {:?}", query);
 
     if query.appid != "__UNI__410C039" && query.appid != "HBuilder" {
         let response = VersionUpdateResponse {

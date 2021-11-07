@@ -1,6 +1,4 @@
-use crate::{
-    adventures::response::VersionUpdateResponse, app_request::AuthUser, app_response::AppError,
-};
+use crate::{adventures::response::VersionUpdateResponse, app_response::AppError};
 use axum::{extract::Query, Json};
 use serde::Deserialize;
 
@@ -11,10 +9,9 @@ pub struct VersionUpdateReq {
 }
 
 pub async fn version_update_adventures(
-    AuthUser(user): AuthUser,
     query: Query<VersionUpdateReq>,
 ) -> Result<Json<VersionUpdateResponse>, AppError> {
-    debug!("user: {:?}, query: {:?}", user, query);
+    debug!("query: {:?}", query);
 
     if query.appid != "__UNI__410C039" && query.appid != "HBuilder" {
         let response = VersionUpdateResponse {

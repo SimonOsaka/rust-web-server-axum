@@ -1,4 +1,4 @@
-use auth::{decode_token, role_view, Claims, JWTError};
+use auth::{decode_token, Claims, JWTError};
 use axum::{
     async_trait,
     body::HttpBody,
@@ -28,10 +28,15 @@ where
                     None => Err(AppError::from(JWTError::Invalid)),
                 },
                 // for no login user
-                None => Ok(Self(role_view())),
+                None =>
+                //Ok(Self(role_view())),
+                {
+                    Err(AppError::from(JWTError::Missing))
+                }
             }
         } else {
-            Ok(Self(role_view()))
+            // Ok(Self(role_view()))
+            Err(AppError::from(JWTError::Missing))
         }
     }
 }

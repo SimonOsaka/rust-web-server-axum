@@ -8,15 +8,11 @@ edition = "2021"
 name = "domain"
 path = "src/lib.rs"
 
-[features]
-postgres = []
-mysql = []
-
 [dependencies]
-types = { path = "../types", features = ["postgres"] }
-repository = { path = "../repository", features = ["postgres"] }
+types = { path = "../types" }
+repository = { path = "../repository" }
 redis = { path = "../redis" }
-search = { path = "../search", features = ["postgres"] }
+search = { path = "../search" }
 serde = { version = "1.0.125", features = ["derive"] }
 serde_json = "1.0"
 chrono = { version = "0.4.19", features = ["serde"] }

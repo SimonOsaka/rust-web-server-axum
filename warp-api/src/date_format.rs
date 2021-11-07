@@ -26,23 +26,11 @@ pub mod my_date_format {
     //        D: Deserializer<'de>
     //
     // although it may also be generic over the output types T.
-    #[cfg(any(feature = "postgres"))]
     pub fn deserialize<'de, D>(deserializer: D) -> Result<chrono::NaiveDateTime, D::Error>
     where
         D: Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
         chrono::NaiveDateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
-    }
-
-    #[cfg(any(feature = "mysql"))]
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<chrono::DateTime<UTC>, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
-        chrono::Utc
-            .datetime_from_str(&s, FORMAT)
-            .map_err(serde::de::Error::custom)
     }
 }

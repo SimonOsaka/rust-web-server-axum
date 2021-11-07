@@ -20,17 +20,17 @@ path = "src/main.rs"
 name = "app"
 
 [features]
-default = ["database_lib", "search_lib", "api_warp_lib"]
+default = ["database_lib", "search_lib"]
 redis_lib = []
 database_lib = []
 search_lib = []
 api_warp_lib = []
 
 [dependencies]
-axum-api = { path = "../axum-api", features = ["postgres"] }
-warp-api = { path = "../warp-api", features = ["postgres"] }
+axum-api = { path = "../axum-api" }
+warp-api = { path = "../warp-api" }
 redis = { path = "../redis" }
-repository = { path = "../repository", features = ["postgres"] }
+repository = { path = "../repository" }
 search = { path = "../search" }
 async-trait = "0.1"
 flexi_logger = "0.19"

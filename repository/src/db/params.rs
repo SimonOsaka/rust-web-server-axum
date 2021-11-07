@@ -24,12 +24,8 @@ impl SqlParams {
             + sqlx::Type<sqlx::Postgres>
             + std::fmt::Debug,
     {
-        if cfg!(feature = "postgres") {
-            self.placeholder = format!("${:?}", self.index);
-            self.index = self.index + 1;
-        } else {
-            self.placeholder = "?".to_owned();
-        }
+        self.placeholder = format!("${:?}", self.index);
+        self.index = self.index + 1;
         debug!("add_value: {} = {:?}", self.placeholder, value);
         self.args.add(value);
         self.placeholder.clone()

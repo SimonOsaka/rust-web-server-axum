@@ -2,14 +2,9 @@ use std::convert::Infallible;
 
 use types::my_item_type_format::to_item_type_name;
 
-use crate::{
-    adventures::response::{Tabs, TabsResponse},
-    routes::AuthUser,
-};
+use crate::adventures::response::{Tabs, TabsResponse};
 
-pub async fn tabs_adventures(user: AuthUser) -> Result<impl warp::Reply, Infallible> {
-    debug!("user: {:?}", user);
-
+pub async fn tabs_adventures() -> Result<impl warp::Reply, Infallible> {
     let tabs: Vec<Tabs> = vec![
         Tabs {
             name: to_item_type_name(0),

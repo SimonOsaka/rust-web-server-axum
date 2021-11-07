@@ -4,13 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[features]
-postgres = []
-mysql = []
 
 [dependencies]
-types = { path = "../types", features = ["postgres"] }
-domain = { package = "domain", path = "../domain", features = ["postgres"] }
+types = { path = "../types" }
+domain = { path = "../domain" }
 auth = { path = "../auth" }
 warp = "0.3"
 chrono = "0.4.19"

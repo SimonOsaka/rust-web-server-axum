@@ -41,34 +41,30 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             ))
         .or(warp::path!("api" / "adventures" / ID)
             .and(warp::get())
-            .and(with_auth())
             .and(with_state(state.clone()))
-            .and_then(|_id: ID, user: AuthUser, state: AppState| async move {
-                get_adventure(_id, user, state)
+            .and_then(|_id: ID, state: AppState| async move {
+                get_adventure(_id, state)
                     .await
                     .map_err(|e| warp::reject::custom(e))
             }))
         .or(warp::path!("api" / "adventures" / "tabs")
             .and(warp::get())
-            .and(with_auth())
             .and_then(tabs_adventures))
         .or(warp::path!("api" / "adventures" / "update")
             .and(warp::get())
-            .and(with_auth())
             .and(warp::query())
             .and_then(version_update_adventures))
         .or(warp::path!("api" / "adventures" / "playlist" / String)
             .and(warp::get())
-            .and(with_auth())
             .and(with_state(state.clone()))
             .and_then(
-                |play_list: String, user: AuthUser, state: AppState| async move {
-                    play_list_adventures(play_list, user, state)
+                |play_list: String, state: AppState| async move {
+                    play_list_adventures(play_list, state)
                         .await
                         .map_err(|e| warp::reject::custom(e))
                 },
             ))
-            .or(warp::path!("api" / "adventures")
+        .or(warp::path!("api" / "adventures")
             .and(warp::post())
             .and(with_json_validate())
             .and(with_auth())

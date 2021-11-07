@@ -9,10 +9,7 @@ use crate::AppState;
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct FavoriteForm {
     #[validate(range(min = 1, message = "adventure_id not correct"))]
-    #[cfg(any(feature = "postgres"))]
     adventure_id: i64,
-    #[cfg(any(feature = "mysql"))]
-    adventure_id: u64,
 }
 
 #[derive(Serialize)]
