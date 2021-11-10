@@ -1,6 +1,6 @@
 use super::{DeleteMyFavorite, GetMyFavorite, MyFavorites, NewMyFavorite};
 use crate::db::{SqlParams, SqlReader, SqlWriter};
-use sql_builder::SqlBuilder;
+use sql_builder::{name, SqlBuilder, SqlName};
 use sqlx::Error;
 use types::ID;
 
@@ -41,12 +41,12 @@ pub async fn delete(del: DeleteMyFavorite) -> Result<bool, Error> {
 pub async fn get_favorite(del: GetMyFavorite) -> Result<Option<MyFavorites>, Error> {
     let mut param = SqlParams::new();
 
-    let mut sql_builder = SqlBuilder::select_from("my_favorites");
+    let mut sql_builder = SqlBuilder::select_from(name!("my_favorites";"fav"));
     sql_builder
-        .fields(&["id", "user_id", "adventure_id"])
-        .and_where_eq("is_deleted", 0)
-        .and_where_eq("user_id", param.add_value(del.user_id))
-        .and_where_eq("adventure_id", param.add_value(del.adventure_id));
+        .fields(&["fav.id", "fav.user_id", "fav.adventure_id"])
+        .and_where_eq("fav.is_deleted", 0)
+        .and_where_eq("fav.user_id", param.add_value(del.user_id))
+        .and_where_eq("fav.adventure_id", param.add_value(del.adventure_id));
 
     let res = sql_builder.query_one_optinal(param).await?;
     debug!("get_favorite: {:?}", res);

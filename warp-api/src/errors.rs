@@ -1,14 +1,50 @@
+use std::num::ParseIntError;
+
 use auth::JWTError;
-use domain::{CreateAdventureError, DomainError, FavoriteError, GetAdventureError, GetUserError};
+use domain::{
+    CreateAdventureError, DeleteAdventureError, DomainError, FavoriteError, GetAdventureError,
+    GetUserError,
+};
 use thiserror::Error;
 use validator::ValidationErrors;
 use warp::hyper::StatusCode;
 
 use crate::response::{ErrorMessage, ErrorResponse};
 
+fn forbidden(str: String) -> ErrorResponse {
+    error_response(str, StatusCode::FORBIDDEN)
+}
+
+fn internal_server_error(str: String) -> ErrorResponse {
+    error_response(str, StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+fn not_found(str: String) -> ErrorResponse {
+    error_response(str, StatusCode::NOT_FOUND)
+}
+
+fn unauthorized(str: String) -> ErrorResponse {
+    error_response(str, StatusCode::UNAUTHORIZED)
+}
+
+fn bad_request(str: String) -> ErrorResponse {
+    error_response(str, StatusCode::BAD_REQUEST)
+}
+
+fn error_response(message: String, code: StatusCode) -> ErrorResponse {
+    ErrorResponse(
+        ErrorMessage {
+            message,
+            code: code.as_u16(),
+        },
+        code,
+    )
+}
+
 #[derive(Debug)]
 pub enum ValidateError {
     InvalidParam(ValidationErrors),
+    ParsePathIntParam(ParseIntError),
 }
 
 #[derive(Error, Debug)]
@@ -33,33 +69,15 @@ pub enum ChangeUsernameError {
 
 impl From<DomainError> for ErrorResponse {
     fn from(e: DomainError) -> ErrorResponse {
-        ErrorResponse(
-            ErrorMessage {
-                message: e.to_string(),
-                code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-            },
-            StatusCode::INTERNAL_SERVER_ERROR,
-        )
+        internal_server_error(e.to_string())
     }
 }
 
 impl From<GetAdventureError> for ErrorResponse {
     fn from(e: GetAdventureError) -> ErrorResponse {
         match &e {
-            GetAdventureError::NotFound { .. } => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::NOT_FOUND.as_u16(),
-                },
-                StatusCode::NOT_FOUND,
-            ),
-            GetAdventureError::DomainError(_) => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                },
-                StatusCode::INTERNAL_SERVER_ERROR,
-            ),
+            GetAdventureError::NotFound { .. } => not_found(e.to_string()),
+            GetAdventureError::DomainError(_) => internal_server_error(e.to_string()),
         }
     }
 }
@@ -67,20 +85,8 @@ impl From<GetAdventureError> for ErrorResponse {
 impl From<JWTError> for ErrorResponse {
     fn from(e: JWTError) -> Self {
         match &e {
-            JWTError::Invalid => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::UNAUTHORIZED.as_u16(),
-                },
-                StatusCode::UNAUTHORIZED,
-            ),
-            JWTError::Missing => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::UNAUTHORIZED.as_u16(),
-                },
-                StatusCode::UNAUTHORIZED,
-            ),
+            JWTError::Invalid => unauthorized(e.to_string()),
+            JWTError::Missing => unauthorized(e.to_string()),
         }
     }
 }
@@ -88,13 +94,8 @@ impl From<JWTError> for ErrorResponse {
 impl From<ValidateError> for ErrorResponse {
     fn from(e: ValidateError) -> Self {
         match &e {
-            ValidateError::InvalidParam(v) => ErrorResponse(
-                ErrorMessage {
-                    message: v.to_string().replace("\n", " , "),
-                    code: StatusCode::BAD_REQUEST.as_u16(),
-                },
-                StatusCode::BAD_REQUEST,
-            ),
+            ValidateError::InvalidParam(v) => bad_request(v.to_string().replace("\n", " , ")),
+            ValidateError::ParsePathIntParam(v) => bad_request(v.to_string()),
         }
     }
 }
@@ -102,27 +103,9 @@ impl From<ValidateError> for ErrorResponse {
 impl From<GetUserError> for ErrorResponse {
     fn from(e: GetUserError) -> Self {
         match &e {
-            GetUserError::NotFound { .. } => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::NOT_FOUND.as_u16(),
-                },
-                StatusCode::NOT_FOUND,
-            ),
-            GetUserError::PasswordNotCorrect { .. } => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                },
-                StatusCode::FORBIDDEN,
-            ),
-            GetUserError::DomainError(_) => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                },
-                StatusCode::INTERNAL_SERVER_ERROR,
-            ),
+            GetUserError::NotFound { .. } => not_found(e.to_string()),
+            GetUserError::PasswordNotCorrect { .. } => forbidden(e.to_string()),
+            GetUserError::DomainError(_) => internal_server_error(e.to_string()),
         }
     }
 }
@@ -130,20 +113,8 @@ impl From<GetUserError> for ErrorResponse {
 impl From<LoginError> for ErrorResponse {
     fn from(e: LoginError) -> Self {
         match &e {
-            LoginError::WrongPassword => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                },
-                StatusCode::FORBIDDEN,
-            ),
-            LoginError::UserNotExist => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::UNAUTHORIZED.as_u16(),
-                },
-                StatusCode::UNAUTHORIZED,
-            ),
+            LoginError::WrongPassword => forbidden(e.to_string()),
+            LoginError::UserNotExist => unauthorized(e.to_string()),
         }
     }
 }
@@ -151,13 +122,7 @@ impl From<LoginError> for ErrorResponse {
 impl From<RegistryError> for ErrorResponse {
     fn from(e: RegistryError) -> Self {
         match &e {
-            RegistryError::UserExist => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                },
-                StatusCode::FORBIDDEN,
-            ),
+            RegistryError::UserExist => forbidden(e.to_string()),
         }
     }
 }
@@ -165,13 +130,7 @@ impl From<RegistryError> for ErrorResponse {
 impl From<ChangeUsernameError> for ErrorResponse {
     fn from(e: ChangeUsernameError) -> Self {
         match &e {
-            ChangeUsernameError::UsernameExist => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                },
-                StatusCode::FORBIDDEN,
-            ),
+            ChangeUsernameError::UsernameExist => forbidden(e.to_string()),
         }
     }
 }
@@ -179,34 +138,10 @@ impl From<ChangeUsernameError> for ErrorResponse {
 impl From<CreateAdventureError> for ErrorResponse {
     fn from(e: CreateAdventureError) -> Self {
         match &e {
-            CreateAdventureError::AdventureNotFound { .. } => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::NOT_FOUND.as_u16(),
-                },
-                StatusCode::NOT_FOUND,
-            ),
-            CreateAdventureError::Exist => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                },
-                StatusCode::FORBIDDEN,
-            ),
-            CreateAdventureError::AddDocuments => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                },
-                StatusCode::INTERNAL_SERVER_ERROR,
-            ),
-            CreateAdventureError::DomainError(_) => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                },
-                StatusCode::INTERNAL_SERVER_ERROR,
-            ),
+            CreateAdventureError::AdventureNotFound { .. } => not_found(e.to_string()),
+            CreateAdventureError::Exist => forbidden(e.to_string()),
+            CreateAdventureError::AddDocuments => internal_server_error(e.to_string()),
+            CreateAdventureError::DomainError(_) => internal_server_error(e.to_string()),
         }
     }
 }
@@ -214,20 +149,19 @@ impl From<CreateAdventureError> for ErrorResponse {
 impl From<FavoriteError> for ErrorResponse {
     fn from(e: FavoriteError) -> Self {
         match &e {
-            FavoriteError::AlreadyExist { .. } => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                },
-                StatusCode::FORBIDDEN,
-            ),
-            FavoriteError::DomainError(_) => ErrorResponse(
-                ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                },
-                StatusCode::INTERNAL_SERVER_ERROR,
-            ),
+            FavoriteError::AlreadyExist { .. } => forbidden(e.to_string()),
+            FavoriteError::DomainError(_) => internal_server_error(e.to_string()),
+        }
+    }
+}
+
+impl From<DeleteAdventureError> for ErrorResponse {
+    fn from(e: DeleteAdventureError) -> Self {
+        match &e {
+            DeleteAdventureError::AdventureNotFound { .. } => not_found(e.to_string()),
+            DeleteAdventureError::NotOwner => forbidden(e.to_string()),
+            DeleteAdventureError::DelDocuments => internal_server_error(e.to_string()),
+            DeleteAdventureError::DomainError(_) => internal_server_error(e.to_string()),
         }
     }
 }

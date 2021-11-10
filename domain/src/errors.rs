@@ -2,6 +2,7 @@ use anyhow::Error as OpaqueError;
 use log::debug;
 use repository::SqlxError;
 pub fn search_to_domain_error(e: meilisearch_sdk::errors::Error) -> DomainError {
+    debug!("search_to_domain_error: {}", e);
     DomainError::from(OpaqueError::from(e))
 }
 

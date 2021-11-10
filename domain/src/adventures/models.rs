@@ -66,6 +66,7 @@ pub struct Adventures {
     pub province: String,
     pub city: String,
     pub district: String,
+    pub user_id: ID,
 }
 
 impl From<MyAdventures> for Adventures {
@@ -86,6 +87,7 @@ impl From<MyAdventures> for Adventures {
             province: my.province,
             city: my.city,
             district: my.district,
+            user_id: my.user_id,
         }
     }
 }

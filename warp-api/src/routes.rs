@@ -6,9 +6,11 @@ use warp::header::headers_cloned;
 use warp::hyper::header::AUTHORIZATION;
 use warp::hyper::HeaderMap;
 use warp::reject::custom;
-use warp::{self, get, query, Reply};
+use warp::{self, Reply, get, query};
 use warp::{Filter, Rejection};
-
+use crate::my_list::my_list_adventures;
+use crate::request::PathValidate;
+use crate::delete::{DeleteAdventureReq, delete_adventure};
 use crate::errors::ValidateError;
 use crate::favorite::{FavoriteForm, favorite, unfavorite};
 use crate::get::get_adventure;
@@ -39,6 +41,17 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                         .map_err(|e| warp::reject::custom(e))
                 },
             ))
+        .or(warp::path!("api" / "adventures" / "my")
+            .and(get())
+            .and(with_auth())
+            .and(with_state(state.clone()))
+            .and_then(
+                |user: AuthUser, state: AppState| async move {
+                    my_list_adventures(user, state)
+                        .await
+                        .map_err(|e| warp::reject::custom(e))
+                },
+            ))
         .or(warp::path!("api" / "adventures" / ID)
             .and(warp::get())
             .and(with_state(state.clone()))
@@ -46,6 +59,19 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 get_adventure(_id, state)
                     .await
                     .map_err(|e| warp::reject::custom(e))
+            }))
+        .or(warp::path!("api" / "adventures" / ID)
+            .and(warp::delete())
+            .and(with_auth())
+            .and(with_state(state.clone()))
+            .and_then(|_id: ID, user: AuthUser,state: AppState| async move {
+                let v = DeleteAdventureReq {
+                    adventure_id: _id
+                };
+                let req = v.valid().await?;
+                delete_adventure(req, user, state)
+                        .await
+                        .map_err(|e| warp::reject::custom(e)) 
             }))
         .or(warp::path!("api" / "adventures" / "tabs")
             .and(warp::get())

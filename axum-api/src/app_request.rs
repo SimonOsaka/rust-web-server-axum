@@ -2,7 +2,7 @@ use auth::{decode_token, Claims, JWTError};
 use axum::{
     async_trait,
     body::HttpBody,
-    extract::{FromRequest, Query, RequestParts},
+    extract::{FromRequest, Path, Query, RequestParts},
     BoxError, Json,
 };
 use http_body::Body;
@@ -86,5 +86,27 @@ where
             .validate()
             .map_err(|e| AppError::from(ValidateError::InvalidParam(e)))?;
         Ok(ValidatedJson(value))
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct ValidatedPath<T>(pub T);
+
+#[async_trait]
+impl<T, B> FromRequest<B> for ValidatedPath<T>
+where
+    T: DeserializeOwned + Validate + Send,
+    B: Send,
+{
+    type Rejection = AppError;
+
+    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
+        let Path(value) = Path::<T>::from_request(req)
+            .await
+            .map_err(|e| AppError::from(ValidateError::AxumPathRejection(e)))?;
+        value
+            .validate()
+            .map_err(|e| AppError::from(ValidateError::InvalidParam(e)))?;
+        Ok(ValidatedPath(value))
     }
 }

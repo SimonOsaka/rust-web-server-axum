@@ -2,8 +2,8 @@ use anyhow::Result;
 use types::ID;
 
 use crate::{
-    Adventures, AdventuresQuery, CreateAdventureError, DomainError, GetAdventureError,
-    NewJourneyData, PlayListQuery,
+    Adventures, AdventuresQuery, CreateAdventureError, DeleteAdventureError, DomainError,
+    GetAdventureError, NewJourneyData, PlayListQuery, Users,
 };
 #[async_trait]
 pub trait AdventuresManager {
@@ -25,4 +25,8 @@ pub trait AdventuresManager {
     async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError>;
 
     async fn add_journey(&self, data: NewJourneyData) -> Result<ID, CreateAdventureError>;
+
+    async fn delete_adventure(&self, id: ID, user_id: ID) -> Result<bool, DeleteAdventureError>;
+
+    async fn find_by_user_id(&self, user_id: ID) -> Result<Vec<(Adventures, Users)>, DomainError>;
 }

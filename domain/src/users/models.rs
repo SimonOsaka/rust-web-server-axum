@@ -1,6 +1,7 @@
 use crate::{
-    AddFavorite, AdventuresManager, CreateAdventureError, DelFavorite, DomainError, Favorite,
-    FavoriteError, FavoritesManager, NewJourney, NewJourneyData, UsersManager,
+    AddFavorite, Adventures, AdventuresManager, CreateAdventureError, DelFavorite,
+    DeleteAdventureError, DomainError, Favorite, FavoriteError, FavoritesManager, NewJourney,
+    NewJourneyData, UsersManager,
 };
 use repository::users::models::{MyUsers, NewMyUsers};
 use serde::Serialize;
@@ -83,6 +84,21 @@ impl Users {
                 adventure_id,
             })
             .await?)
+    }
+
+    pub async fn delete_adventure(
+        &self,
+        adventure_id: ID,
+        manager: &impl AdventuresManager,
+    ) -> Result<bool, DeleteAdventureError> {
+        Ok(manager.delete_adventure(adventure_id, self.id).await?)
+    }
+
+    pub async fn find_adventures(
+        &self,
+        manager: &impl AdventuresManager,
+    ) -> Result<Vec<(Adventures, Users)>, DomainError> {
+        Ok(manager.find_by_user_id(self.id).await?)
     }
 }
 

@@ -18,6 +18,18 @@ where
     Ok(index.add_documents(&vec, Some("id")).await?)
 }
 
+/// delete documents
+pub async fn del_documents<T>(uids: Vec<T>) -> Result<Progress, Error>
+where
+    T: std::fmt::Display + serde::ser::Serialize + std::fmt::Debug,
+{
+    let meilisearch = MEILISEARCH.get().unwrap();
+
+    let index = &meilisearch.adventures_index;
+
+    Ok(index.delete_documents(&uids).await?)
+}
+
 #[derive(Debug)]
 pub struct Condition {
     pub filter: Option<String>,

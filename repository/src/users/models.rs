@@ -1,6 +1,8 @@
+use serde::Deserialize;
 use types::{DateTime, ID, U8I16};
 
-#[derive(sqlx::FromRow, Debug)]
+#[derive(sqlx::FromRow, Deserialize, sqlx::Type, Debug)]
+#[sqlx(type_name = "RECORD")]
 pub struct MyUsers {
     pub id: ID,
     pub username: String,

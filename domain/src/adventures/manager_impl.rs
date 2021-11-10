@@ -1,5 +1,6 @@
 use crate::{
-    database_to_domain_error, search_to_domain_error, CreateAdventureError, NewJourneyData,
+    database_to_domain_error, search_to_domain_error, CreateAdventureError, DeleteAdventureError,
+    NewJourneyData, Users,
 };
 use crate::{Adventures, AdventuresQuery, DomainError, GetAdventureError, PlayListQuery};
 
@@ -8,9 +9,12 @@ use anyhow::Result;
 use log::debug;
 
 use meilisearch_sdk::progress::UpdateStatus;
-use repository::{create_journey, find_one, find_title_crypto, NewMyAdventuresJourney};
+use repository::{
+    create_journey, delete_adventure, find_by_user_id, find_one, find_title_crypto,
+    NewMyAdventuresJourney,
+};
 use search::adventures::{search_by_play_list, search_latest, search_one};
-use search::meilisearch::operation::add_documents;
+use search::meilisearch::operation::{add_documents, del_documents};
 use types::ID;
 
 #[derive(Clone, Debug)]
@@ -76,7 +80,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError> {
-        let result = search_one(id).await;
+        let result = find_one(id).await;
         match result {
             Ok(opt_my) => match opt_my {
                 Some(my) => {
@@ -129,5 +133,58 @@ impl super::AdventuresManager for AdventuresManagerImpl {
             },
             None => return Err(CreateAdventureError::AddDocuments),
         }
+    }
+
+    async fn delete_adventure(&self, id: ID, user_id: ID) -> Result<bool, DeleteAdventureError> {
+        let result = find_one(id)
+            .await
+            .map_err(|e| DeleteAdventureError::DomainError(database_to_domain_error(e)))?;
+        if result.is_none() {
+            debug!("adventure {} is not exist", id);
+            return Ok(true);
+        } else {
+            if result.unwrap().user_id != user_id {
+                debug!("adventure {} 's owner is not the user {}", id, user_id);
+                return Err(DeleteAdventureError::NotOwner);
+            }
+        }
+
+        let is_db_del = delete_adventure(id)
+            .await
+            .map_err(|e| DeleteAdventureError::DomainError(database_to_domain_error(e)))?;
+        if is_db_del {
+            let progress = del_documents(vec![id])
+                .await
+                .map_err(|e| DeleteAdventureError::DomainError(search_to_domain_error(e)))?;
+
+            match progress.wait_for_pending_update(None, None).await {
+                Some(o) => match o {
+                    Ok(s) => match s {
+                        UpdateStatus::Processed { .. } => return Ok(true),
+                        _ => return Err(DeleteAdventureError::DelDocuments),
+                    },
+                    Err(_) => return Err(DeleteAdventureError::DelDocuments),
+                },
+                None => return Err(DeleteAdventureError::DelDocuments),
+            }
+        }
+
+        Ok(true)
+    }
+
+    async fn find_by_user_id(&self, user_id: ID) -> Result<Vec<(Adventures, Users)>, DomainError> {
+        let result = find_by_user_id(user_id)
+            .await
+            .map_err(database_to_domain_error)?;
+
+        let t = result
+            .into_iter()
+            .map(|db_my| {
+                let (ad, u) = db_my;
+                (Adventures::from(ad), Users::from(u))
+            })
+            .collect();
+
+        Ok(t)
     }
 }

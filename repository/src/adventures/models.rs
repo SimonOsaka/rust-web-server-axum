@@ -1,4 +1,6 @@
-use types::{ID, U8I16};
+use types::{MyAdventures, ID, U8I16};
+
+use crate::MyUsers;
 
 #[derive(Clone, Debug)]
 pub struct AdventuresWhere {
@@ -23,4 +25,14 @@ pub struct NewMyAdventuresJourney {
     pub source: U8I16,
     pub journey_destiny: String,
     pub user_id: ID,
+}
+
+pub struct FindAllWhere {
+    pub user_id: ID,
+}
+
+#[derive(Debug, sqlx::FromRow)]
+pub struct AdventureUser {
+    pub my_adventures: MyAdventures,
+    pub my_users: MyUsers,
 }

@@ -4,6 +4,7 @@ use crate::{
     app_response::{AppError, ErrorMessage},
     change_password::change_password,
     change_username::change_username,
+    delete::delete_adventure,
     favorite::{favorite, unfavorite},
     journey::journey,
     list::list_adventures,
@@ -43,7 +44,10 @@ pub fn routes(state: AppState) -> Router {
     let r = Router::new()
         .route("/", get(index))
         // adventures
-        .route("/api/adventures/:id", get(get_adventure))
+        .route(
+            "/api/adventures/:id",
+            get(get_adventure).delete(delete_adventure),
+        )
         .route("/api/adventures", get(list_adventures).post(journey))
         .route(
             "/api/adventures/playlist/:play_list",

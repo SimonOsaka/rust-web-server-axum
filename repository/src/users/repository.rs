@@ -4,6 +4,24 @@ use sql_builder::SqlBuilder;
 use sqlx::Error;
 use types::ID;
 
+const MY_USERS_FIELDS: &[&str; 6] = &[
+    "id",
+    "username",
+    "created_at",
+    "password",
+    "roles",
+    "is_deleted",
+];
+
+pub const MY_USERS_STRUCT_FIELDS: &[&str; 6] = &[
+    "(u.id",
+    "u.username",
+    "u.password",
+    "u.roles",
+    "u.is_deleted",
+    "u.created_at) AS \"my_users\"",
+];
+
 pub async fn insert(u: NewMyUsers) -> Result<ID, Error> {
     let mut param = SqlParams::new();
 
@@ -27,14 +45,7 @@ pub async fn find_user_by_username(username: String) -> Result<Option<MyUsers>, 
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::select_from("my_users");
     sql_builder
-        .fields(&[
-            "id",
-            "username",
-            "created_at",
-            "password",
-            "roles",
-            "is_deleted",
-        ])
+        .fields(MY_USERS_FIELDS)
         .and_where_eq("is_deleted", 0)
         .and_where_eq("username", param.add_value(username));
 

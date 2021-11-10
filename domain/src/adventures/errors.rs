@@ -27,3 +27,18 @@ pub enum CreateAdventureError {
     #[error("Something went wrong.")]
     DomainError(#[from] DomainError),
 }
+
+#[derive(thiserror::Error, Debug)]
+pub enum DeleteAdventureError {
+    #[error("There is no adventure with id {adventure_id:?}.")]
+    AdventureNotFound {
+        adventure_id: ID,
+        // source: DomainError,
+    },
+    #[error("Adventure's owner isn't correct.")]
+    NotOwner,
+    #[error("Del document error")]
+    DelDocuments,
+    #[error("Something went wrong.")]
+    DomainError(#[from] DomainError),
+}

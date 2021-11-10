@@ -2,7 +2,8 @@ use crate::{DateTime, ID, U8I16};
 use meilisearch_sdk::document::Document;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, sqlx::FromRow)]
+#[derive(sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[sqlx(type_name = "RECORD")]
 pub struct MyAdventures {
     pub id: ID,
     pub title: String,
@@ -20,6 +21,7 @@ pub struct MyAdventures {
     pub province: String,
     pub city: String,
     pub district: String,
+    pub user_id: ID,
 }
 
 impl Document for MyAdventures {

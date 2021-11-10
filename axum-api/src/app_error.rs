@@ -1,6 +1,6 @@
 use auth::JWTError;
 use axum::{
-    extract::rejection::{JsonRejection, QueryRejection},
+    extract::rejection::{JsonRejection, PathParamsRejection, QueryRejection},
     http::StatusCode,
     response::IntoResponse,
     Json,
@@ -17,6 +17,7 @@ pub enum ValidateError {
     InvalidParam(ValidationErrors),
     AxumQueryRejection(QueryRejection),
     AxumJsonRejection(JsonRejection),
+    AxumPathRejection(PathParamsRejection),
 }
 
 #[derive(Error, Debug)]
@@ -132,6 +133,16 @@ impl From<ValidateError> for AppError {
                     .into_response(),
             ),
             ValidateError::AxumJsonRejection(v) => AppError(
+                (
+                    StatusCode::BAD_REQUEST,
+                    Json(json!(ErrorMessage {
+                        message: v.to_string(),
+                        code: StatusCode::BAD_REQUEST.as_u16(),
+                    })),
+                )
+                    .into_response(),
+            ),
+            ValidateError::AxumPathRejection(v) => AppError(
                 (
                     StatusCode::BAD_REQUEST,
                     Json(json!(ErrorMessage {

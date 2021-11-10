@@ -13,29 +13,7 @@ pub struct AdventuresResponse {
 impl From<Vec<domain::Adventures>> for AdventuresResponse {
     fn from(ads: Vec<domain::Adventures>) -> Self {
         let adventures_count = ads.len() as u64;
-        let adventures = ads
-            .into_iter()
-            .map(|a| Adventures {
-                id: a.id,
-                title: a.title,
-                image_url: a.image_url,
-                created_at: a.created_at,
-                author_name: "油油".to_string(),
-                item_type: a.item_type,
-                item_type_name: my_item_type_format::to_item_type_name(a.item_type),
-                link: a.link,
-                source: a.source,
-                source_name: my_source::to_source_name(a.source),
-                journey_destiny_name: my_journey_destiny::to_name(&a.journey_destiny),
-                script_content: a.script_content,
-                play_list: a.play_list,
-                address: a.address,
-                shop_name: a.shop_name,
-                province: a.province,
-                city: a.city,
-                district: a.district,
-            })
-            .collect();
+        let adventures = ads.into_iter().map(|ad| Adventures::from(ad)).collect();
         Self {
             adventures,
             adventures_count,
@@ -57,26 +35,7 @@ pub struct AdventureResponse {
 
 impl From<domain::Adventures> for AdventureResponse {
     fn from(ad: domain::Adventures) -> Self {
-        let adventure = Adventures {
-            id: ad.id,
-            title: ad.title,
-            image_url: ad.image_url,
-            created_at: ad.created_at,
-            author_name: "油油".to_string(),
-            item_type: ad.item_type,
-            item_type_name: my_item_type_format::to_item_type_name(ad.item_type),
-            link: ad.link,
-            source: ad.source,
-            source_name: my_source::to_source_name(ad.source),
-            journey_destiny_name: my_journey_destiny::to_name(&ad.journey_destiny),
-            script_content: ad.script_content,
-            play_list: ad.play_list,
-            address: ad.address,
-            shop_name: ad.shop_name,
-            province: ad.province,
-            city: ad.city,
-            district: ad.district,
-        };
+        let adventure = Adventures::from(ad);
         Self { adventure }
     }
 }
@@ -111,6 +70,31 @@ pub struct Adventures {
     pub district: String,
 }
 
+impl From<domain::Adventures> for Adventures {
+    fn from(ad: domain::Adventures) -> Self {
+        Self {
+            id: ad.id,
+            title: ad.title,
+            image_url: ad.image_url,
+            created_at: ad.created_at,
+            author_name: "油油".to_string(),
+            item_type: ad.item_type,
+            item_type_name: my_item_type_format::to_item_type_name(ad.item_type),
+            link: ad.link,
+            source: ad.source,
+            source_name: my_source::to_source_name(ad.source),
+            journey_destiny_name: my_journey_destiny::to_name(&ad.journey_destiny),
+            script_content: ad.script_content,
+            play_list: ad.play_list,
+            address: ad.address,
+            shop_name: ad.shop_name,
+            province: ad.province,
+            city: ad.city,
+            district: ad.district,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Response404 {
@@ -140,4 +124,58 @@ pub struct VersionUpdateResponse {
     pub i_os: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub android: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MyAdventuresResponse {
+    pub adventures: Vec<AdventureUser>,
+    pub adventures_count: u64,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Users {
+    username: String,
+}
+
+impl From<domain::Users> for Users {
+    fn from(u: domain::Users) -> Self {
+        Self {
+            username: u.username,
+        }
+    }
+}
+
+impl From<Vec<(domain::Adventures, domain::Users)>> for MyAdventuresResponse {
+    fn from(vec: Vec<(domain::Adventures, domain::Users)>) -> Self {
+        let adventures_count = vec.len() as u64;
+        let adventures = vec
+            .into_iter()
+            .map(|domain_t| {
+                let (domain_ad, domain_u) = domain_t;
+                AdventureUser {
+                    adventure: Adventures::from(domain_ad),
+                    user: Users::from(domain_u),
+                }
+            })
+            .collect();
+
+        Self {
+            adventures,
+            adventures_count,
+        }
+    }
+}
+
+impl warp::Reply for MyAdventuresResponse {
+    fn into_response(self) -> warp::reply::Response {
+        warp::reply::json(&self).into_response()
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AdventureUser {
+    pub adventure: Adventures,
+    pub user: Users,
 }

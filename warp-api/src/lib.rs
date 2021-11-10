@@ -2,6 +2,7 @@ pub mod adventures;
 pub mod app_state;
 mod errors;
 mod index;
+pub mod request;
 mod response;
 pub mod routes;
 pub mod users;
@@ -12,3 +13,5 @@ pub use users::*;
 
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate async_trait;
