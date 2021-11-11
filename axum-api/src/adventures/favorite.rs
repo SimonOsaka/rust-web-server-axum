@@ -4,15 +4,15 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::{
-    app_request::{AuthUser, ValidatedJson},
+    app_request::{AuthUser, ValidatedPath},
     app_response::AppError,
     AppState,
 };
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct FavoriteForm {
-    #[validate(range(min = 1, message = "adventure_id not correct"))]
-    adventure_id: i64,
+    #[validate(range(min = 1, message = "id not correct"))]
+    id: i64,
 }
 
 #[derive(Serialize)]
@@ -26,7 +26,7 @@ enum Action {
 }
 
 pub async fn favorite(
-    ValidatedJson(form): ValidatedJson<FavoriteForm>,
+    ValidatedPath(form): ValidatedPath<FavoriteForm>,
     AuthUser(auth_user): AuthUser,
     Extension(state): Extension<AppState>,
 ) -> Result<Json<FavoriteResponse>, AppError> {
@@ -34,7 +34,7 @@ pub async fn favorite(
 }
 
 pub async fn unfavorite(
-    ValidatedJson(form): ValidatedJson<FavoriteForm>,
+    ValidatedPath(form): ValidatedPath<FavoriteForm>,
     AuthUser(auth_user): AuthUser,
     Extension(state): Extension<AppState>,
 ) -> Result<Json<FavoriteResponse>, AppError> {
@@ -52,14 +52,12 @@ async fn process(
 
     match action {
         Action::Favorite => {
-            user.favorite(form.adventure_id, &state.favorites_manager)
-                .await?;
+            user.favorite(form.id, &state.favorites_manager).await?;
 
             Ok(FavoriteResponse { favorited: true }.into())
         }
         Action::Unfavorite => {
-            user.unfavorite(form.adventure_id, &state.favorites_manager)
-                .await?;
+            user.unfavorite(form.id, &state.favorites_manager).await?;
 
             Ok(FavoriteResponse { favorited: false }.into())
         }

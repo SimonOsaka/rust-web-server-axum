@@ -102,22 +102,28 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                         .map_err(|e| warp::reject::custom(e))
                 },
             ))
-        .or(warp::path!("api" / "adventures" / "favorite")
+        .or(warp::path!("api" / "adventures" / ID / "favorite")
             .and(warp::post())
-            .and(with_json_validate())
             .and(with_auth())
             .and(with_state(state.clone()))
-            .and_then(|form: FavoriteForm, user: AuthUser, state: AppState| async move {
+            .and_then(|_id: ID, user: AuthUser, state: AppState| async move {
+                let v = FavoriteForm {
+                    adventure_id: _id,
+                };
+                let form = v.valid().await?;
                 favorite(form, user, state) 
                     .await
                     .map_err(|e| warp::reject::custom(e))
             }))
-        .or(warp::path!("api" / "adventures" / "unfavorite")
+        .or(warp::path!("api" / "adventures" / ID / "unfavorite")
             .and(warp::post())
-            .and(with_json_validate())
             .and(with_auth())
             .and(with_state(state.clone()))
-            .and_then(|form: FavoriteForm, user: AuthUser, state: AppState| async move {
+            .and_then(|_id: ID, user: AuthUser, state: AppState| async move {
+                let v = FavoriteForm {
+                    adventure_id: _id,
+                };
+                let form = v.valid().await?;
                 unfavorite(form, user, state) 
                     .await
                     .map_err(|e| warp::reject::custom(e))
