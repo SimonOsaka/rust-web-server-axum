@@ -77,7 +77,7 @@ impl Users {
         &self,
         adventure_id: ID,
         manager: &impl FavoritesManager,
-    ) -> Result<bool, DomainError> {
+    ) -> Result<bool, FavoriteError> {
         Ok(manager
             .del_favorite(DelFavorite {
                 user_id: self.id,

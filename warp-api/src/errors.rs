@@ -150,6 +150,7 @@ impl From<FavoriteError> for ErrorResponse {
     fn from(e: FavoriteError) -> Self {
         match &e {
             FavoriteError::AlreadyExist { .. } => forbidden(e.to_string()),
+            FavoriteError::AdventureNotFound { .. } => not_found(e.to_string()),
             FavoriteError::DomainError(_) => internal_server_error(e.to_string()),
         }
     }

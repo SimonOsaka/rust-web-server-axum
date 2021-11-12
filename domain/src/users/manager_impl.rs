@@ -14,11 +14,14 @@ pub struct UsersManagerImpl;
 #[async_trait]
 impl super::UsersManager for UsersManagerImpl {
     async fn add_user(&self, reg_user: RegistryUsers) -> Result<Users, DomainError> {
-        let inserted_my_user_id = insert(NewMyUsers {
-            username: reg_user.username.clone(),
-            password: hash_password(reg_user.password),
-            roles: reg_user.roles.clone(),
-        })
+        let inserted_my_user_id = insert(
+            NewMyUsers {
+                username: reg_user.username.clone(),
+                password: hash_password(reg_user.password),
+                roles: reg_user.roles.clone(),
+            },
+            None,
+        )
         .await
         .map_err(database_to_domain_error)?;
 
@@ -31,7 +34,7 @@ impl super::UsersManager for UsersManagerImpl {
     }
 
     async fn get_user_by_username(&self, username: String) -> Result<Users, GetUserError> {
-        let user = find_user_by_username(username.clone())
+        let user = find_user_by_username(username.clone(), None)
             .await
             .map_err(database_to_domain_error)?;
         match user {
@@ -43,7 +46,7 @@ impl super::UsersManager for UsersManagerImpl {
     }
 
     async fn get_user(&self, username: String, password: String) -> Result<Users, GetUserError> {
-        let user = find_user_by_username(username.clone())
+        let user = find_user_by_username(username.clone(), None)
             .await
             .map_err(database_to_domain_error)?;
         match user {
@@ -67,7 +70,7 @@ impl super::UsersManager for UsersManagerImpl {
         username: String,
         login_password: String,
     ) -> Result<(bool, Users), GetUserError> {
-        let my_user = find_user_by_username(username.clone())
+        let my_user = find_user_by_username(username.clone(), None)
             .await
             .map_err(database_to_domain_error);
         let result = match my_user {
@@ -93,7 +96,7 @@ impl super::UsersManager for UsersManagerImpl {
         username: String,
         password: String,
     ) -> Result<bool, DomainError> {
-        let success = update_user_password(username, hash_password(password))
+        let success = update_user_password(username, hash_password(password), None)
             .await
             .map_err(database_to_domain_error)?;
 
@@ -105,7 +108,7 @@ impl super::UsersManager for UsersManagerImpl {
         old_username: String,
         new_username: String,
     ) -> Result<bool, DomainError> {
-        let success = update_username(old_username, new_username)
+        let success = update_username(old_username, new_username, None)
             .await
             .map_err(database_to_domain_error)?;
 

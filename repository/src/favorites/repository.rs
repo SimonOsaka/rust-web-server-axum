@@ -1,10 +1,13 @@
 use super::{DeleteMyFavorite, GetMyFavorite, MyFavorites, NewMyFavorite};
 use crate::db::{SqlParams, SqlReader, SqlWriter};
 use sql_builder::{name, SqlBuilder, SqlName};
-use sqlx::Error;
+use sqlx::{Error, Postgres, Transaction};
 use types::ID;
 
-pub async fn insert(fav: NewMyFavorite) -> Result<ID, Error> {
+pub async fn insert<'a>(
+    fav: NewMyFavorite,
+    transaction: Option<&'a mut Transaction<'static, Postgres>>,
+) -> Result<ID, Error> {
     let mut param = SqlParams::new();
 
     let mut sql_builder = SqlBuilder::insert_into("my_favorites");
@@ -16,13 +19,16 @@ pub async fn insert(fav: NewMyFavorite) -> Result<ID, Error> {
         ])
         .returning_id();
 
-    let id = sql_builder.insert_one(param).await?;
+    let id = sql_builder.insert_one(param, transaction).await?;
     debug!("insert id: {:?}", id);
 
     Ok(id)
 }
 
-pub async fn delete(del: DeleteMyFavorite) -> Result<bool, Error> {
+pub async fn delete<'a>(
+    del: DeleteMyFavorite,
+    transaction: Option<&'a mut Transaction<'static, Postgres>>,
+) -> Result<bool, Error> {
     let mut param = SqlParams::new();
 
     let mut sql_builder = SqlBuilder::update_table("my_favorites");
@@ -32,13 +38,16 @@ pub async fn delete(del: DeleteMyFavorite) -> Result<bool, Error> {
         .and_where_eq("user_id", param.add_value(del.user_id))
         .and_where_eq("adventure_id", param.add_value(del.adventure_id));
 
-    let affect_rows = sql_builder.delete_one(param).await?;
+    let affect_rows = sql_builder.delete_one(param, transaction).await?;
     debug!("delete affect_rows: {:?}", affect_rows);
 
     Ok(affect_rows > 0)
 }
 
-pub async fn get_favorite(del: GetMyFavorite) -> Result<Option<MyFavorites>, Error> {
+pub async fn get_favorite<'a>(
+    del: GetMyFavorite,
+    transaction: Option<&'a mut Transaction<'static, Postgres>>,
+) -> Result<Option<MyFavorites>, Error> {
     let mut param = SqlParams::new();
 
     let mut sql_builder = SqlBuilder::select_from(name!("my_favorites";"fav"));
@@ -48,7 +57,7 @@ pub async fn get_favorite(del: GetMyFavorite) -> Result<Option<MyFavorites>, Err
         .and_where_eq("fav.user_id", param.add_value(del.user_id))
         .and_where_eq("fav.adventure_id", param.add_value(del.adventure_id));
 
-    let res = sql_builder.query_one_optinal(param).await?;
+    let res = sql_builder.query_one_optinal(param, transaction).await?;
     debug!("get_favorite: {:?}", res);
 
     Ok(res)

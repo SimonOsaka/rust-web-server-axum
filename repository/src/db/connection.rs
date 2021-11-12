@@ -1,6 +1,6 @@
 use std::env;
 
-use sqlx::Executor;
+use sqlx::{Error, Executor, Postgres, Transaction};
 
 use crate::db::{PoolOptions, SqlPool};
 
@@ -45,5 +45,10 @@ impl Repo {
         REPOSITORY.set(repo.await).expect("db connection must set");
 
         debug!("db connection created");
+    }
+
+    pub async fn transaction<'c>() -> Result<Transaction<'static, Postgres>, Error> {
+        let pool = &REPOSITORY.get().unwrap().connection_pool;
+        Ok(pool.begin().await?)
     }
 }

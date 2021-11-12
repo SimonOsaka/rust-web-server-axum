@@ -40,44 +40,50 @@ pub enum ChangeUsernameError {
     UsernameExist,
 }
 
+fn forbidden(str: String) -> AppError {
+    error_response(str, StatusCode::FORBIDDEN)
+}
+
+fn internal_server_error(str: String) -> AppError {
+    error_response(str, StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+fn not_found(str: String) -> AppError {
+    error_response(str, StatusCode::NOT_FOUND)
+}
+
+fn unauthorized(str: String) -> AppError {
+    error_response(str, StatusCode::UNAUTHORIZED)
+}
+
+fn bad_request(str: String) -> AppError {
+    error_response(str, StatusCode::BAD_REQUEST)
+}
+
+fn error_response(message: String, code: StatusCode) -> AppError {
+    AppError(
+        (
+            code,
+            Json(json!(ErrorMessage {
+                message,
+                code: code.as_u16(),
+            })),
+        )
+            .into_response(),
+    )
+}
+
 impl From<DomainError> for AppError {
     fn from(e: DomainError) -> AppError {
-        AppError(
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                })),
-            )
-                .into_response(),
-        )
+        internal_server_error(e.to_string())
     }
 }
 
 impl From<GetAdventureError> for AppError {
     fn from(e: GetAdventureError) -> AppError {
         match &e {
-            GetAdventureError::NotFound { .. } => AppError(
-                (
-                    StatusCode::NOT_FOUND,
-                    Json(json!(ErrorMessage {
-                        message: e.to_string(),
-                        code: StatusCode::NOT_FOUND.as_u16(),
-                    })),
-                )
-                    .into_response(),
-            ),
-            GetAdventureError::DomainError(_) => AppError(
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!(ErrorMessage {
-                        message: e.to_string(),
-                        code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                    })),
-                )
-                    .into_response(),
-            ),
+            GetAdventureError::NotFound { .. } => not_found(e.to_string()),
+            GetAdventureError::DomainError(_) => internal_server_error(e.to_string()),
         }
     }
 }
@@ -85,26 +91,8 @@ impl From<GetAdventureError> for AppError {
 impl From<JWTError> for AppError {
     fn from(e: JWTError) -> AppError {
         match &e {
-            JWTError::Invalid => AppError(
-                (
-                    StatusCode::UNAUTHORIZED,
-                    Json(json!(ErrorMessage {
-                        message: e.to_string(),
-                        code: StatusCode::UNAUTHORIZED.as_u16(),
-                    })),
-                )
-                    .into_response(),
-            ),
-            JWTError::Missing => AppError(
-                (
-                    StatusCode::UNAUTHORIZED,
-                    Json(json!(ErrorMessage {
-                        message: e.to_string(),
-                        code: StatusCode::UNAUTHORIZED.as_u16(),
-                    })),
-                )
-                    .into_response(),
-            ),
+            JWTError::Invalid => unauthorized(e.to_string()),
+            JWTError::Missing => unauthorized(e.to_string()),
         }
     }
 }
@@ -112,46 +100,10 @@ impl From<JWTError> for AppError {
 impl From<ValidateError> for AppError {
     fn from(e: ValidateError) -> Self {
         match &e {
-            ValidateError::InvalidParam(v) => AppError(
-                (
-                    StatusCode::BAD_REQUEST,
-                    Json(json!(ErrorMessage {
-                        message: v.to_string().replace("\n", " , "),
-                        code: StatusCode::BAD_REQUEST.as_u16(),
-                    })),
-                )
-                    .into_response(),
-            ),
-            ValidateError::AxumQueryRejection(v) => AppError(
-                (
-                    StatusCode::BAD_REQUEST,
-                    Json(json!(ErrorMessage {
-                        message: v.to_string(),
-                        code: StatusCode::BAD_REQUEST.as_u16(),
-                    })),
-                )
-                    .into_response(),
-            ),
-            ValidateError::AxumJsonRejection(v) => AppError(
-                (
-                    StatusCode::BAD_REQUEST,
-                    Json(json!(ErrorMessage {
-                        message: v.to_string(),
-                        code: StatusCode::BAD_REQUEST.as_u16(),
-                    })),
-                )
-                    .into_response(),
-            ),
-            ValidateError::AxumPathRejection(v) => AppError(
-                (
-                    StatusCode::BAD_REQUEST,
-                    Json(json!(ErrorMessage {
-                        message: v.to_string(),
-                        code: StatusCode::BAD_REQUEST.as_u16(),
-                    })),
-                )
-                    .into_response(),
-            ),
+            ValidateError::InvalidParam(v) => bad_request(v.to_string().replace("\n", " , ")),
+            ValidateError::AxumQueryRejection(v) => bad_request(v.to_string()),
+            ValidateError::AxumJsonRejection(v) => bad_request(v.to_string()),
+            ValidateError::AxumPathRejection(v) => bad_request(v.to_string()),
         }
     }
 }
@@ -159,27 +111,9 @@ impl From<ValidateError> for AppError {
 impl From<GetUserError> for AppError {
     fn from(e: GetUserError) -> Self {
         match &e {
-            GetUserError::NotFound { .. } => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::NOT_FOUND.as_u16(),
-                }))
-                .into_response(),
-            ),
-            GetUserError::PasswordNotCorrect { .. } => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                }))
-                .into_response(),
-            ),
-            GetUserError::DomainError(_) => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                }))
-                .into_response(),
-            ),
+            GetUserError::NotFound { .. } => not_found(e.to_string()),
+            GetUserError::PasswordNotCorrect { .. } => forbidden(e.to_string()),
+            GetUserError::DomainError(_) => internal_server_error(e.to_string()),
         }
     }
 }
@@ -187,20 +121,8 @@ impl From<GetUserError> for AppError {
 impl From<LoginError> for AppError {
     fn from(e: LoginError) -> Self {
         match &e {
-            LoginError::WrongPassword => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                }))
-                .into_response(),
-            ),
-            LoginError::UserNotExist => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::UNAUTHORIZED.as_u16(),
-                }))
-                .into_response(),
-            ),
+            LoginError::WrongPassword => forbidden(e.to_string()),
+            LoginError::UserNotExist => unauthorized(e.to_string()),
         }
     }
 }
@@ -208,13 +130,7 @@ impl From<LoginError> for AppError {
 impl From<RegistryError> for AppError {
     fn from(e: RegistryError) -> Self {
         match &e {
-            RegistryError::UserExist => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                }))
-                .into_response(),
-            ),
+            RegistryError::UserExist => forbidden(e.to_string()),
         }
     }
 }
@@ -222,13 +138,7 @@ impl From<RegistryError> for AppError {
 impl From<ChangeUsernameError> for AppError {
     fn from(e: ChangeUsernameError) -> Self {
         match &e {
-            ChangeUsernameError::UsernameExist => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                }))
-                .into_response(),
-            ),
+            ChangeUsernameError::UsernameExist => forbidden(e.to_string()),
         }
     }
 }
@@ -236,34 +146,10 @@ impl From<ChangeUsernameError> for AppError {
 impl From<CreateAdventureError> for AppError {
     fn from(e: CreateAdventureError) -> Self {
         match &e {
-            CreateAdventureError::AdventureNotFound { .. } => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::NOT_FOUND.as_u16(),
-                }))
-                .into_response(),
-            ),
-            CreateAdventureError::Exist => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                }))
-                .into_response(),
-            ),
-            CreateAdventureError::AddDocuments => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                }))
-                .into_response(),
-            ),
-            CreateAdventureError::DomainError(_) => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                }))
-                .into_response(),
-            ),
+            CreateAdventureError::AdventureNotFound { .. } => not_found(e.to_string()),
+            CreateAdventureError::Exist => forbidden(e.to_string()),
+            CreateAdventureError::AddDocuments => internal_server_error(e.to_string()),
+            CreateAdventureError::DomainError(_) => internal_server_error(e.to_string()),
         }
     }
 }
@@ -271,20 +157,9 @@ impl From<CreateAdventureError> for AppError {
 impl From<FavoriteError> for AppError {
     fn from(e: FavoriteError) -> Self {
         match &e {
-            FavoriteError::AlreadyExist { .. } => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::FORBIDDEN.as_u16(),
-                }))
-                .into_response(),
-            ),
-            FavoriteError::DomainError(_) => AppError(
-                Json(json!(ErrorMessage {
-                    message: e.to_string(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                }))
-                .into_response(),
-            ),
+            FavoriteError::AlreadyExist { .. } => forbidden(e.to_string()),
+            FavoriteError::DomainError(_) => internal_server_error(e.to_string()),
+            FavoriteError::AdventureNotFound { .. } => not_found(e.to_string()),
         }
     }
 }

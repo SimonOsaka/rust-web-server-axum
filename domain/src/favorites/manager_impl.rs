@@ -1,10 +1,10 @@
-use repository::favorites::{
-    delete, get_favorite, insert, DeleteMyFavorite, GetMyFavorite, NewMyFavorite,
+use repository::{
+    db::Repo,
+    favorites::{delete, get_favorite, insert, DeleteMyFavorite, GetMyFavorite, NewMyFavorite},
+    find_one_adventure,
 };
 
-use crate::{
-    database_to_domain_error, AddFavorite, DelFavorite, DomainError, Favorite, FavoriteError,
-};
+use crate::{database_to_domain_error, AddFavorite, DelFavorite, Favorite, FavoriteError};
 
 #[derive(Clone, Debug)]
 pub struct FavoritesManagerImpl;
@@ -12,10 +12,25 @@ pub struct FavoritesManagerImpl;
 #[async_trait]
 impl super::FavoritesManager for FavoritesManagerImpl {
     async fn add_favorite(&self, add_favorite: AddFavorite) -> Result<Favorite, FavoriteError> {
-        let result_optional = get_favorite(GetMyFavorite {
-            user_id: add_favorite.user_id,
-            adventure_id: add_favorite.adventure_id,
-        })
+        let mut transaction = Repo::transaction().await.expect("");
+
+        let result_adventure =
+            find_one_adventure(add_favorite.adventure_id, Some(&mut transaction)).await;
+        if let Ok(result) = result_adventure {
+            if result.is_none() {
+                return Err(FavoriteError::AdventureNotFound {
+                    adventure_id: add_favorite.adventure_id,
+                });
+            }
+        }
+
+        let result_optional = get_favorite(
+            GetMyFavorite {
+                user_id: add_favorite.user_id,
+                adventure_id: add_favorite.adventure_id,
+            },
+            Some(&mut transaction),
+        )
         .await;
 
         match result_optional {
@@ -28,12 +43,17 @@ impl super::FavoritesManager for FavoritesManagerImpl {
             Err(e) => return Err(FavoriteError::DomainError(database_to_domain_error(e))),
         }
 
-        let inserted_id = insert(NewMyFavorite {
-            user_id: add_favorite.user_id,
-            adventure_id: add_favorite.adventure_id,
-        })
+        let inserted_id = insert(
+            NewMyFavorite {
+                user_id: add_favorite.user_id,
+                adventure_id: add_favorite.adventure_id,
+            },
+            Some(&mut transaction),
+        )
         .await
         .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
+
+        transaction.commit().await.expect("");
 
         Ok(Favorite {
             id: inserted_id,
@@ -42,11 +62,26 @@ impl super::FavoritesManager for FavoritesManagerImpl {
         })
     }
 
-    async fn del_favorite(&self, del_favorite: DelFavorite) -> Result<bool, DomainError> {
-        let result_optional = get_favorite(GetMyFavorite {
-            user_id: del_favorite.user_id,
-            adventure_id: del_favorite.adventure_id,
-        })
+    async fn del_favorite(&self, del_favorite: DelFavorite) -> Result<bool, FavoriteError> {
+        let mut transaction = Repo::transaction().await.expect("");
+
+        let result_adventure =
+            find_one_adventure(del_favorite.adventure_id, Some(&mut transaction)).await;
+        if let Ok(result) = result_adventure {
+            if result.is_none() {
+                return Err(FavoriteError::AdventureNotFound {
+                    adventure_id: del_favorite.adventure_id,
+                });
+            }
+        }
+
+        let result_optional = get_favorite(
+            GetMyFavorite {
+                user_id: del_favorite.user_id,
+                adventure_id: del_favorite.adventure_id,
+            },
+            Some(&mut transaction),
+        )
         .await;
 
         match result_optional {
@@ -55,15 +90,20 @@ impl super::FavoritesManager for FavoritesManagerImpl {
                     return Ok(true);
                 }
             }
-            Err(e) => return Err(database_to_domain_error(e)),
+            Err(e) => return Err(FavoriteError::DomainError(database_to_domain_error(e))),
         }
 
-        let result = delete(DeleteMyFavorite {
-            user_id: del_favorite.user_id,
-            adventure_id: del_favorite.adventure_id,
-        })
+        let result = delete(
+            DeleteMyFavorite {
+                user_id: del_favorite.user_id,
+                adventure_id: del_favorite.adventure_id,
+            },
+            Some(&mut transaction),
+        )
         .await
-        .map_err(database_to_domain_error)?;
+        .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
+
+        transaction.commit().await.expect("");
 
         Ok(result)
     }

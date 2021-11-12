@@ -9,9 +9,10 @@ use anyhow::Result;
 use log::debug;
 
 use meilisearch_sdk::progress::UpdateStatus;
+use repository::db::Repo;
 use repository::{
-    create_journey, delete_adventure, find_by_user_id, find_one, find_title_crypto,
-    NewMyAdventuresJourney,
+    create_journey, delete_one_adventure, find_adventure_title_crypto, find_adventures_by_user_id,
+    find_one_adventure, NewMyAdventuresJourney,
 };
 use search::adventures::{search_by_play_list, search_latest, search_one};
 use search::meilisearch::operation::{add_documents, del_documents};
@@ -80,7 +81,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError> {
-        let result = find_one(id).await;
+        let result = find_one_adventure(id, None).await;
         match result {
             Ok(opt_my) => match opt_my {
                 Some(my) => {
@@ -103,18 +104,25 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     async fn add_journey(&self, data: NewJourneyData) -> Result<ID, CreateAdventureError> {
-        let my_adventures_optional = find_title_crypto(data.nj.crypto())
-            .await
-            .map_err(database_to_domain_error)?;
+        let mut transaction = Repo::transaction().await.expect("");
+
+        let my_adventures_optional =
+            find_adventure_title_crypto(data.nj.crypto(), Some(&mut transaction))
+                .await
+                .map_err(database_to_domain_error)?;
         if my_adventures_optional.is_some() {
             return Err(CreateAdventureError::Exist);
         }
 
-        let id = create_journey(NewMyAdventuresJourney::from(data))
+        let id = create_journey(NewMyAdventuresJourney::from(data), Some(&mut transaction))
             .await
             .map_err(database_to_domain_error)?;
 
-        let result = find_one(id).await.map_err(database_to_domain_error)?;
+        let result = find_one_adventure(id, Some(&mut transaction))
+            .await
+            .map_err(database_to_domain_error)?;
+
+        transaction.commit().await.expect("");
 
         let progress = match result {
             Some(ad) => add_documents(vec![ad])
@@ -136,7 +144,9 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     async fn delete_adventure(&self, id: ID, user_id: ID) -> Result<bool, DeleteAdventureError> {
-        let result = find_one(id)
+        let mut transaction = Repo::transaction().await.expect("");
+
+        let result = find_one_adventure(id, Some(&mut transaction))
             .await
             .map_err(|e| DeleteAdventureError::DomainError(database_to_domain_error(e)))?;
         if result.is_none() {
@@ -149,9 +159,12 @@ impl super::AdventuresManager for AdventuresManagerImpl {
             }
         }
 
-        let is_db_del = delete_adventure(id)
+        let is_db_del = delete_one_adventure(id, Some(&mut transaction))
             .await
             .map_err(|e| DeleteAdventureError::DomainError(database_to_domain_error(e)))?;
+
+        transaction.commit().await.expect("commit error");
+
         if is_db_del {
             let progress = del_documents(vec![id])
                 .await
@@ -173,7 +186,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     async fn find_by_user_id(&self, user_id: ID) -> Result<Vec<(Adventures, Users)>, DomainError> {
-        let result = find_by_user_id(user_id)
+        let result = find_adventures_by_user_id(user_id, None)
             .await
             .map_err(database_to_domain_error)?;
 
