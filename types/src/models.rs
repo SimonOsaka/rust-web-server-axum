@@ -22,6 +22,7 @@ pub struct MyAdventures {
     pub city: String,
     pub district: String,
     pub user_id: ID,
+    pub fav_count: i64,
 }
 
 impl Document for MyAdventures {

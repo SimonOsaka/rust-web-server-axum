@@ -54,7 +54,6 @@ pub struct Adventures {
     pub image_url: String,
     #[serde(with = "my_date_format")]
     pub created_at: DateTime,
-    pub author_name: String,
     pub item_type: U8I16,
     pub item_type_name: String,
     pub link: String,
@@ -68,6 +67,7 @@ pub struct Adventures {
     pub province: String,
     pub city: String,
     pub district: String,
+    pub fav_count: i64,
 }
 
 impl From<domain::Adventures> for Adventures {
@@ -77,7 +77,6 @@ impl From<domain::Adventures> for Adventures {
             title: ad.title,
             image_url: ad.image_url,
             created_at: ad.created_at,
-            author_name: "油油".to_string(),
             item_type: ad.item_type,
             item_type_name: my_item_type_format::to_item_type_name(ad.item_type),
             link: ad.link,
@@ -91,6 +90,7 @@ impl From<domain::Adventures> for Adventures {
             province: ad.province,
             city: ad.city,
             district: ad.district,
+            fav_count: ad.fav_count,
         }
     }
 }
@@ -154,10 +154,9 @@ impl From<Vec<(domain::Adventures, domain::Users)>> for MyAdventuresResponse {
             .into_iter()
             .map(|domain_t| {
                 let (domain_ad, domain_u) = domain_t;
-                AdventureUser {
-                    adventure: Adventures::from(domain_ad),
-                    user: Users::from(domain_u),
-                }
+                let adventure = Adventures::from(domain_ad);
+                let user = Users::from(domain_u);
+                AdventureUser { adventure, user }
             })
             .collect();
 

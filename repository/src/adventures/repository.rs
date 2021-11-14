@@ -1,13 +1,13 @@
 use crate::adventures::models::{AdventuresWhere, NewMyAdventuresJourney, PlayListWhere};
 use crate::db::write::SqlWriter;
 use crate::db::{SqlBuilder, SqlParams, SqlReader};
-use crate::{AdventureUser, MyUsers, MY_USERS_STRUCT_FIELDS};
+use crate::{AdventureUser, FavCount, MyUsers, MY_USERS_STRUCT_FIELDS};
 
 use sql_builder::{name, SqlName};
 use sqlx::{Error, Postgres, Transaction};
 use types::{MyAdventures, ID};
 
-const MY_ADVENTURES_FIELDS: &[&str; 17] = &[
+const MY_ADVENTURES_FIELDS: &[&str; 18] = &[
     "ad.id",
     "ad.title",
     "ad.created_at",
@@ -25,9 +25,10 @@ const MY_ADVENTURES_FIELDS: &[&str; 17] = &[
     "ad.city",
     "ad.district",
     "ad.user_id",
+    "ad.fav_count",
 ];
 
-const MY_ADVENTURES_STRUCT_FIELDS: &[&str; 17] = &[
+const MY_ADVENTURES_STRUCT_FIELDS: &[&str; 18] = &[
     "(ad.id",
     "ad.title",
     "ad.image_url",
@@ -44,7 +45,8 @@ const MY_ADVENTURES_STRUCT_FIELDS: &[&str; 17] = &[
     "ad.province",
     "ad.city",
     "ad.district",
-    "ad.user_id) AS \"my_adventures\"",
+    "ad.user_id",
+    "ad.fav_count) AS \"my_adventures\"",
 ];
 
 pub async fn find_latest_adventures<'a>(
@@ -210,8 +212,7 @@ pub async fn find_adventures_by_user_id<'a>(
         .and_where_eq(name!("ad", "is_deleted"), 0)
         .and_where_eq(name!("u", "id"), params.add_value(user_id));
 
-    let list: Vec<AdventureUser> = //sql_builder.query_list_tuple().await?; 
-    sql_builder.query_list(params,transaction).await?;
+    let list: Vec<AdventureUser> = sql_builder.query_list(params, transaction).await?;
 
     let c = list
         .into_iter()
@@ -223,4 +224,24 @@ pub async fn find_adventures_by_user_id<'a>(
         })
         .collect();
     Ok(c)
+}
+
+pub async fn update_adventure_fav<'a>(
+    id: ID,
+    fc: FavCount,
+    transaction: Option<&'a mut Transaction<'static, Postgres>>,
+) -> Result<bool, Error> {
+    let mut params = SqlParams::new();
+    let mut sql_builder = SqlBuilder::update_table("my_adventures");
+    match fc {
+        FavCount::Fav => sql_builder.set("fav_count", "fav_count + 1"),
+        FavCount::UnFav => sql_builder.set("fav_count", "fav_count - 1"),
+    };
+    sql_builder
+        .and_where_eq("is_deleted", 0)
+        .and_where_eq("id", params.add_value(id));
+
+    let affect_rows = sql_builder.update_one(params, transaction).await?;
+
+    Ok(affect_rows == 1)
 }

@@ -36,3 +36,8 @@ pub struct AdventureUser {
     pub my_adventures: MyAdventures,
     pub my_users: MyUsers,
 }
+
+pub enum FavCount {
+    Fav,
+    UnFav,
+}

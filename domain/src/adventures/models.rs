@@ -67,6 +67,7 @@ pub struct Adventures {
     pub city: String,
     pub district: String,
     pub user_id: ID,
+    pub fav_count: i64,
 }
 
 impl From<MyAdventures> for Adventures {
@@ -88,6 +89,7 @@ impl From<MyAdventures> for Adventures {
             city: my.city,
             district: my.district,
             user_id: my.user_id,
+            fav_count: my.fav_count,
         }
     }
 }
