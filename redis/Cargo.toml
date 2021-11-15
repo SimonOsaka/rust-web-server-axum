@@ -8,5 +8,5 @@ edition = "2021"
 [dependencies]
 redis = { version = "0.21.2", features = ["connection-manager", "tokio-comp"] }
 once_cell = "1.8.0"
-flexi_logger = "0.19.3"
+flexi_logger = "0.20"
 log = "0.4"

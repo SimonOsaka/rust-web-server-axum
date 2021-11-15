@@ -15,25 +15,25 @@ impl From<Vec<domain::Adventures>> for AdventuresResponse {
         let adventures_count = ads.len() as u64;
         let adventures = ads
             .into_iter()
-            .map(|a| Adventures {
-                id: a.id,
-                title: a.title,
-                image_url: a.image_url,
-                created_at: a.created_at,
-                author_name: "油油".to_string(),
-                item_type: a.item_type,
-                item_type_name: my_item_type_format::to_item_type_name(a.item_type),
-                link: a.link,
-                source: a.source,
-                source_name: my_source::to_source_name(a.source),
-                journey_destiny_name: my_journey_destiny::to_name(&a.journey_destiny),
-                script_content: a.script_content,
-                play_list: a.play_list,
-                address: a.address,
-                shop_name: a.shop_name,
-                province: a.province,
-                city: a.city,
-                district: a.district,
+            .map(|ad| Adventures {
+                id: ad.id,
+                title: ad.title,
+                image_url: ad.image_url,
+                created_at: ad.created_at,
+                item_type: ad.item_type,
+                item_type_name: my_item_type_format::to_item_type_name(ad.item_type),
+                link: ad.link,
+                source: ad.source,
+                source_name: my_source::to_source_name(ad.source),
+                journey_destiny_name: my_journey_destiny::to_name(&ad.journey_destiny),
+                script_content: ad.script_content,
+                play_list: ad.play_list,
+                address: ad.address,
+                shop_name: ad.shop_name,
+                province: ad.province,
+                city: ad.city,
+                district: ad.district,
+                fav_count: ad.fav_count,
             })
             .collect();
         Self {
@@ -56,7 +56,6 @@ impl From<domain::Adventures> for AdventureResponse {
             title: ad.title,
             image_url: ad.image_url,
             created_at: ad.created_at,
-            author_name: "油油".to_string(),
             item_type: ad.item_type,
             item_type_name: my_item_type_format::to_item_type_name(ad.item_type),
             link: ad.link,
@@ -70,6 +69,7 @@ impl From<domain::Adventures> for AdventureResponse {
             province: ad.province,
             city: ad.city,
             district: ad.district,
+            fav_count: ad.fav_count,
         };
         Self { adventure }
     }
@@ -83,7 +83,6 @@ pub struct Adventures {
     pub image_url: String,
     #[serde(with = "my_date_format")]
     pub created_at: DateTime,
-    pub author_name: String,
     pub item_type: U8I16,
     pub item_type_name: String,
     pub link: String,
@@ -97,6 +96,7 @@ pub struct Adventures {
     pub province: String,
     pub city: String,
     pub district: String,
+    pub fav_count: i64,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

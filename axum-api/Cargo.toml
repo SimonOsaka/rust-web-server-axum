@@ -15,7 +15,7 @@ tower = { version = "0.4", features = ["util", "filter", "timeout"] }
 tower-http = { version = "0.1", features = ["trace", "add-extension"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-flexi_logger = "0.19"
+flexi_logger = "0.20"
 log = "0.4"
 jsonwebtoken = "7"
 headers = "0.3"

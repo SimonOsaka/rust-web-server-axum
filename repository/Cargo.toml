@@ -21,7 +21,7 @@ serde = { version = "1.0.125", features = ["derive"] }
 chrono = { version = "0.4.19", features = ["serde"] }
 anyhow = "1.0"
 async-trait = "0.1"
-flexi_logger = "0.19"
+flexi_logger = "0.20"
 log = "0.4"
 sql-builder = "3.1.1"
 once_cell = "1.8.0"
