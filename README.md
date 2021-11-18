@@ -18,6 +18,8 @@
     - meilisearch
 - auth: jwt token auth
     - jwt web token
+- logger: log everything
+    - tracing
 
 ## Prepare
 - Install Rust 1.56+
