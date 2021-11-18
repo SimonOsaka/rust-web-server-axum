@@ -12,6 +12,7 @@ pub struct MyUsers {
     pub created_at: DateTime,
 }
 
+#[derive(Debug)]
 pub struct NewMyUsers {
     pub username: String,
     pub password: String,

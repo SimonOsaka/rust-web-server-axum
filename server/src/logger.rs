@@ -51,5 +51,5 @@ pub fn create() {
         .start()
         .unwrap();
 
-    debug!("log file path: /apps/log/rust");
+    // debug!("log file path: /apps/log/rust");
 }

@@ -37,7 +37,8 @@ pub struct AdventureUser {
     pub my_users: MyUsers,
 }
 
-pub enum FavCount {
+#[derive(Debug)]
+pub enum FavCountKind {
     Fav,
     UnFav,
 }

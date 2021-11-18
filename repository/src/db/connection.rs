@@ -1,6 +1,7 @@
 use std::env;
 
 use sqlx::{Error, Executor, Postgres, Transaction};
+use tracing::debug;
 
 use crate::db::{PoolOptions, SqlPool};
 
@@ -37,6 +38,7 @@ impl Repo {
         Repo { connection_pool }
     }
 
+    #[tracing::instrument]
     pub async fn create() {
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 

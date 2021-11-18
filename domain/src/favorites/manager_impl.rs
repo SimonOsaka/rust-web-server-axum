@@ -1,7 +1,7 @@
 use repository::{
     db::Repo,
     favorites::{delete, get_favorite, insert, DeleteMyFavorite, GetMyFavorite, NewMyFavorite},
-    find_one_adventure, update_adventure_fav, FavCount,
+    find_one_adventure, update_adventure_fav, FavCountKind,
 };
 use search::meilisearch::operation::add_documents;
 
@@ -59,7 +59,7 @@ impl super::FavoritesManager for FavoritesManagerImpl {
 
         update_adventure_fav(
             add_favorite.adventure_id,
-            FavCount::Fav,
+            FavCountKind::Fav,
             Some(&mut transaction),
         )
         .await
@@ -127,7 +127,7 @@ impl super::FavoritesManager for FavoritesManagerImpl {
 
         update_adventure_fav(
             del_favorite.adventure_id,
-            FavCount::UnFav,
+            FavCountKind::UnFav,
             Some(&mut transaction),
         )
         .await

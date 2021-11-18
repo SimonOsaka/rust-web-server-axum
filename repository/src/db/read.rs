@@ -1,9 +1,9 @@
+use crate::db::SqlRow;
+use crate::db::REPOSITORY;
 use sql_builder::SqlBuilder;
 use sqlx::{Error, FromRow};
 use sqlx::{Postgres, Transaction};
-
-use crate::db::SqlRow;
-use crate::db::REPOSITORY;
+use tracing::debug;
 
 use super::SqlParams;
 

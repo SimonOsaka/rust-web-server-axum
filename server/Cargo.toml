@@ -32,6 +32,7 @@ warp-api = { path = "../warp-api" }
 redis = { path = "../redis" }
 repository = { path = "../repository" }
 search = { path = "../search" }
+logger = { path = "../logger" }
 async-trait = "0.1"
 flexi_logger = "0.20"
 log = "0.4"

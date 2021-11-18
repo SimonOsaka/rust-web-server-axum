@@ -9,6 +9,7 @@ members = [
     "axum-api",
     "server",
     "auth",
+    "logger",
 ]
 
 [profile.dev]

@@ -1,10 +1,10 @@
 use crate::adventures::models::{AdventuresWhere, NewMyAdventuresJourney, PlayListWhere};
 use crate::db::write::SqlWriter;
 use crate::db::{SqlBuilder, SqlParams, SqlReader};
-use crate::{AdventureUser, FavCount, MyUsers, MY_USERS_STRUCT_FIELDS};
-
+use crate::{AdventureUser, FavCountKind, MyUsers, MY_USERS_STRUCT_FIELDS};
 use sql_builder::{name, SqlName};
 use sqlx::{Error, Postgres, Transaction};
+use tracing::debug;
 use types::{MyAdventures, ID};
 
 const MY_ADVENTURES_FIELDS: &[&str; 18] = &[
@@ -49,6 +49,7 @@ const MY_ADVENTURES_STRUCT_FIELDS: &[&str; 18] = &[
     "ad.fav_count) AS \"my_adventures\"",
 ];
 
+#[tracing::instrument(skip(transaction))]
 pub async fn find_latest_adventures<'a>(
     query: AdventuresWhere,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -100,6 +101,7 @@ pub async fn find_latest_adventures<'a>(
     Ok(my_adventures)
 }
 
+#[tracing::instrument(skip(transaction))]
 pub async fn find_adventures_by_play_list<'a>(
     query: PlayListWhere,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -114,6 +116,7 @@ pub async fn find_adventures_by_play_list<'a>(
     Ok(my_adventures)
 }
 
+#[tracing::instrument(skip(transaction))]
 pub async fn find_one_adventure<'a>(
     id: ID,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -129,6 +132,7 @@ pub async fn find_one_adventure<'a>(
     Ok(my)
 }
 
+#[tracing::instrument(skip(transaction))]
 pub async fn create_journey<'a>(
     adventure: NewMyAdventuresJourney,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -165,6 +169,7 @@ pub async fn create_journey<'a>(
     Ok(id)
 }
 
+#[tracing::instrument(skip(transaction))]
 pub async fn find_adventure_title_crypto<'a>(
     title_crypto: String,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -180,6 +185,7 @@ pub async fn find_adventure_title_crypto<'a>(
     Ok(my)
 }
 
+#[tracing::instrument(skip(transaction))]
 pub async fn delete_one_adventure<'a>(
     id: ID,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -196,6 +202,7 @@ pub async fn delete_one_adventure<'a>(
     Ok(affect_rows == 1)
 }
 
+#[tracing::instrument(skip(transaction))]
 pub async fn find_adventures_by_user_id<'a>(
     user_id: ID,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -226,16 +233,17 @@ pub async fn find_adventures_by_user_id<'a>(
     Ok(c)
 }
 
+#[tracing::instrument(skip(transaction))]
 pub async fn update_adventure_fav<'a>(
     id: ID,
-    fc: FavCount,
+    fc: FavCountKind,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
 ) -> Result<bool, Error> {
     let mut params = SqlParams::new();
     let mut sql_builder = SqlBuilder::update_table("my_adventures");
     match fc {
-        FavCount::Fav => sql_builder.set("fav_count", "fav_count + 1"),
-        FavCount::UnFav => sql_builder.set("fav_count", "fav_count - 1"),
+        FavCountKind::Fav => sql_builder.set("fav_count", "fav_count + 1"),
+        FavCountKind::UnFav => sql_builder.set("fav_count", "fav_count - 1"),
     };
     sql_builder
         .and_where_eq("is_deleted", 0)

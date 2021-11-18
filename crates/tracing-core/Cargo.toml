@@ -1,0 +1,41 @@
+[package]
+name = "tracing-core"
+# When releasing to crates.io:
+# - Remove path dependencies
+# - Update html_root_url.
+# - Update doc url
+#   - Cargo.toml
+#   - README.md
+# - Update CHANGELOG.md.
+# - Create "v0.2.x" git tag.
+version = "0.2.0"
+authors = ["Tokio Contributors <team@tokio.rs>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/tokio-rs/tracing"
+homepage = "https://tokio.rs"
+description = """
+Core primitives for application-level tracing.
+"""
+categories = [
+    "development-tools::debugging",
+    "development-tools::profiling",
+    "asynchronous",
+]
+keywords = ["logging", "tracing", "profiling"]
+edition = "2018"
+
+[features]
+default = ["std"]
+alloc = []
+std = ["lazy_static", "alloc"]
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+[dependencies]
+lazy_static = { version = "1", optional = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

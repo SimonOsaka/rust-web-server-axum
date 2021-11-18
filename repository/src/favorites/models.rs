@@ -7,16 +7,19 @@ pub struct MyFavorites {
     pub adventure_id: ID,
 }
 
+#[derive(Debug)]
 pub struct NewMyFavorite {
     pub user_id: ID,
     pub adventure_id: ID,
 }
 
+#[derive(Debug)]
 pub struct DeleteMyFavorite {
     pub user_id: ID,
     pub adventure_id: ID,
 }
 
+#[derive(Debug)]
 pub struct GetMyFavorite {
     pub user_id: ID,
     pub adventure_id: ID,

@@ -1,6 +1,6 @@
 use crate::db::SqlArguments;
 use sqlx::Arguments;
-
+use tracing::debug;
 pub struct SqlParams {
     index: u8,
     placeholder: String,
@@ -40,6 +40,7 @@ impl SqlParams {
 mod tests {
 
     use sql_builder::SqlBuilder;
+    use tracing::debug;
 
     use crate::db::params::SqlParams;
 
