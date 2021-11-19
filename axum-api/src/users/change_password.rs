@@ -18,6 +18,7 @@ pub struct ChangePasswordForm {
     new_password: String,
 }
 
+#[tracing::instrument(skip(auth_user, state, change_password_form))]
 pub async fn change_password(
     AuthUser(auth_user): AuthUser,
     ValidatedJson(change_password_form): ValidatedJson<ChangePasswordForm>,

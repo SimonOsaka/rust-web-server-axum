@@ -1,4 +1,5 @@
 use redis::{aio::ConnectionManager, FromRedisValue, RedisError, ToRedisArgs};
+use tracing::{debug, warn};
 
 /// Set redis key and value async
 ///

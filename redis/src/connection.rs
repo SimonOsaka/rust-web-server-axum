@@ -1,6 +1,7 @@
 use std::{env, fmt};
 
 use redis::aio::ConnectionManager;
+use tracing::debug;
 
 use crate::REDIS;
 

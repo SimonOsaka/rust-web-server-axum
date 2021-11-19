@@ -20,6 +20,7 @@ struct LoginResponse {
     token: String,
 }
 
+#[tracing::instrument(skip(state))]
 pub async fn login(
     login_form: LoginForm,
     state: AppState,

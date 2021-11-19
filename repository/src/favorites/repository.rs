@@ -5,7 +5,7 @@ use sqlx::{Error, Postgres, Transaction};
 use tracing::debug;
 use types::ID;
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn insert<'a>(
     fav: NewMyFavorite,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -27,7 +27,7 @@ pub async fn insert<'a>(
     Ok(id)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn delete<'a>(
     del: DeleteMyFavorite,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -47,7 +47,7 @@ pub async fn delete<'a>(
     Ok(affect_rows > 0)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn get_favorite<'a>(
     del: GetMyFavorite,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,

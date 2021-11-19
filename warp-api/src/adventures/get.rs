@@ -1,8 +1,10 @@
 use domain::AdventuresManager;
+use tracing::debug;
 use types::ID;
 
 use crate::{adventures::response::AdventureResponse, response::ErrorResponse, AppState};
 
+#[tracing::instrument(skip(state))]
 pub async fn get_adventure(_id: ID, state: AppState) -> Result<impl warp::Reply, ErrorResponse> {
     debug!("_id: {:?}, state: {:?}", _id, state);
 

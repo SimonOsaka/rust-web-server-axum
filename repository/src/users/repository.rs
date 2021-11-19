@@ -23,7 +23,7 @@ pub const MY_USERS_STRUCT_FIELDS: &[&str; 6] = &[
     "u.created_at) AS \"my_users\"",
 ];
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction,u),fields(u.username=%u.username),err)]
 pub async fn insert<'a>(
     u: NewMyUsers,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -46,7 +46,7 @@ pub async fn insert<'a>(
     Ok(id)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn find_user_by_username<'a>(
     username: String,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -62,7 +62,7 @@ pub async fn find_user_by_username<'a>(
     Ok(my_users)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn update_user_password<'a>(
     username: String,
     password: String,
@@ -79,7 +79,7 @@ pub async fn update_user_password<'a>(
     Ok(affect > 0)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn update_username<'a>(
     old_username: String,
     new_username: String,

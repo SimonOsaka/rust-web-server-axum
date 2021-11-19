@@ -49,7 +49,7 @@ const MY_ADVENTURES_STRUCT_FIELDS: &[&str; 18] = &[
     "ad.fav_count) AS \"my_adventures\"",
 ];
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn find_latest_adventures<'a>(
     query: AdventuresWhere,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -101,7 +101,7 @@ pub async fn find_latest_adventures<'a>(
     Ok(my_adventures)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn find_adventures_by_play_list<'a>(
     query: PlayListWhere,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -116,7 +116,7 @@ pub async fn find_adventures_by_play_list<'a>(
     Ok(my_adventures)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn find_one_adventure<'a>(
     id: ID,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -132,7 +132,7 @@ pub async fn find_one_adventure<'a>(
     Ok(my)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn create_journey<'a>(
     adventure: NewMyAdventuresJourney,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -169,7 +169,7 @@ pub async fn create_journey<'a>(
     Ok(id)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn find_adventure_title_crypto<'a>(
     title_crypto: String,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -185,7 +185,7 @@ pub async fn find_adventure_title_crypto<'a>(
     Ok(my)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn delete_one_adventure<'a>(
     id: ID,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -202,7 +202,7 @@ pub async fn delete_one_adventure<'a>(
     Ok(affect_rows == 1)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn find_adventures_by_user_id<'a>(
     user_id: ID,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
@@ -233,7 +233,7 @@ pub async fn find_adventures_by_user_id<'a>(
     Ok(c)
 }
 
-#[tracing::instrument(skip(transaction))]
+#[tracing::instrument(skip(transaction), err)]
 pub async fn update_adventure_fav<'a>(
     id: ID,
     fc: FavCountKind,

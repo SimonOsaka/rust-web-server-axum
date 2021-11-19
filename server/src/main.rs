@@ -1,12 +1,7 @@
-// #[macro_use]
-// extern crate log;
-// mod logger;
 
 #[tokio::main(flavor = "multi_thread", worker_threads = 10)]
 async fn main() {
     dotenv::dotenv().ok();
-
-    // logger::create();
 
     // add return value here, log can output to console and file, don't change.
     // issue: https://github.com/tokio-rs/tracing/issues/971

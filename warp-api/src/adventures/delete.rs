@@ -1,6 +1,7 @@
 use crate::request::PathValidate;
 use domain::{DeleteAdventureError, UsersManager};
 use serde::Deserialize;
+use tracing::debug;
 use validator::Validate;
 use warp::hyper::StatusCode;
 
@@ -14,6 +15,7 @@ pub struct DeleteAdventureReq {
 
 impl PathValidate for DeleteAdventureReq {}
 
+#[tracing::instrument(skip(user, state))]
 pub async fn delete_adventure(
     req: DeleteAdventureReq,
     AuthUser(user): AuthUser,

@@ -1,4 +1,5 @@
 use axum::Json;
+use tracing::debug;
 use types::my_item_type_format::to_item_type_name;
 
 use crate::{
@@ -6,6 +7,7 @@ use crate::{
     app_response::AppError,
 };
 
+#[tracing::instrument]
 pub async fn tabs_adventures() -> Result<Json<TabsResponse>, AppError> {
     let tabs: Vec<Tabs> = vec![
         Tabs {

@@ -1,5 +1,6 @@
 use domain::{AdventuresManager, AdventuresQuery};
 use serde::Deserialize;
+use tracing::debug;
 use types::my_item_type_format::to_item_type_name;
 use validator::{Validate, ValidationError};
 
@@ -36,6 +37,7 @@ fn validate_item_id(item_id: u8) -> Result<(), ValidationError> {
     Ok(())
 }
 
+#[tracing::instrument(skip(state))]
 pub async fn list_adventures(
     query: AdventuresQueryReq,
     state: AppState,

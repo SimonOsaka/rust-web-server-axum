@@ -13,6 +13,7 @@ pub struct UsersManagerImpl;
 
 #[async_trait]
 impl super::UsersManager for UsersManagerImpl {
+    #[tracing::instrument(skip(self,reg_user),fields(reg_user.username=%reg_user.username))]
     async fn add_user(&self, reg_user: RegistryUsers) -> Result<Users, DomainError> {
         let inserted_my_user_id = insert(
             NewMyUsers {
@@ -33,6 +34,7 @@ impl super::UsersManager for UsersManagerImpl {
         })
     }
 
+    #[tracing::instrument(skip(self))]
     async fn get_user_by_username(&self, username: String) -> Result<Users, GetUserError> {
         let user = find_user_by_username(username.clone(), None)
             .await
@@ -45,6 +47,7 @@ impl super::UsersManager for UsersManagerImpl {
         }
     }
 
+    #[tracing::instrument(skip(self))]
     async fn get_user(&self, username: String, password: String) -> Result<Users, GetUserError> {
         let user = find_user_by_username(username.clone(), None)
             .await
@@ -65,6 +68,7 @@ impl super::UsersManager for UsersManagerImpl {
         }
     }
 
+    #[tracing::instrument(skip(self))]
     async fn verify_user(
         &self,
         username: String,
@@ -91,6 +95,7 @@ impl super::UsersManager for UsersManagerImpl {
         Ok((pass, user.clone()))
     }
 
+    #[tracing::instrument(skip(self))]
     async fn change_password(
         &self,
         username: String,
@@ -103,6 +108,7 @@ impl super::UsersManager for UsersManagerImpl {
         Ok(success)
     }
 
+    #[tracing::instrument(skip(self))]
     async fn change_username(
         &self,
         old_username: String,

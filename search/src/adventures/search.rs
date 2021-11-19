@@ -3,8 +3,10 @@ use crate::meilisearch::operation::{
     search_documents_with_filter, Condition, Page, Sort, SortDirect, SortProperty,
 };
 use meilisearch_sdk::errors::Error;
+use tracing::debug;
 use types::{MyAdventures, ID};
 
+#[tracing::instrument(err)]
 pub async fn search_latest(query: AdventuresFilter) -> Result<Vec<MyAdventures>, Error> {
     let mut filter = vec!["is_deleted = 0".to_string()];
     if query.item_id != 0 {
@@ -39,6 +41,7 @@ pub async fn search_latest(query: AdventuresFilter) -> Result<Vec<MyAdventures>,
     Ok(result)
 }
 
+#[tracing::instrument(err)]
 pub async fn search_by_play_list(query: PlayListFilter) -> Result<Vec<MyAdventures>, Error> {
     let mut condition = Condition::new();
     condition.filter = Some(format!(
@@ -62,6 +65,7 @@ pub async fn search_by_play_list(query: PlayListFilter) -> Result<Vec<MyAdventur
     Ok(result)
 }
 
+#[tracing::instrument(err)]
 pub async fn search_one(id: ID) -> Result<Option<MyAdventures>, Error> {
     let mut condition = Condition::new();
     condition.filter = Some(format!("id = {} AND is_deleted = 0", id));

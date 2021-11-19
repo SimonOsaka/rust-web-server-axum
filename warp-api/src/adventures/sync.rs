@@ -1,8 +1,10 @@
 use domain::AdventuresManager;
+use tracing::debug;
 use types::ID;
 
 use crate::{response::ErrorResponse, routes::AuthUser, AppState};
 
+#[tracing::instrument(skip(state))]
 pub async fn sync_adventure(
     _id: ID,
     user: AuthUser,

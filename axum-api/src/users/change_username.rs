@@ -17,6 +17,7 @@ pub struct ChangeUsernameForm {
     new_username: String,
 }
 
+#[tracing::instrument(skip(auth_user, state))]
 pub async fn change_username(
     AuthUser(auth_user): AuthUser,
     ValidatedJson(change_username_form): ValidatedJson<ChangeUsernameForm>,

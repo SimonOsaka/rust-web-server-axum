@@ -22,6 +22,7 @@ pub struct RegistryResponse {
     username: String,
 }
 
+#[tracing::instrument(skip(state, registry_form))]
 pub async fn registry(
     ValidatedJson(registry_form): ValidatedJson<RegistryForm>,
     Extension(state): Extension<AppState>,

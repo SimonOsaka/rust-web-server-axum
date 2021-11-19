@@ -115,6 +115,7 @@ impl Into<PlayListFilter> for PlayListQuery {
     }
 }
 
+#[derive(Debug)]
 pub struct NewJourney {
     pub title: String,
     pub image_url: String,
@@ -129,6 +130,7 @@ impl NewJourney {
     }
 }
 
+#[derive(Debug)]
 pub struct NewJourneyData {
     pub nj: NewJourney,
     pub u: Users,

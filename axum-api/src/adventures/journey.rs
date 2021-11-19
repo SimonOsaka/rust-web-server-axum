@@ -54,6 +54,7 @@ pub struct JourneyResponse {
     id: ID,
 }
 
+#[tracing::instrument(skip(auth_user, state))]
 pub async fn journey(
     ValidatedJson(form): ValidatedJson<JourneyForm>,
     AuthUser(auth_user): AuthUser,

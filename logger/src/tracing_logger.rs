@@ -38,7 +38,7 @@ pub fn log_create() -> (WorkerGuard, WorkerGuard) {
 
     let (stderr_writer, _guard_stderr) = tracing_appender::non_blocking(std::io::stderr());
 
-    let fmt_stdout = tracing_subscriber::fmt::Subscriber::new()
+    let fmt_stderr = tracing_subscriber::fmt::Subscriber::new()
         .with_timer(offset_tz.clone())
         .with_ansi(true)
         .with_thread_ids(true)
@@ -68,24 +68,36 @@ pub fn log_create() -> (WorkerGuard, WorkerGuard) {
         .unwrap();
 
     // let subscriber =
-    tracing_subscriber::registry()
+    let default_layer = tracing_subscriber::registry()
         .with(env_filter)
         // .with(EnvFilter::from_default_env().add_directive(tracing::Level::TRACE.into()))
-        .with(fmt_stdout)
-        // .with(tracing_subscriber::fmt::Subscriber::new().with_writer(std::io::stdout))
-        .with(fmt_file)
-        // .with(tracing_subscriber::fmt::Subscriber::new().with_writer(non_blocking))
-        .init();
+        .with(fmt_file);
+    // .with(tracing_subscriber::fmt::Subscriber::new().with_writer(non_blocking))
+
+    let rust_env = std::env::var("RUST_ENV").unwrap_or("development".to_string());
+    match rust_env.as_str() {
+        "development" => {
+            let err_layer = default_layer.with(fmt_stderr);
+            // .with(tracing_subscriber::fmt::Subscriber::new().with_writer(std::io::stdout))
+            err_layer.init();
+        }
+        "production" => {
+            default_layer.init();
+        }
+        _ => {
+            panic!("RUST_ENV only accept one of production, development");
+        }
+    }
 
     // tracing::collect::set_global_default(subscriber).expect("Unable to set a global collector");
 
     // tracing_subscriber::fmt::init();
 
-    tracing::debug!("debug is open");
-    tracing::info!("info is open");
-    tracing::warn!("warn is open");
-    tracing::trace!("trace is open");
-    tracing::error!("error is open");
+    tracing::debug!("debug is open, RUST_ENV: {}", rust_env);
+    tracing::info!("info is open, RUST_ENV: {}", rust_env);
+    tracing::warn!("warn is open, RUST_ENV: {}", rust_env);
+    tracing::trace!("trace is open, RUST_ENV: {}", rust_env);
+    tracing::error!("error is open, RUST_ENV: {}", rust_env);
 
     (_guard_file, _guard_stderr)
 }

@@ -99,6 +99,31 @@ pub struct Adventures {
     pub fav_count: i64,
 }
 
+impl From<domain::Adventures> for Adventures {
+    fn from(ad: domain::Adventures) -> Self {
+        Self {
+            id: ad.id,
+            title: ad.title,
+            image_url: ad.image_url,
+            created_at: ad.created_at,
+            item_type: ad.item_type,
+            item_type_name: my_item_type_format::to_item_type_name(ad.item_type),
+            link: ad.link,
+            source: ad.source,
+            source_name: my_source::to_source_name(ad.source),
+            journey_destiny_name: my_journey_destiny::to_name(&ad.journey_destiny),
+            script_content: ad.script_content,
+            play_list: ad.play_list,
+            address: ad.address,
+            shop_name: ad.shop_name,
+            province: ad.province,
+            city: ad.city,
+            district: ad.district,
+            fav_count: ad.fav_count,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Response404 {
@@ -128,4 +153,51 @@ pub struct VersionUpdateResponse {
     pub i_os: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub android: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MyAdventuresResponse {
+    pub adventures: Vec<AdventureUser>,
+    pub adventures_count: u64,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Users {
+    username: String,
+}
+
+impl From<domain::Users> for Users {
+    fn from(u: domain::Users) -> Self {
+        Self {
+            username: u.username,
+        }
+    }
+}
+
+impl From<Vec<(domain::Adventures, domain::Users)>> for MyAdventuresResponse {
+    fn from(vec: Vec<(domain::Adventures, domain::Users)>) -> Self {
+        let adventures_count = vec.len() as u64;
+        let adventures = vec
+            .into_iter()
+            .map(|domain_t| {
+                let (domain_ad, domain_u) = domain_t;
+                let adventure = Adventures::from(domain_ad);
+                let user = Users::from(domain_u);
+                AdventureUser { adventure, user }
+            })
+            .collect();
+
+        Self {
+            adventures,
+            adventures_count,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AdventureUser {
+    pub adventure: Adventures,
+    pub user: Users,
 }

@@ -15,6 +15,7 @@ pub struct FavoritesManagerImpl;
 
 #[async_trait]
 impl super::FavoritesManager for FavoritesManagerImpl {
+    #[tracing::instrument(skip(self))]
     async fn add_favorite(&self, add_favorite: AddFavorite) -> Result<Favorite, FavoriteError> {
         let mut transaction = Repo::transaction().await.expect("");
 
@@ -84,6 +85,7 @@ impl super::FavoritesManager for FavoritesManagerImpl {
         })
     }
 
+    #[tracing::instrument(skip(self))]
     async fn del_favorite(&self, del_favorite: DelFavorite) -> Result<bool, FavoriteError> {
         let mut transaction = Repo::transaction().await.expect("");
 

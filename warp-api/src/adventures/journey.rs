@@ -51,6 +51,7 @@ struct JourneyResponse {
     id: ID,
 }
 
+#[tracing::instrument(skip(auth_user, state))]
 pub async fn journey(
     form: JourneyForm,
     AuthUser(auth_user): AuthUser,

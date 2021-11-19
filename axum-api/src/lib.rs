@@ -10,6 +10,3 @@ pub mod users;
 pub use adventures::*;
 pub use app_state::*;
 pub use users::*;
-
-#[macro_use]
-extern crate log;

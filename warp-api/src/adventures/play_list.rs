@@ -1,7 +1,9 @@
 use domain::{AdventuresManager, PlayListQuery};
+use tracing::debug;
 
 use crate::{adventures::response::AdventuresResponse, response::ErrorResponse, AppState};
 
+#[tracing::instrument(skip(state))]
 pub async fn play_list_adventures(
     play_list: String,
     state: AppState,

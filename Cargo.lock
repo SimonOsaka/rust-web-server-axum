@@ -141,18 +141,17 @@ dependencies = [
  "auth",
  "axum",
  "domain",
- "flexi_logger",
  "headers",
  "http-body",
  "hyper",
  "jsonwebtoken",
- "log",
  "serde",
  "serde_json",
  "thiserror",
  "tokio 1.14.0",
  "tower",
  "tower-http",
+ "tracing 0.2.0",
  "types",
  "validator",
 ]
@@ -593,8 +592,6 @@ dependencies = [
  "async-trait",
  "base64 0.13.0",
  "chrono",
- "flexi_logger",
- "log",
  "meilisearch-sdk",
  "redis 0.1.0",
  "repository",
@@ -603,6 +600,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
+ "tracing 0.2.0",
  "types",
 ]
 
@@ -659,23 +657,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b394ed3d285a429378d3b384b9eb1285267e7df4b166df24b7a6939a04dc392e"
 dependencies = [
  "instant",
-]
-
-[[package]]
-name = "flexi_logger"
-version = "0.20.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d7854b643a891cf06daed194725d6ae6c374dd63fe4aad5c202912f853ff2df"
-dependencies = [
- "ansi_term",
- "atty",
- "glob",
- "lazy_static",
- "log",
- "regex",
- "rustversion",
- "thiserror",
- "time 0.3.5",
 ]
 
 [[package]]
@@ -856,12 +837,6 @@ dependencies = [
  "libc",
  "wasi",
 ]
-
-[[package]]
-name = "glob"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
 
 [[package]]
 name = "h2"
@@ -1806,10 +1781,9 @@ dependencies = [
 name = "redis"
 version = "0.1.0"
 dependencies = [
- "flexi_logger",
- "log",
  "once_cell",
  "redis 0.21.4",
+ "tracing 0.2.0",
 ]
 
 [[package]]
@@ -1957,12 +1931,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustversion"
-version = "1.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61b3909d758bb75c79f23d4736fac9433868679d3ad2ea7a61e3c25cfda9a088"
-
-[[package]]
 name = "ryu"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2019,12 +1987,11 @@ dependencies = [
 name = "search"
 version = "0.1.0"
 dependencies = [
- "flexi_logger",
- "log",
  "meilisearch-sdk",
  "once_cell",
  "serde",
  "serde_json",
+ "tracing 0.2.0",
  "types",
 ]
 
@@ -2109,8 +2076,6 @@ dependencies = [
  "async-trait",
  "axum-api",
  "dotenv",
- "flexi_logger",
- "log",
  "logger",
  "once_cell",
  "redis 0.1.0",
@@ -3224,11 +3189,10 @@ dependencies = [
  "auth",
  "chrono",
  "domain",
- "flexi_logger",
- "log",
  "serde",
  "serde_derive",
  "thiserror",
+ "tracing 0.2.0",
  "types",
  "validator",
  "warp",

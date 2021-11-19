@@ -10,6 +10,7 @@ use crate::{
     list::list_adventures,
     login::login,
     me::me,
+    my_list::my_list_adventures,
     play_list::play_list_adventures,
     registry::registry,
     sync::sync_adventure,
@@ -28,6 +29,7 @@ use serde_json::json;
 use std::time::Duration;
 use tower::{filter::AsyncFilterLayer, util::AndThenLayer, BoxError, ServiceBuilder};
 use tower_http::trace::TraceLayer;
+use tracing::debug;
 
 use crate::app_state::AppState;
 
@@ -57,6 +59,7 @@ pub fn routes(state: AppState) -> Router {
         .route("/api/adventures/tabs", get(tabs_adventures))
         .route("/api/adventures/:id/favorite", post(favorite))
         .route("/api/adventures/:id/unfavorite", post(unfavorite))
+        .route("/api/adventures/my", get(my_list_adventures))
         // sync
         .route("/api/sync/:id", get(sync_adventure))
         // users

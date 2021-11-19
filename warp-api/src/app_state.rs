@@ -32,7 +32,7 @@ pub async fn start() {
     // custom log format
     // pass x-real-ip from nginx
     let log = warp::log::custom(|info| {
-        info!(
+        tracing::debug!(
             target: APPLICATION_NAME,
             "{:?} \"{} {} {:?}\" {} \"{}\" \"{}\" {:?}",
             info.request_headers()

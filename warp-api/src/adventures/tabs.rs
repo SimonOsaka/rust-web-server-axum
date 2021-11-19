@@ -1,9 +1,11 @@
 use std::convert::Infallible;
 
+use tracing::debug;
 use types::my_item_type_format::to_item_type_name;
 
 use crate::adventures::response::{Tabs, TabsResponse};
 
+#[tracing::instrument]
 pub async fn tabs_adventures() -> Result<impl warp::Reply, Infallible> {
     let tabs: Vec<Tabs> = vec![
         Tabs {

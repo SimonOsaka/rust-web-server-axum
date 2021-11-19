@@ -19,6 +19,7 @@ pub struct LoginResponse {
     token: String,
 }
 
+#[tracing::instrument(skip(state))]
 pub async fn login(
     ValidatedJson(login_form): ValidatedJson<LoginForm>,
     Extension(state): Extension<AppState>,

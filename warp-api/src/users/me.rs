@@ -11,6 +11,7 @@ pub struct MeResponse {
     pub roles: Vec<String>,
 }
 
+#[tracing::instrument(skip(auth_user, state))]
 pub async fn me(
     AuthUser(auth_user): AuthUser,
     state: AppState,

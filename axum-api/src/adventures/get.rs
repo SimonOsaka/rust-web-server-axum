@@ -4,8 +4,10 @@ use axum::{
     Json,
 };
 use domain::AdventuresManager;
+use tracing::debug;
 use types::ID;
 
+#[tracing::instrument(skip(state))]
 pub async fn get_adventure(
     Path(_id): Path<ID>,
     Extension(state): Extension<AppState>,

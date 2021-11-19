@@ -1,6 +1,7 @@
 use crate::{adventures::response::VersionUpdateResponse, app_response::AppError};
 use axum::{extract::Query, Json};
 use serde::Deserialize;
+use tracing::debug;
 
 #[derive(Default, Deserialize, Debug, Clone)]
 pub struct VersionUpdateReq {
@@ -8,6 +9,7 @@ pub struct VersionUpdateReq {
     pub version: String,
 }
 
+#[tracing::instrument]
 pub async fn version_update_adventures(
     query: Query<VersionUpdateReq>,
 ) -> Result<Json<VersionUpdateResponse>, AppError> {

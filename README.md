@@ -11,7 +11,6 @@
     - sqlx
 - types: type for all module
 - server: boot & logger
-    - flexi_logger
 - redis: nosql db
     - redis
 - search: search engine
@@ -73,6 +72,22 @@ ALTER TABLE table_name DROP CONSTRAINT constraint_name;
 - `cargo build --release`
 - `cd target/release`
 - `./app`
+
+## tracing
+1. init to see source [logger/src/tracing_logger.rs](logger/src/tracing_logger.rs)
+    - environment variable `RUST_ENV`
+    - stderr, console output log in `development`
+    - file, path to log in `production`, `development`
+2. tracing log marco
+    - `tracing::debug!`
+    - `tracing::info!`
+    - `tracing::warn!`
+    - `tracing::error!`
+3. tracing method 
+    - `#[tracing::instrument]` in library or async method
+    - `#[tracing::instrument(skip(transaction))]` ignore `transaction` param in method
+    - `#[tracing::instrument(skip(transaction), fields(name=%u.username))]` output `name=xxxx`
+    - `#[tracing::instrument(skip(transaction), fields(name=%u.username), err)]` err print
 
 ## Docker
 ```shell

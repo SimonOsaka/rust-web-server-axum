@@ -25,6 +25,7 @@ enum Action {
     Unfavorite,
 }
 
+#[tracing::instrument(skip(auth_user, state))]
 pub async fn favorite(
     ValidatedPath(form): ValidatedPath<FavoriteForm>,
     AuthUser(auth_user): AuthUser,
@@ -33,6 +34,7 @@ pub async fn favorite(
     process(form, AuthUser(auth_user), state, Action::Favorite).await
 }
 
+#[tracing::instrument(skip(auth_user, state))]
 pub async fn unfavorite(
     ValidatedPath(form): ValidatedPath<FavoriteForm>,
     AuthUser(auth_user): AuthUser,

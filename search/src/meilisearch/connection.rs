@@ -1,6 +1,7 @@
 use std::env;
 
 use meilisearch_sdk::{client::Client, indexes::Index};
+use tracing::debug;
 
 use crate::MEILISEARCH;
 
@@ -9,8 +10,10 @@ pub struct MeiliSearch {
     pub(crate) meili_key: String,
     pub(crate) adventures_index: Index,
 }
+
 impl MeiliSearch {
     /// create meilisearch client and index
+    #[tracing::instrument]
     pub async fn create() {
         let meilisearch_url = env::var("MEILISEARCH_URL").expect("MEILISEARCH_URL must be set");
         let meilisearch_key = env::var("MEILISEARCH_KEY").expect("MEILISEARCH_KEY must be set");

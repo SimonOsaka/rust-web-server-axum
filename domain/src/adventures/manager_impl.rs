@@ -6,8 +6,6 @@ use crate::{Adventures, AdventuresQuery, DomainError, GetAdventureError, PlayLis
 
 use anyhow::Result;
 
-use log::debug;
-
 use meilisearch_sdk::progress::UpdateStatus;
 use repository::db::Repo;
 use repository::{
@@ -16,6 +14,7 @@ use repository::{
 };
 use search::adventures::{search_by_play_list, search_latest, search_one};
 use search::meilisearch::operation::{add_documents, del_documents};
+use tracing::debug;
 use types::ID;
 
 #[derive(Clone, Debug)]
@@ -23,6 +22,7 @@ pub struct AdventuresManagerImpl;
 
 #[async_trait]
 impl super::AdventuresManager for AdventuresManagerImpl {
+    #[tracing::instrument(skip(self))]
     async fn find_adventures(
         &self,
         query: AdventuresQuery,
@@ -38,6 +38,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         Ok(result)
     }
 
+    #[tracing::instrument(skip(self))]
     async fn find_adventures_by_play_list(
         &self,
         query: PlayListQuery,
@@ -54,6 +55,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         Ok(result)
     }
 
+    #[tracing::instrument(skip(self))]
     async fn get_adventure_by_id(&self, id: ID) -> Result<Option<Adventures>, GetAdventureError> {
         let search_results = search_one(id).await.map_err(search_to_domain_error);
 
@@ -67,6 +69,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         }
     }
 
+    #[tracing::instrument(skip(self))]
     async fn get_adventure(&self, id: ID) -> Result<Adventures, GetAdventureError> {
         let search_results = search_one(id).await.map_err(search_to_domain_error);
 
@@ -80,6 +83,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         }
     }
 
+    #[tracing::instrument(skip(self))]
     async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError> {
         let result = find_one_adventure(id, None).await;
         match result {
@@ -103,6 +107,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         }
     }
 
+    #[tracing::instrument(skip(self))]
     async fn add_journey(&self, data: NewJourneyData) -> Result<ID, CreateAdventureError> {
         let mut transaction = Repo::transaction().await.expect("");
 
@@ -143,6 +148,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         }
     }
 
+    #[tracing::instrument(skip(self))]
     async fn delete_adventure(&self, id: ID, user_id: ID) -> Result<bool, DeleteAdventureError> {
         let mut transaction = Repo::transaction().await.expect("");
 
@@ -185,6 +191,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         Ok(true)
     }
 
+    #[tracing::instrument(skip(self))]
     async fn find_by_user_id(&self, user_id: ID) -> Result<Vec<(Adventures, Users)>, DomainError> {
         let result = find_adventures_by_user_id(user_id, None)
             .await

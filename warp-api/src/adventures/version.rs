@@ -2,6 +2,7 @@ use std::convert::Infallible;
 
 use crate::adventures::response::VersionUpdateResponse;
 use serde::Deserialize;
+use tracing::debug;
 
 #[derive(Default, Deserialize, Debug, Clone)]
 pub struct VersionUpdateReq {
@@ -9,6 +10,7 @@ pub struct VersionUpdateReq {
     pub version: String,
 }
 
+#[tracing::instrument]
 pub async fn version_update_adventures(
     query: VersionUpdateReq,
 ) -> Result<impl warp::Reply, Infallible> {

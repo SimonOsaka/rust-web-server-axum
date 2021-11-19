@@ -3,6 +3,7 @@ pub mod favorite;
 pub mod get;
 pub mod journey;
 pub mod list;
+pub mod my_list;
 pub mod play_list;
 pub mod response;
 pub mod sync;

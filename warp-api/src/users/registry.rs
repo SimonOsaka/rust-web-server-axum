@@ -20,6 +20,7 @@ struct RegistryResponse {
     username: String,
 }
 
+#[tracing::instrument(skip(state,registry_form),fields(registry_form.username = %registry_form.username))]
 pub async fn registry(
     registry_form: RegistryForm,
     state: AppState,
