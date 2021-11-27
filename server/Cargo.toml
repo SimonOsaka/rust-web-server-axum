@@ -21,20 +21,20 @@ name = "app"
 
 [features]
 default = ["database_lib", "search_lib", "api_warp_lib"]
-redis_lib = []
-database_lib = []
-search_lib = []
-api_warp_lib = []
+redis_lib = ["redis"]
+database_lib = ["repository"]
+search_lib = ["search"]
+api_warp_lib = ["warp-api"]
+api_axum_lib = ["axum-api"]
+extra_lib = ["extra/email"]
 
 [dependencies]
-axum-api = { path = "../axum-api" }
-warp-api = { path = "../warp-api" }
-redis = { path = "../redis" }
-repository = { path = "../repository" }
-search = { path = "../search" }
+axum-api = { path = "../axum-api", optional = true }
+warp-api = { path = "../warp-api", optional = true }
+redis = { path = "../redis", optional = true }
+repository = { path = "../repository", optional = true }
+search = { path = "../search", optional = true }
+extra = { path = "../extra", optional = true }
 logger = { path = "../logger" }
-async-trait = "0.1"
-time = "0.3"
 dotenv = "0.15.0"
 tokio = { version = "1", features = ["macros"] }
-once_cell = "1.8.0"

@@ -1,0 +1,23 @@
+[package]
+name = "extra"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default = []
+email = ["lettre", "tokio", "once_cell", "thiserror"]
+
+[dependencies]
+# email
+lettre = { version = "0.10.0-rc.4", default-features = false, features = [
+    "builder",
+    "hostname",
+    "smtp-transport",
+    "tokio1-rustls-tls",
+    "tokio1",
+    "pool",
+], optional = true }
+tokio = { version = "1", features = ["full"], optional = true }
+once_cell = { version = "1.8.0", optional = true }
+thiserror = { version = "1.0", optional = true }

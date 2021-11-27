@@ -10,11 +10,18 @@ members = [
     "server",
     "auth",
     "logger",
+    "extra",
 ]
 
 [profile.dev]
+opt-level = 0
+overflow-checks = true
+lto = false
+incremental = true
 codegen-units = 16
 
 [profile.release]
 lto = true
 opt-level = 'z'
+overflow-checks = false
+incremental = false
