@@ -171,6 +171,7 @@ pub async fn create_journey<'a>(
 
 #[tracing::instrument(skip(transaction), err)]
 pub async fn find_adventure_title_crypto<'a>(
+    user_id: ID,
     title_crypto: String,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
 ) -> Result<Option<MyAdventures>, sqlx::Error> {
@@ -179,7 +180,8 @@ pub async fn find_adventure_title_crypto<'a>(
     sql_builder
         .fields(MY_ADVENTURES_FIELDS)
         .and_where_eq(name!("ad", "is_deleted"), 0)
-        .and_where_eq(name!("ad", "title_crypto"), param.add_value(title_crypto));
+        .and_where_eq(name!("ad", "title_crypto"), param.add_value(title_crypto))
+        .and_where_eq(name!("ad", "user_id"), param.add_value(user_id));
 
     let my = sql_builder.query_one_optinal(param, transaction).await?;
     Ok(my)

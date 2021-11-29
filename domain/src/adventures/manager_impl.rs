@@ -112,7 +112,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         let mut transaction = Repo::transaction().await.expect("");
 
         let my_adventures_optional =
-            find_adventure_title_crypto(data.nj.crypto(), Some(&mut transaction))
+            find_adventure_title_crypto(data.u.id, data.nj.crypto(), Some(&mut transaction))
                 .await
                 .map_err(database_to_domain_error)?;
         if my_adventures_optional.is_some() {
