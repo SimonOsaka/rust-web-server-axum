@@ -1,6 +1,6 @@
 use auth::JWTError;
 use axum::{
-    extract::rejection::{JsonRejection, PathParamsRejection, QueryRejection},
+    extract::rejection::{JsonRejection, PathRejection, QueryRejection},
     http::StatusCode,
     response::IntoResponse,
     Json,
@@ -17,7 +17,7 @@ pub enum ValidateError {
     InvalidParam(ValidationErrors),
     AxumQueryRejection(QueryRejection),
     AxumJsonRejection(JsonRejection),
-    AxumPathRejection(PathParamsRejection),
+    AxumPathRejection(PathRejection),
 }
 
 #[derive(Error, Debug)]

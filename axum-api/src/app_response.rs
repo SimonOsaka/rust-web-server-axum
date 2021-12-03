@@ -1,18 +1,10 @@
-use axum::{
-    body::{Bytes, Full},
-    http::Response,
-    response::IntoResponse,
-};
+use axum::{body::BoxBody, http::Response, response::IntoResponse};
 use serde::Serialize;
-use std::convert::Infallible;
 
-pub struct AppError(pub Response<Full<Bytes>>);
+pub struct AppError(pub Response<BoxBody>);
 
 impl IntoResponse for AppError {
-    type Body = Full<Bytes>;
-    type BodyError = Infallible;
-
-    fn into_response(self) -> Response<Self::Body> {
+    fn into_response(self) -> Response<BoxBody> {
         self.0
     }
 }

@@ -99,7 +99,7 @@ where
     Ok(bytes)
 }
 
-fn handle_error(error: BoxError) -> impl IntoResponse {
+async fn handle_error(error: BoxError) -> impl IntoResponse {
     if error.is::<tower::timeout::error::Elapsed>() {
         Ok(StatusCode::REQUEST_TIMEOUT)
     } else {

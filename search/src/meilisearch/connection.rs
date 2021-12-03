@@ -7,7 +7,6 @@ use crate::MEILISEARCH;
 
 #[derive(Debug)]
 pub struct MeiliSearch {
-    pub(crate) meili_key: String,
     pub(crate) adventures_index: Index,
 }
 
@@ -21,10 +20,7 @@ impl MeiliSearch {
         let adventures_index = ms_conn.get_or_create("adventures_index").await.unwrap();
 
         MEILISEARCH
-            .set(MeiliSearch {
-                adventures_index,
-                meili_key: meilisearch_key,
-            })
+            .set(MeiliSearch { adventures_index })
             .expect("meilisearch index must created");
 
         debug!("meilisearch connection created");
