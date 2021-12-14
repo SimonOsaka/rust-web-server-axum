@@ -18,13 +18,13 @@ use crate::{
     version::version_update_adventures,
 };
 use axum::{
-    body::{Body, BoxBody, Bytes},
+    body::{Body, Bytes},
     error_handling::HandleErrorLayer,
-    response::IntoResponse,
+    response::{IntoResponse, Response},
     routing::{get, post, put},
     AddExtensionLayer, Json, Router,
 };
-use hyper::{Request, Response, StatusCode};
+use hyper::{Request, StatusCode};
 use serde_json::json;
 use std::time::Duration;
 use tower::{filter::AsyncFilterLayer, util::AndThenLayer, BoxError, ServiceBuilder};
@@ -80,7 +80,7 @@ async fn map_request(req: Request<Body>) -> Result<Request<Body>, BoxError> {
     Ok(req)
 }
 
-async fn map_response(res: Response<BoxBody>) -> Result<Response<Body>, BoxError> {
+async fn map_response(res: Response) -> Result<Response<Body>, BoxError> {
     let (parts, body) = res.into_parts();
     let bytes = buffer_and_print("response", body).await?;
     let res = Response::from_parts(parts, Body::from(bytes));
