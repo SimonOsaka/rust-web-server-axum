@@ -19,7 +19,7 @@ chrono = { version = "0.4.19", features = ["serde"] }
 thiserror = "1.0.30"
 async-trait = "0.1"
 anyhow = "1.0.44"
-meilisearch-sdk = { version = "0.11.0", default-features = false, features = [
+meilisearch-sdk = { version = "0.13.0", default-features = false, features = [
     "sync",
 ] }
 base64 = "0.13"
