@@ -19,6 +19,7 @@
     - jwt web token
 - logger: log everything
     - tracing
+- i18n: multi-languages
 
 ## Prepare
 - Install Rust 1.56+
