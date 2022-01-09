@@ -19,6 +19,7 @@
     - jwt web token
 - logger: log everything
     - tracing
+- extra: extra's tools
 - i18n: multi-languages
 
 ## Prepare
