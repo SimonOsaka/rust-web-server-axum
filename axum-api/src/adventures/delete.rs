@@ -13,7 +13,7 @@ use crate::{
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct DeleteAdventureReq {
-    #[validate(range(min = 1, message = "id not correct"))]
+    #[validate(range(min = 1, code = "adventure-delete-valid-adventure_id"))]
     pub id: i64,
 }
 

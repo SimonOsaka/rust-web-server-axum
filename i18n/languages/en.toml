@@ -1,0 +1,52 @@
+something-wrong = "Something went wrong."
+# 
+# adventure
+# 
+adventure-not-exist = "There is no adventure with id {0}."
+adventure-exist = "Adventure exist"
+adventure-add-document-error = "Add document error"
+adventure-owner-wrong = "Adventure's owner isn't correct."
+adventure-del-document-error = "Del document error"
+adventure-list-valid-limit = "limit 1 - 20"
+adventure-list-valid-item_id = "item_id is not correct"
+adventure-list-valid-offset = "offset start at 0"
+adventure-list-valid-province_key = "province_key at lease 2 chars"
+adventure-delete-valid-adventure_id = "adventure_id isn't correct"
+adventure-favorite-valid-adventure_id = "adventure_id isn't correct"
+adventure-journey-valid-title = "title length(5-40)"
+adventure-journey-valid-image_url = "image_url isn't correct"
+adventure-journey-valid-link = "link isn't correct"
+adventure-journey-valid-source = "source isn't correct"
+adventure-journey-valid-journey_destiny = "journey_destiny isn't correct"
+# 
+# favorite
+# 
+favorite-already-exist = "favorite already exist, user id = {0} adventure id = {1}"
+favorite-adventure-not-found = "There is no adventure id = {0} exist"
+# 
+# jwt
+# 
+jwt-missing = "Missing authorization key"
+jwt-invalid = "Authorization wrong"
+# 
+# user
+# 
+user-not-found = "There is no user with username {0}."
+user-password-not-correct = "Password is not correct with username {0}."
+user-name-exist = "User's name exist"
+user-change-password-valid-old_password = "old password length(8-32)"
+user-change-password-valid-new_password = "new password length(8-32)"
+user-change-username-valid-new_username = "new username length(2-20)"
+# 
+# login
+# 
+login-password-not-correct = "Password is not correct"
+login-user-not-exist = "Login user doesn't exist"
+login-valid-username = "username length(2-20)"
+login-valid-password = "password length(8-32)"
+# 
+# registry
+# 
+registry-user-exist = "Registry user exist"
+registry-valid-username = "username length(2-20)"
+registry-valid-password = "password length(8-32)"

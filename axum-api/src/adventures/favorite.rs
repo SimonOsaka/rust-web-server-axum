@@ -11,7 +11,7 @@ use crate::{
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct FavoriteForm {
-    #[validate(range(min = 1, message = "id not correct"))]
+    #[validate(range(min = 1, code = "adventure-favorite-valid-adventure_id"))]
     id: i64,
 }
 

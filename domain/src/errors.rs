@@ -1,4 +1,5 @@
 use anyhow::Error as OpaqueError;
+use i18n::i18n;
 use repository::SqlxError;
 use tracing::debug;
 pub fn search_to_domain_error(e: meilisearch_sdk::errors::Error) -> DomainError {
@@ -12,7 +13,7 @@ pub fn database_to_domain_error(e: SqlxError) -> DomainError {
 }
 
 #[derive(thiserror::Error, Debug)]
-#[error("Something went wrong.")]
+#[error("{}", i18n("something-wrong"))]
 pub struct DomainError {
     #[from]
     source: anyhow::Error,

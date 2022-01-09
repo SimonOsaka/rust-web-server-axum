@@ -5,6 +5,7 @@ use domain::{
     CreateAdventureError, DeleteAdventureError, DomainError, FavoriteError, GetAdventureError,
     GetUserError,
 };
+use i18n::i18n;
 use thiserror::Error;
 use validator::ValidationErrors;
 use warp::hyper::StatusCode;
@@ -49,21 +50,21 @@ pub enum ValidateError {
 
 #[derive(Error, Debug)]
 pub enum LoginError {
-    #[error("Password is not correct")]
+    #[error("{}", i18n("login-password-not-correct"))]
     WrongPassword,
-    #[error("Login user doesn't exist")]
+    #[error("{}", i18n("login-user-not-exist"))]
     UserNotExist,
 }
 
 #[derive(Error, Debug)]
 pub enum RegistryError {
-    #[error("Registry user exist")]
+    #[error("{}", i18n("registry-user-exist"))]
     UserExist,
 }
 
 #[derive(Error, Debug)]
 pub enum ChangeUsernameError {
-    #[error("Username exist")]
+    #[error("{}", i18n("user-name-exist"))]
     UsernameExist,
 }
 

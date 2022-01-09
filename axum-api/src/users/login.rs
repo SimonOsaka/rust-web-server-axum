@@ -8,9 +8,9 @@ use crate::{app_error::LoginError, app_request::ValidatedJson, app_response::App
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct LoginForm {
-    #[validate(length(min = 2, max = 20, message = "username length(2-20)"))]
+    #[validate(length(min = 2, max = 20, code = "login-valid-username"))]
     username: String,
-    #[validate(length(min = 8, max = 32, message = "password length(8-32)"))]
+    #[validate(length(min = 8, max = 32, code = "login-valid-password"))]
     password: String,
 }
 

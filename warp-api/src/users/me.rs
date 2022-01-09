@@ -1,8 +1,8 @@
 use domain::{GetUserError, UsersManager};
 use serde::Serialize;
 
+use crate::request::AuthUser;
 use crate::response::ErrorResponse;
-use crate::routes::AuthUser;
 use crate::AppState;
 
 #[derive(Serialize)]

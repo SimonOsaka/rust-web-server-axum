@@ -1,6 +1,5 @@
-use crate::request::PathValidate;
+use crate::request::{AuthUser, PathValidate};
 use crate::response::ErrorResponse;
-use crate::routes::AuthUser;
 use crate::AppState;
 use domain::UsersManager;
 use serde::{Deserialize, Serialize};
@@ -8,7 +7,7 @@ use validator::Validate;
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct FavoriteForm {
-    #[validate(range(min = 1, message = "adventure_id not correct"))]
+    #[validate(range(min = 1, code = "adventure-favorite-valid-adventure_id"))]
     pub adventure_id: i64,
 }
 

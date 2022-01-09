@@ -7,6 +7,7 @@ use axum::{
 };
 use http_body::Body;
 use serde::de::DeserializeOwned;
+use types::to_new_validation_errors;
 use validator::Validate;
 
 use crate::{app_error::ValidateError, app_response::AppError};
@@ -58,9 +59,10 @@ where
         let Query(value) = Query::<T>::from_request(req)
             .await
             .map_err(|e| AppError::from(ValidateError::AxumQueryRejection(e)))?;
-        value
-            .validate()
-            .map_err(|e| AppError::from(ValidateError::InvalidParam(e)))?;
+        value.validate().map_err(|e| {
+            let ves = to_new_validation_errors(e);
+            AppError::from(ValidateError::InvalidParam(ves))
+        })?;
         Ok(ValidatedQuery(value))
     }
 }
@@ -82,9 +84,10 @@ where
         let Json(value) = Json::<T>::from_request(req)
             .await
             .map_err(|e| AppError::from(ValidateError::AxumJsonRejection(e)))?;
-        value
-            .validate()
-            .map_err(|e| AppError::from(ValidateError::InvalidParam(e)))?;
+        value.validate().map_err(|e| {
+            let ves = to_new_validation_errors(e);
+            AppError::from(ValidateError::InvalidParam(ves))
+        })?;
         Ok(ValidatedJson(value))
     }
 }
@@ -104,9 +107,10 @@ where
         let Path(value) = Path::<T>::from_request(req)
             .await
             .map_err(|e| AppError::from(ValidateError::AxumPathRejection(e)))?;
-        value
-            .validate()
-            .map_err(|e| AppError::from(ValidateError::InvalidParam(e)))?;
+        value.validate().map_err(|e| {
+            let ves = to_new_validation_errors(e);
+            AppError::from(ValidateError::InvalidParam(ves))
+        })?;
         Ok(ValidatedPath(value))
     }
 }

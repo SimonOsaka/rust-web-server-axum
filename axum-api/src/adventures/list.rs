@@ -11,13 +11,13 @@ use crate::{
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct AdventuresQueryReq {
-    #[validate(custom(function = "validate_item_id", message = "item_id is not correct"))]
+    #[validate(custom(function = "validate_item_id"))]
     pub item_id: u8,
-    #[validate(range(min = 1, max = 20, message = "limit 1 - 20"))]
+    #[validate(range(min = 1, max = 20, code = "adventure-list-valid-limit"))]
     pub limit: Option<u32>,
-    #[validate(range(min = 0, message = "offset start at 0"))]
+    #[validate(range(min = 0, code = "adventure-list-valid-offset"))]
     pub offset: Option<u32>,
-    #[validate(length(min = 2, message = "province_key at lease 2 chars"))]
+    #[validate(length(min = 2, code = "adventure-list-valid-province_key"))]
     pub province_key: Option<String>,
 }
 
@@ -34,7 +34,7 @@ impl From<AdventuresQueryReq> for AdventuresQuery {
 
 fn validate_item_id(item_id: u8) -> Result<(), ValidationError> {
     if to_item_type_name(item_id.into()) == "" {
-        return Err(ValidationError::new("item_id"));
+        return Err(ValidationError::new("adventure-list-valid-item_id"));
     }
 
     Ok(())

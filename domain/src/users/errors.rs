@@ -1,13 +1,14 @@
+use i18n::{i18n, i18n_with_vars};
 use thiserror::Error;
 
 use crate::DomainError;
 
 #[derive(Error, Debug)]
 pub enum GetUserError {
-    #[error("There is no user with username {username:?}.")]
+    #[error("{}", i18n_with_vars("user-not-found", vec![username.to_string()]))]
     NotFound { username: String },
-    #[error("Password is not correct with username {username:?}.")]
+    #[error("{}", i18n_with_vars("user-password-not-correct", vec![username.to_string()]))]
     PasswordNotCorrect { username: String },
-    #[error("Something went wrong.")]
+    #[error("{}", i18n("something-wrong"))]
     DomainError(#[from] DomainError),
 }

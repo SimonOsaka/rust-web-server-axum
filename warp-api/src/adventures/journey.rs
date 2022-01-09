@@ -5,34 +5,31 @@ use types::my_source::to_source_name;
 use types::ID;
 use validator::{Validate, ValidationError};
 
+use crate::request::AuthUser;
 use crate::response::ErrorResponse;
-use crate::routes::AuthUser;
 use crate::AppState;
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct JourneyForm {
-    #[validate(length(min = 5, max = 40, message = "title length(5-40)"))]
+    #[validate(length(min = 5, max = 40, code = "adventure-journey-valid-title"))]
     title: String,
 
-    #[validate(url)]
+    #[validate(url(code = "adventure-journey-valid-image_url"))]
     image_url: String,
 
-    #[validate(url)]
+    #[validate(url(code = "adventure-journey-valid-link"))]
     link: String,
 
-    #[validate(custom(function = "validate_source", message = "source is not correct"))]
+    #[validate(custom(function = "validate_source"))]
     source: u8,
 
-    #[validate(custom(
-        function = "validate_journey_destiny",
-        message = "journey_destiny is not correct"
-    ))]
+    #[validate(custom(function = "validate_journey_destiny"))]
     journey_destiny: String,
 }
 
 fn validate_source(source: u8) -> Result<(), ValidationError> {
     if to_source_name(source.into()) == "" {
-        return Err(ValidationError::new("source"));
+        return Err(ValidationError::new("adventure-journey-valid-source"));
     }
 
     Ok(())
@@ -40,7 +37,9 @@ fn validate_source(source: u8) -> Result<(), ValidationError> {
 
 fn validate_journey_destiny(journey_destiny: &str) -> Result<(), ValidationError> {
     if to_name(&journey_destiny) == "" {
-        return Err(ValidationError::new("journey_destiny"));
+        return Err(ValidationError::new(
+            "adventure-journey-valid-journey_destiny",
+        ));
     }
 
     Ok(())

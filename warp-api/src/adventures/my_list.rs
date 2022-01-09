@@ -2,7 +2,8 @@ use domain::UsersManager;
 use tracing::debug;
 
 use crate::{
-    adventures::response::MyAdventuresResponse, response::ErrorResponse, routes::AuthUser, AppState,
+    adventures::response::MyAdventuresResponse, request::AuthUser, response::ErrorResponse,
+    AppState,
 };
 
 #[tracing::instrument(skip(user, state))]

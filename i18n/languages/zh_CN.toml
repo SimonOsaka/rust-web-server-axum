@@ -1,0 +1,52 @@
+something-wrong = "发生错误了"
+# 
+# adventure
+# 
+adventure-not-exist = "没有这条探险数据 {0}"
+adventure-exist = "探险已存在"
+adventure-add-document-error = "添加探险文档错误"
+adventure-owner-wrong = "探险数据拥有者不正确"
+adventure-del-document-error = "删除探险文档错误"
+adventure-list-valid-limit = "分页数据限制1 - 20条之间"
+adventure-list-valid-item_id = "分类不正确"
+adventure-list-valid-offset = "分页从0开始"
+adventure-list-valid-province_key = "省份至少两个字符"
+adventure-delete-valid-adventure_id = "要删除的id不正确"
+adventure-favorite-valid-adventure_id = "喜爱的探险id不正确"
+adventure-journey-valid-title = "题目长度(5-40)"
+adventure-journey-valid-image_url = "图片链接不正确"
+adventure-journey-valid-link = "链接不正确"
+adventure-journey-valid-source = "来源不正确"
+adventure-journey-valid-journey_destiny = "旅游目的地不正确"
+# 
+# favorite
+# 
+favorite-already-exist = "喜爱的探险已存在，用户id = {0}，探险id = {1}"
+favorite-adventure-not-found = "探险id = {0}不存在"
+# 
+# jwt
+# 
+jwt-missing = "缺少授权密钥"
+jwt-invalid = "授权错误"
+# 
+# user
+# 
+user-not-found = "用户名为{0}的用户不存在"
+user-password-not-correct = "用户名{0}的密码不正确"
+user-name-exist = "用户名不存在"
+user-change-password-valid-old_password = "旧密码长度(8-32)"
+user-change-password-valid-new_password = "新密码长度(8-32)"
+user-change-username-valid-new_username = "新用户名长度(2-20)"
+# 
+# login
+# 
+login-password-not-correct = "密码不正确"
+login-user-not-exist = "用户不存在"
+login-valid-username = "用户名长度(2-20)"
+login-valid-password = "密码长度(8-32)"
+# 
+# registry
+# 
+registry-user-exist = "注册的用户已存在"
+registry-valid-username = "注册用户名长度(2-20)"
+registry-valid-password = "注册用户名长度(8-32)"

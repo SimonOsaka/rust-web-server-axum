@@ -13,7 +13,7 @@ use crate::{
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct ChangeUsernameForm {
-    #[validate(length(min = 2, max = 20, message = "new username length(2-20)"))]
+    #[validate(length(min = 2, max = 20, code = "user-change-username-valid-new_username"))]
     new_username: String,
 }
 

@@ -11,6 +11,7 @@ members = [
     "auth",
     "logger",
     "extra",
+    "i18n",
 ]
 
 [profile.dev]

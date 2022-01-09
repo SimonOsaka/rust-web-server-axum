@@ -1,44 +1,45 @@
+use i18n::{i18n, i18n_with_vars};
 use types::ID;
 
 use crate::DomainError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum GetAdventureError {
-    #[error("There is no adventure with id {adventure_id:?}.")]
+    #[error("{}", i18n_with_vars("adventure-not-exist", vec![adventure_id.to_string()]))]
     NotFound {
         adventure_id: ID,
         // source: DomainError,
     },
-    #[error("Something went wrong.")]
+    #[error("{}", i18n("something-wrong"))]
     DomainError(#[from] DomainError),
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum CreateAdventureError {
-    #[error("There is no adventure with id {adventure_id:?}.")]
+    #[error("{}", i18n_with_vars("adventure-not-exist", vec![adventure_id.to_string()]))]
     AdventureNotFound {
         adventure_id: ID,
         // source: DomainError,
     },
-    #[error("Adventure exist")]
+    #[error("{}", i18n("adventure-exist"))]
     Exist,
-    #[error("Add document error")]
+    #[error("{}", i18n("adventure-add-document-error"))]
     AddDocuments,
-    #[error("Something went wrong.")]
+    #[error("{}", i18n("something-wrong"))]
     DomainError(#[from] DomainError),
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum DeleteAdventureError {
-    #[error("There is no adventure with id {adventure_id:?}.")]
+    #[error("{}", i18n_with_vars("adventure-not-exist", vec![adventure_id.to_string()]))]
     AdventureNotFound {
         adventure_id: ID,
         // source: DomainError,
     },
-    #[error("Adventure's owner isn't correct.")]
+    #[error("{}", i18n("adventure-owner-wrong"))]
     NotOwner,
-    #[error("Del document error")]
+    #[error("{}", i18n("adventure-del-document-error"))]
     DelDocuments,
-    #[error("Something went wrong.")]
+    #[error("{}", i18n("something-wrong"))]
     DomainError(#[from] DomainError),
 }

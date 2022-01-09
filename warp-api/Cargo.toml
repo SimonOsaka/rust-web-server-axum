@@ -9,6 +9,7 @@ edition = "2021"
 types = { path = "../types" }
 domain = { path = "../domain" }
 auth = { path = "../auth" }
+i18n = { path = "../i18n" }
 warp = "0.3"
 chrono = "0.4.19"
 serde = "1.0.125"

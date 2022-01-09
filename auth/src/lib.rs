@@ -1,4 +1,5 @@
 use chrono::{Duration, Utc};
+use i18n::i18n;
 use jsonwebtoken::errors::Result;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use once_cell::sync::Lazy;
@@ -71,9 +72,9 @@ pub fn role_view() -> Claims {
 
 #[derive(thiserror::Error, Clone, Debug)]
 pub enum JWTError {
-    #[error("Missing authorization key")]
+    #[error("{}", i18n("jwt-missing"))]
     Missing,
-    #[error("Authorization wrong")]
+    #[error("{}", i18n("jwt-invalid"))]
     Invalid,
 }
 

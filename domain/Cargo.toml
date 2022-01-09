@@ -13,6 +13,7 @@ types = { path = "../types" }
 repository = { path = "../repository" }
 redis = { path = "../redis" }
 search = { path = "../search" }
+i18n = { path = "../i18n" }
 serde = { version = "1.0.125", features = ["derive"] }
 serde_json = "1.0"
 chrono = { version = "0.4.19", features = ["serde"] }

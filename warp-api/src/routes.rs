@@ -1,24 +1,15 @@
-use auth::{decode_token, Claims, JWTError};
-use serde::de::DeserializeOwned;
 use types::ID;
-use validator::Validate;
-use warp::header::headers_cloned;
-use warp::hyper::header::AUTHORIZATION;
-use warp::hyper::HeaderMap;
-use warp::reject::custom;
-use warp::{self, Reply, get, query};
-use warp::{Filter, Rejection};
+use warp::{self, Reply, get, Filter, Rejection};
 use crate::my_list::my_list_adventures;
-use crate::request::PathValidate;
+use crate::request::{PathValidate, with_query_validate, with_auth, AuthUser, with_json_validate, handle_rejection, with_state};
 use crate::delete::{DeleteAdventureReq, delete_adventure};
-use crate::errors::ValidateError;
 use crate::favorite::{FavoriteForm, favorite, unfavorite};
 use crate::get::get_adventure;
 use crate::index::index;
 use crate::journey::{journey, JourneyForm};
 use crate::list::{list_adventures, AdventuresQueryReq};
 use crate::play_list::play_list_adventures;
-use crate::response::ErrorResponse;
+
 use crate::sync::sync_adventure;
 use crate::tabs::tabs_adventures;
 use crate::version::version_update_adventures;
@@ -193,66 +184,4 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 },
             ))
         .recover(handle_rejection)
-}
-
-fn with_state(
-    state: AppState,
-) -> impl Filter<Extract = (AppState,), Error = std::convert::Infallible> + Clone {
-    warp::any().map(move || state.clone())
-}
-
-#[derive(Debug)]
-pub struct AuthUser(pub Claims);
-
-fn with_auth() -> impl Filter<Extract = (AuthUser,), Error = Rejection> + Clone {
-    headers_cloned().and_then(|x: HeaderMap| async move {
-        match x.get(AUTHORIZATION) {
-            Some(k) => match k.to_str().ok().and_then(|x| decode_token(x).ok()) {
-                Some(k) => Ok(AuthUser(k)),
-                None => Err(warp::reject::custom(ErrorResponse::from(JWTError::Invalid))),
-            },
-            // for no login user
-            None =>
-            //Ok(AuthUser(role_view())),
-            {
-                Err(warp::reject::custom(ErrorResponse::from(JWTError::Missing)))
-            }
-        }
-    })
-}
-
-fn with_json_validate<T>() -> impl Filter<Extract = (T,), Error = Rejection> + Clone
-where
-    T: Validate + std::marker::Send + DeserializeOwned,
-{
-    warp::body::content_length_limit(1024 * 16).and(warp::body::json().and_then(
-        |val: T| async move {
-            match val.validate() {
-                Ok(_) => Ok(val),
-                Err(e) => Err(custom(ErrorResponse::from(ValidateError::InvalidParam(e)))),
-            }
-        },
-    ))
-}
-
-fn with_query_validate<T>() -> impl Filter<Extract = (T,), Error = Rejection> + Clone
-where
-    T: 'static + Validate + std::marker::Send + DeserializeOwned,
-{
-    query::<T>().and_then(|req: T| async move {
-        match req.validate() {
-            Ok(_) => Ok(req),
-            Err(e) => Err(custom(ErrorResponse::from(ValidateError::InvalidParam(e)))),
-        }
-    })
-}
-
-async fn handle_rejection(
-    err: warp::reject::Rejection,
-) -> Result<impl warp::Reply, warp::reject::Rejection> {
-    if let Some(e) = err.find::<ErrorResponse>() {
-        return Ok(e.clone().into_response());
-    }
-
-    Err(err)
 }
