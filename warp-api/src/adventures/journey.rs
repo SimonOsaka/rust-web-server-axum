@@ -28,7 +28,7 @@ pub struct JourneyForm {
 }
 
 fn validate_source(source: u8) -> Result<(), ValidationError> {
-    if to_source_name(source.into()) == "" {
+    if to_source_name(source.into()).is_empty() {
         return Err(ValidationError::new("adventure-journey-valid-source"));
     }
 
@@ -36,7 +36,7 @@ fn validate_source(source: u8) -> Result<(), ValidationError> {
 }
 
 fn validate_journey_destiny(journey_destiny: &str) -> Result<(), ValidationError> {
-    if to_name(&journey_destiny) == "" {
+    if to_name(journey_destiny).is_empty() {
         return Err(ValidationError::new(
             "adventure-journey-valid-journey_destiny",
         ));

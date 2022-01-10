@@ -40,8 +40,7 @@ impl super::FavoritesManager for FavoritesManagerImpl {
 
         match result_optional {
             Ok(o) => {
-                if o.is_some() {
-                    let my_fav = o.unwrap();
+                if let Some(my_fav) = o {
                     return Ok(Favorite::from(my_fav));
                 }
             }

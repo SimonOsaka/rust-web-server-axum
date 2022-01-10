@@ -26,6 +26,17 @@
         {
             "type": "shell",
             "command": [
+                "cargo clippy"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
+            "label": "cargo clippy"
+        },
+        {
+            "type": "shell",
+            "command": [
                 "cargo build --release"
             ],
             "problemMatcher": [

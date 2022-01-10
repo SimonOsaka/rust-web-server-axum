@@ -13,7 +13,7 @@ pub struct AdventuresResponse {
 impl From<Vec<domain::Adventures>> for AdventuresResponse {
     fn from(ads: Vec<domain::Adventures>) -> Self {
         let adventures_count = ads.len() as u64;
-        let adventures = ads.into_iter().map(|ad| Adventures::from(ad)).collect();
+        let adventures = ads.into_iter().map(Adventures::from).collect();
         Self {
             adventures,
             adventures_count,

@@ -27,24 +27,24 @@ impl From<AdventuresWhere> for AdventuresQuery {
     }
 }
 
-impl Into<AdventuresWhere> for AdventuresQuery {
-    fn into(self) -> AdventuresWhere {
+impl From<AdventuresQuery> for AdventuresWhere {
+    fn from(aq: AdventuresQuery) -> Self {
         AdventuresWhere {
-            item_id: (self.item_id),
-            limit: (self.limit),
-            offset: (self.offset),
-            province_key: (self.province_key),
+            item_id: (aq.item_id),
+            limit: (aq.limit),
+            offset: (aq.offset),
+            province_key: (aq.province_key),
         }
     }
 }
 
-impl Into<AdventuresFilter> for AdventuresQuery {
-    fn into(self) -> AdventuresFilter {
+impl From<AdventuresQuery> for AdventuresFilter {
+    fn from(aq: AdventuresQuery) -> Self {
         AdventuresFilter {
-            item_id: (self.item_id),
-            limit: (self.limit),
-            offset: (self.offset),
-            province_key: (self.province_key),
+            item_id: (aq.item_id),
+            limit: (aq.limit),
+            offset: (aq.offset),
+            province_key: (aq.province_key),
         }
     }
 }
@@ -99,18 +99,18 @@ pub struct PlayListQuery {
     pub play_list: String,
 }
 
-impl Into<PlayListWhere> for PlayListQuery {
-    fn into(self) -> PlayListWhere {
+impl From<PlayListQuery> for PlayListWhere {
+    fn from(plq: PlayListQuery) -> Self {
         PlayListWhere {
-            play_list: (self.play_list),
+            play_list: (plq.play_list),
         }
     }
 }
 
-impl Into<PlayListFilter> for PlayListQuery {
-    fn into(self) -> PlayListFilter {
+impl From<PlayListQuery> for PlayListFilter {
+    fn from(plq: PlayListQuery) -> Self {
         PlayListFilter {
-            play_list: (self.play_list),
+            play_list: (plq.play_list),
         }
     }
 }

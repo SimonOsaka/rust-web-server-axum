@@ -14,7 +14,7 @@ pub struct Repo {
 
 impl Repo {
     async fn new(database_url: &str) -> Self {
-        Self::from_pool_builder(&database_url).await
+        Self::from_pool_builder(database_url).await
     }
 
     async fn from_pool_builder(database_url: &str) -> Self {
@@ -29,7 +29,7 @@ impl Repo {
                     Ok(())
                 })
             })
-            .connect(&database_url)
+            .connect(database_url)
             .await
             .expect("init database error");
 

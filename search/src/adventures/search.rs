@@ -31,13 +31,7 @@ pub async fn search_latest(query: AdventuresFilter) -> Result<Vec<MyAdventures>,
 
     let search_results = search_documents_with_filter::<MyAdventures>(condition).await;
 
-    let result: Vec<MyAdventures> = search_results?
-        .into_iter()
-        .map(|sr| {
-            let my = sr.result;
-            my
-        })
-        .collect();
+    let result: Vec<MyAdventures> = search_results?.into_iter().map(|sr| sr.result).collect();
     Ok(result)
 }
 
@@ -54,13 +48,7 @@ pub async fn search_by_play_list(query: PlayListFilter) -> Result<Vec<MyAdventur
 
     let search_results = search_documents_with_filter::<MyAdventures>(condition).await;
 
-    let result: Vec<MyAdventures> = search_results?
-        .into_iter()
-        .map(|sr| {
-            let my = sr.result;
-            my
-        })
-        .collect();
+    let result: Vec<MyAdventures> = search_results?.into_iter().map(|sr| sr.result).collect();
 
     Ok(result)
 }
@@ -75,13 +63,7 @@ pub async fn search_one(id: ID) -> Result<Option<MyAdventures>, Error> {
 
     let search_results = search_documents_with_filter::<MyAdventures>(condition).await;
 
-    let result: Vec<MyAdventures> = search_results?
-        .into_iter()
-        .map(|sr| {
-            let my = sr.result;
-            my
-        })
-        .collect();
+    let result: Vec<MyAdventures> = search_results?.into_iter().map(|sr| sr.result).collect();
 
     if result.len() == 1 {
         Ok(Some(result.get(0).unwrap().to_owned()))

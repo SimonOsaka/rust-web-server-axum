@@ -18,7 +18,7 @@ fn main() {
         // 'en' or 'zh_CN'
         let lang_file_name = origin_language_file_name
             .replace(".toml", "")
-            .replace("\"", "");
+            .replace('\"', "");
         // 'en' or 'zh_cn'
         let lang_file_name_lowercase = lang_file_name.to_lowercase();
 
@@ -28,7 +28,7 @@ fn main() {
             lang_file_name_lowercase, lang_file_name
         ));
         all_lang.push(format!(
-            "    let {}_language: HashMap<&str, &str> = toml::from_str(&{}_toml).unwrap();",
+            "    let {}_language: HashMap<&str, &str> = toml::from_str({}_toml).unwrap();",
             lang_file_name_lowercase, lang_file_name_lowercase
         ));
         all_lang.push(format!(
@@ -40,18 +40,18 @@ fn main() {
     }
 
     // src/lang.rs
-    let mut all_c = Vec::new();
-    all_c.push("use std::collections::HashMap;");
-    all_c.push("");
-    all_c.push("use once_cell::sync::Lazy;");
-    all_c.push("");
-    all_c.push("pub(crate) static ALL_LANGUAGES: Lazy<HashMap<&str, HashMap<&str, &str>>> = Lazy::new(|| {");
-    all_c.push("    let mut all = HashMap::<&str, HashMap<&str, &str>>::new();");
-    all_c.push("");
     let all_lang = &all_lang.join("\n");
-    all_c.push(all_lang);
-    all_c.push("    all");
-    all_c.push("});");
+    let all_c = vec![
+    "use std::collections::HashMap;",
+    "",
+    "use once_cell::sync::Lazy;",
+    "",
+    "pub(crate) static ALL_LANGUAGES: Lazy<HashMap<&str, HashMap<&str, &str>>> = Lazy::new(|| {",
+    "    let mut all = HashMap::<&str, HashMap<&str, &str>>::new();",
+    "",
+    all_lang,
+    "    all",
+    "});"];
     let dest_path = Path::new("./src").join("lang.rs");
     fs::write(&dest_path, all_c.join("\n")).unwrap();
 }

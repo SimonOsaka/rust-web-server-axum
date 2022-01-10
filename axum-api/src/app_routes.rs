@@ -43,7 +43,7 @@ pub fn routes(state: AppState) -> Router {
         .timeout(Duration::from_secs(30))
         .layer(AddExtensionLayer::new(state));
 
-    let r = Router::new()
+    Router::new()
         .route("/", get(index))
         // adventures
         .route(
@@ -68,9 +68,7 @@ pub fn routes(state: AppState) -> Router {
         .route("/api/users/me", get(me))
         .route("/api/users/password", put(change_password))
         .route("/api/users/username", put(change_username))
-        .layer(middleware_stack);
-
-    r
+        .layer(middleware_stack)
 }
 
 async fn map_request(req: Request<Body>) -> Result<Request<Body>, BoxError> {

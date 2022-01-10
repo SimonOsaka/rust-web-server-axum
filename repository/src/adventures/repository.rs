@@ -65,7 +65,7 @@ pub async fn find_latest_adventures<'a>(
         match query.province_key.as_ref() {
             // 字符串变量存在
             Some(pv) => {
-                if pv.len() > 0 {
+                if !pv.is_empty() {
                     pgsql_builder
                         .and_where_eq(
                             name!("ad", "item_type"),
@@ -225,12 +225,7 @@ pub async fn find_adventures_by_user_id<'a>(
 
     let c = list
         .into_iter()
-        .map(|adventure_user| {
-            (
-                adventure_user.my_adventures.into(),
-                adventure_user.my_users.into(),
-            )
-        })
+        .map(|adventure_user| (adventure_user.my_adventures, adventure_user.my_users))
         .collect();
     Ok(c)
 }

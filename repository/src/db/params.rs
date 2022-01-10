@@ -7,13 +7,19 @@ pub struct SqlParams {
     args: SqlArguments,
 }
 
-impl SqlParams {
-    pub fn new() -> SqlParams {
-        SqlParams {
+impl Default for SqlParams {
+    fn default() -> Self {
+        Self {
             index: 1,
             placeholder: String::from(""),
             args: SqlArguments::default(),
         }
+    }
+}
+
+impl SqlParams {
+    pub fn new() -> SqlParams {
+        SqlParams::default()
     }
 
     pub fn add_value<'q, T>(&mut self, value: T) -> String
@@ -25,7 +31,7 @@ impl SqlParams {
             + std::fmt::Debug,
     {
         self.placeholder = format!("${:?}", self.index);
-        self.index = self.index + 1;
+        self.index += 1;
         debug!("add_value: {} = {:?}", self.placeholder, value);
         self.args.add(value);
         self.placeholder.clone()

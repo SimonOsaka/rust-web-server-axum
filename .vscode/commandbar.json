@@ -24,6 +24,16 @@
             "priority": 9
         },
         {
+            "text": "✓ clippy",
+            "color": "Purple",
+            "tooltip": "cargo clippy",
+            "language": "rust",
+            "commandType": "palette",
+            "command": "workbench.action.tasks.runTask|cargo clippy",
+            "alignment": "left",
+            "priority": 8
+        },
+        {
             "text": "⚡︎ release",
             "color": "LightSteelBlue",
             "tooltip": "cargo build --release",
@@ -31,7 +41,7 @@
             "commandType": "palette",
             "command": "workbench.action.tasks.runTask|cargo build --release",
             "alignment": "left",
-            "priority": 8
+            "priority": 7
         },
         {
             "text": "⚡︎ release linux",
@@ -41,7 +51,7 @@
             "commandType": "palette",
             "command": "workbench.action.tasks.runTask|cargo build --release --target=x86_64-unknown-linux-musl",
             "alignment": "left",
-            "priority": 8
+            "priority": 6
         },
         {
             "text": "Terminal",

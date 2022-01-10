@@ -88,14 +88,9 @@ pub fn i18n_with_language_vars(key: &str, language: &str, vars: Vec<String>) -> 
         let lang = v.deref().to_owned();
         if let Some(vlang) = lang.get(key) {
             let mut ret = (**vlang).to_string();
-            let mut i: u8 = 0;
-            for v in vars {
-                let mut p = Vec::<String>::new();
-                p.push("{".to_string());
-                p.push(i.to_string());
-                p.push("}".to_string());
+            for (i, v) in (0_u8..).zip(vars.into_iter()) {
+                let p = vec!["{".to_string(), i.to_string(), "}".to_string()];
                 ret = ret.replace(p.join("").as_str(), &v);
-                i = i + 1;
             }
             ret
         } else {

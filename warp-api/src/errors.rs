@@ -95,7 +95,7 @@ impl From<JWTError> for ErrorResponse {
 impl From<ValidateError> for ErrorResponse {
     fn from(e: ValidateError) -> Self {
         match &e {
-            ValidateError::InvalidParam(v) => bad_request(v.to_string().replace("\n", " , ")),
+            ValidateError::InvalidParam(v) => bad_request(v.to_string().replace('\n', " , ")),
             ValidateError::ParsePathIntParam(v) => bad_request(v.to_string()),
         }
     }

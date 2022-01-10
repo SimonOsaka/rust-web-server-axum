@@ -35,13 +35,13 @@ impl SqlWriter for SqlBuilder {
         let sql = &self.sql().unwrap();
         debug!("insert_one sql: {}", sql);
 
-        let result;
-        if let Some(tx) = transaction {
-            result = sqlx::query_with(&sql, args.fetch()).fetch_one(tx).await?;
+        let result = if let Some(tx) = transaction {
+            sqlx::query_with(sql, args.fetch()).fetch_one(tx).await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;
-            result = sqlx::query_with(&sql, args.fetch()).fetch_one(pool).await?;
-        }
+            sqlx::query_with(sql, args.fetch()).fetch_one(pool).await?
+        };
+
         Ok(result.get(0))
     }
 
@@ -53,13 +53,13 @@ impl SqlWriter for SqlBuilder {
         let sql = &self.sql().unwrap();
         debug!("update_one sql: {}", sql);
 
-        let result;
-        if let Some(tx) = transaction {
-            result = sqlx::query_with(&sql, args.fetch()).execute(tx).await?;
+        let result = if let Some(tx) = transaction {
+            sqlx::query_with(sql, args.fetch()).execute(tx).await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;
-            result = sqlx::query_with(&sql, args.fetch()).execute(pool).await?;
-        }
+            sqlx::query_with(sql, args.fetch()).execute(pool).await?
+        };
+
         Ok(result.rows_affected())
     }
 
@@ -71,13 +71,13 @@ impl SqlWriter for SqlBuilder {
         let sql = &self.sql().unwrap();
         debug!("delete_one sql: {}", sql);
 
-        let result;
-        if let Some(tx) = transaction {
-            result = sqlx::query_with(&sql, args.fetch()).execute(tx).await?;
+        let result = if let Some(tx) = transaction {
+            sqlx::query_with(sql, args.fetch()).execute(tx).await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;
-            result = sqlx::query_with(&sql, args.fetch()).execute(pool).await?;
-        }
+            sqlx::query_with(sql, args.fetch()).execute(pool).await?
+        };
+
         Ok(result.rows_affected())
     }
 }

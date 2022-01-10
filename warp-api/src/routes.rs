@@ -29,7 +29,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 |query: AdventuresQueryReq, state: AppState| async move {
                     list_adventures(query, state)
                         .await
-                        .map_err(|e| warp::reject::custom(e))
+                        .map_err(warp::reject::custom)
                 },
             ))
         .or(warp::path!("api" / "adventures" / "my")
@@ -40,7 +40,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 |user: AuthUser, state: AppState| async move {
                     my_list_adventures(user, state)
                         .await
-                        .map_err(|e| warp::reject::custom(e))
+                        .map_err(warp::reject::custom)
                 },
             ))
         .or(warp::path!("api" / "adventures" / ID)
@@ -49,7 +49,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             .and_then(|_id: ID, state: AppState| async move {
                 get_adventure(_id, state)
                     .await
-                    .map_err(|e| warp::reject::custom(e))
+                    .map_err(warp::reject::custom)
             }))
         .or(warp::path!("api" / "adventures" / ID)
             .and(warp::delete())
@@ -62,7 +62,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 let req = v.valid().await?;
                 delete_adventure(req, user, state)
                         .await
-                        .map_err(|e| warp::reject::custom(e)) 
+                        .map_err(warp::reject::custom) 
             }))
         .or(warp::path!("api" / "adventures" / "tabs")
             .and(warp::get())
@@ -78,7 +78,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 |play_list: String, state: AppState| async move {
                     play_list_adventures(play_list, state)
                         .await
-                        .map_err(|e| warp::reject::custom(e))
+                        .map_err(warp::reject::custom)
                 },
             ))
         .or(warp::path!("api" / "adventures")
@@ -90,7 +90,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 |form: JourneyForm, user: AuthUser, state: AppState| async move {
                     journey(form, user, state)
                         .await
-                        .map_err(|e| warp::reject::custom(e))
+                        .map_err(warp::reject::custom)
                 },
             ))
         .or(warp::path!("api" / "adventures" / ID / "favorite")
@@ -104,7 +104,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 let form = v.valid().await?;
                 favorite(form, user, state) 
                     .await
-                    .map_err(|e| warp::reject::custom(e))
+                    .map_err(warp::reject::custom)
             }))
         .or(warp::path!("api" / "adventures" / ID / "unfavorite")
             .and(warp::post())
@@ -117,7 +117,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 let form = v.valid().await?;
                 unfavorite(form, user, state) 
                     .await
-                    .map_err(|e| warp::reject::custom(e))
+                    .map_err(warp::reject::custom)
             }))
         //sync
         .or(warp::path!("api" / "sync" / ID)
@@ -127,7 +127,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             .and_then(|_id: ID, user: AuthUser, state: AppState| async move {
                 sync_adventure(_id, user, state)
                     .await
-                    .map_err(|e| warp::reject::custom(e))
+                    .map_err(warp::reject::custom)
             }))
         //users
         .or(warp::path!("api" / "users" / "login")
@@ -137,7 +137,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             .and_then(|login_form: LoginForm, state: AppState| async move {
                 login(login_form, state)
                     .await
-                    .map_err(|e| warp::reject::custom(e))
+                    .map_err(warp::reject::custom)
             }))
         .or(warp::path!("api" / "users" / "registry")
             .and(warp::post())
@@ -146,7 +146,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
             .and_then(|registry_form: RegistryForm, state: AppState| async move {
                 registry(registry_form, state)
                     .await
-                    .map_err(|e| warp::reject::custom(e))
+                    .map_err(warp::reject::custom)
             }))
         .or(warp::path!("api" / "users" / "password")
             .and(warp::put())
@@ -157,7 +157,7 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 |user: AuthUser,change_password_form: ChangePasswordForm, state: AppState| async move {
                     change_password(user,change_password_form, state)
                         .await
-                        .map_err(|e| warp::reject::custom(e))
+                        .map_err(warp::reject::custom)
                 },
             ))
         .or(warp::path!("api" / "users" / "username")
@@ -169,18 +169,18 @@ pub fn routes(state: AppState) -> impl Filter<Extract = impl Reply, Error = Reje
                 |user: AuthUser,change_username_form: ChangeUsernameForm, state: AppState| async move {
                     change_username(user,change_username_form, state)
                         .await
-                        .map_err(|e| warp::reject::custom(e))
+                        .map_err(warp::reject::custom)
                 },
             ))
         .or(warp::path!("api" / "users" / "me")
             .and(warp::get())
             .and(with_auth())
-            .and(with_state(state.clone()))
+            .and(with_state(state))
             .and_then(
                 |user: AuthUser,state: AppState| async move {
                     me(user, state)
                         .await
-                        .map_err(|e| warp::reject::custom(e))
+                        .map_err(warp::reject::custom)
                 },
             ))
         .recover(handle_rejection)

@@ -6,10 +6,8 @@ use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use types::ID;
 
-static TOKEN_SECRET: Lazy<String> = Lazy::new(|| {
-    let secret = std::env::var("JWT_SECRET").expect("jwt secret must set");
-    secret
-});
+static TOKEN_SECRET: Lazy<String> =
+    Lazy::new(|| std::env::var("JWT_SECRET").expect("jwt secret must set"));
 const TOKEN_PREFIX: &str = "Token ";
 
 #[derive(Deserialize, Serialize, Debug, Clone)]

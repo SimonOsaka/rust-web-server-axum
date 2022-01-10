@@ -31,7 +31,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         let result = search_results
             .map_err(search_to_domain_error)?
             .into_iter()
-            .map(|my| Adventures::from(my))
+            .map(Adventures::from)
             .collect();
 
         debug!("find_adventures result: {:?}", result);
@@ -48,7 +48,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         let result = search_results
             .map_err(search_to_domain_error)?
             .into_iter()
-            .map(|my| Adventures::from(my))
+            .map(Adventures::from)
             .collect();
 
         debug!("find_adventures_by_play_list result: {:?}", result);
@@ -158,11 +158,9 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         if result.is_none() {
             debug!("adventure {} is not exist", id);
             return Ok(true);
-        } else {
-            if result.unwrap().user_id != user_id {
-                debug!("adventure {} 's owner is not the user {}", id, user_id);
-                return Err(DeleteAdventureError::NotOwner);
-            }
+        } else if result.unwrap().user_id != user_id {
+            debug!("adventure {} 's owner is not the user {}", id, user_id);
+            return Err(DeleteAdventureError::NotOwner);
         }
 
         let is_db_del = delete_one_adventure(id, Some(&mut transaction))

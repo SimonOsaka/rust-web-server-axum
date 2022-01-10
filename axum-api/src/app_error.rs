@@ -100,7 +100,7 @@ impl From<JWTError> for AppError {
 impl From<ValidateError> for AppError {
     fn from(e: ValidateError) -> Self {
         match &e {
-            ValidateError::InvalidParam(v) => bad_request(v.to_string().replace("\n", " , ")),
+            ValidateError::InvalidParam(v) => bad_request(v.to_string().replace('\n', " , ")),
             ValidateError::AxumQueryRejection(v) => bad_request(v.to_string()),
             ValidateError::AxumJsonRejection(v) => bad_request(v.to_string()),
             ValidateError::AxumPathRejection(v) => bad_request(v.to_string()),

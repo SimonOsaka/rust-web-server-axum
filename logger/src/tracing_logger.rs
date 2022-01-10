@@ -74,7 +74,7 @@ pub fn log_create() -> (WorkerGuard, WorkerGuard) {
         .with(fmt_file);
     // .with(tracing_subscriber::fmt::Subscriber::new().with_writer(non_blocking))
 
-    let rust_env = std::env::var("RUST_ENV").unwrap_or("development".to_string());
+    let rust_env = std::env::var("RUST_ENV").unwrap_or_else(|_| "development".to_string());
     match rust_env.as_str() {
         "development" => {
             let err_layer = default_layer.with(fmt_stderr);

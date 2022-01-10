@@ -39,17 +39,15 @@ impl SqlReader for SqlBuilder {
         let sql = &self.sql().unwrap();
         debug!("query_list sql: {}", sql);
 
-        let result: Vec<T>;
-        if let Some(tx) = transaction {
-            result = sqlx::query_as_with(&sql, args.fetch())
-                .fetch_all(tx)
-                .await?;
+        let result: Vec<T> = if let Some(tx) = transaction {
+            sqlx::query_as_with(sql, args.fetch()).fetch_all(tx).await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;
-            result = sqlx::query_as_with(&sql, args.fetch())
+            sqlx::query_as_with(sql, args.fetch())
                 .fetch_all(pool)
-                .await?;
-        }
+                .await?
+        };
+
         Ok(result)
     }
 
@@ -64,17 +62,16 @@ impl SqlReader for SqlBuilder {
         let sql = &self.sql().unwrap();
         debug!("query_one sql: {}", sql);
 
-        let result: Option<T>;
-        if let Some(tx) = transaction {
-            result = sqlx::query_as_with(&sql, args.fetch())
+        let result: Option<T> = if let Some(tx) = transaction {
+            sqlx::query_as_with(sql, args.fetch())
                 .fetch_optional(tx)
-                .await?;
+                .await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;
-            result = sqlx::query_as_with(&sql, args.fetch())
+            sqlx::query_as_with(sql, args.fetch())
                 .fetch_optional(pool)
-                .await?;
-        }
+                .await?
+        };
 
         Ok(result)
     }

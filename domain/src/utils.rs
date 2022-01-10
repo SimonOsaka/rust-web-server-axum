@@ -18,7 +18,7 @@ pub fn verify(crypt_str: String, other_str: String) -> bool {
     pbkdf2::verify(
         PBKDF2_ALG,
         HASH_ROUNDS,
-        &"asdf".as_bytes(),
+        "asdf".as_bytes(),
         other_str.as_bytes(),
         str.as_slice(),
     )
@@ -35,7 +35,7 @@ pub fn hash(to_encrypt: String) -> String {
     pbkdf2::derive(
         PBKDF2_ALG,
         HASH_ROUNDS,
-        &"asdf".as_bytes(),
+        "asdf".as_bytes(),
         to_encrypt.as_bytes(),
         &mut to_store,
     );

@@ -30,7 +30,7 @@ impl From<AdventuresQueryReq> for AdventuresQuery {
 }
 
 fn validate_item_id(item_id: u8) -> Result<(), ValidationError> {
-    if to_item_type_name(item_id.into()) == "" {
+    if to_item_type_name(item_id.into()).is_empty() {
         return Err(ValidationError::new("adventure-list-valid-item_id"));
     }
 

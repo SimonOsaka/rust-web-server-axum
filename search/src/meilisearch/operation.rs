@@ -36,9 +36,10 @@ pub struct Condition {
     pub sort: Option<Sort>,
     pub page: Option<Page>,
 }
-impl Condition {
-    pub fn new() -> Condition {
-        Condition {
+
+impl Default for Condition {
+    fn default() -> Self {
+        Self {
             filter: None,
             sort: None,
             page: Some(Page {
@@ -48,6 +49,13 @@ impl Condition {
         }
     }
 }
+
+impl Condition {
+    pub fn new() -> Condition {
+        Condition::default()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Sort {
     pub property: SortProperty,
@@ -102,7 +110,7 @@ where
 
     let filter = condition.filter;
     if let Some(ref f) = filter {
-        query.with_filter(&f.as_str());
+        query.with_filter(f.as_str());
     };
     if let Some(s) = condition.sort {
         match s.property {
