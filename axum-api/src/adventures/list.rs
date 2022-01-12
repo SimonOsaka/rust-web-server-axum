@@ -2,8 +2,7 @@ use axum::{extract::Extension, Json};
 use domain::{AdventuresManager, AdventuresQuery};
 use serde::Deserialize;
 use tracing::debug;
-use types::my_item_type_format::to_item_type_name;
-use validator::{Validate, ValidationError};
+use validator::Validate;
 
 use crate::{
     app_request::ValidatedQuery, app_response::AppError, response::AdventuresResponse, AppState,
@@ -11,7 +10,7 @@ use crate::{
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct AdventuresQueryReq {
-    #[validate(custom(function = "validate_item_id"))]
+    #[validate(custom(function = "types::validate_item_id"))]
     pub item_id: u8,
     #[validate(range(min = 1, max = 20, code = "adventure-list-valid-limit"))]
     pub limit: Option<u32>,
@@ -30,14 +29,6 @@ impl From<AdventuresQueryReq> for AdventuresQuery {
             province_key: ad.province_key,
         }
     }
-}
-
-fn validate_item_id(item_id: u8) -> Result<(), ValidationError> {
-    if to_item_type_name(item_id.into()).is_empty() {
-        return Err(ValidationError::new("adventure-list-valid-item_id"));
-    }
-
-    Ok(())
 }
 
 #[tracing::instrument(skip(state))]

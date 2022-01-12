@@ -1,10 +1,8 @@
 use axum::{extract::Extension, Json};
 use domain::{NewJourney, UsersManager};
 use serde::{Deserialize, Serialize};
-use types::my_journey_destiny::to_name;
-use types::my_source::to_source_name;
 use types::ID;
-use validator::{Validate, ValidationError};
+use validator::Validate;
 
 use crate::{
     app_request::{AuthUser, ValidatedJson},
@@ -23,29 +21,11 @@ pub struct JourneyForm {
     #[validate(url(code = "adventure-journey-valid-link"))]
     link: String,
 
-    #[validate(custom(function = "validate_source"))]
+    #[validate(custom(function = "types::validate_source"))]
     source: u8,
 
-    #[validate(custom(function = "validate_journey_destiny"))]
+    #[validate(custom(function = "types::validate_journey_destiny"))]
     journey_destiny: String,
-}
-
-fn validate_source(source: u8) -> Result<(), ValidationError> {
-    if to_source_name(source.into()).is_empty() {
-        return Err(ValidationError::new("adventure-journey-valid-source"));
-    }
-
-    Ok(())
-}
-
-fn validate_journey_destiny(journey_destiny: &str) -> Result<(), ValidationError> {
-    if to_name(journey_destiny).is_empty() {
-        return Err(ValidationError::new(
-            "adventure-journey-valid-journey_destiny",
-        ));
-    }
-
-    Ok(())
 }
 
 #[derive(Serialize)]
