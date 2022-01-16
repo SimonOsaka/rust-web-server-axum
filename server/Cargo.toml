@@ -27,6 +27,7 @@ search_lib = ["search"]
 api_warp_lib = ["warp-api"]
 api_axum_lib = ["axum-api"]
 extra_lib = ["extra/email"]
+auth_lib = ["auth/authorization", "auth/jwt"]
 
 [dependencies]
 axum-api = { path = "../axum-api", optional = true }
@@ -36,5 +37,6 @@ repository = { path = "../repository", optional = true }
 search = { path = "../search", optional = true }
 extra = { path = "../extra", optional = true }
 logger = { path = "../logger" }
+auth = { path = "../auth", optional = true }
 dotenv = "0.15.0"
 tokio = { version = "1", features = ["macros"] }

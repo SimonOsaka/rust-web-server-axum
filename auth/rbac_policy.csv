@@ -1,0 +1,11 @@
+p, role_data1, data1, write
+p, role_data2, data2, write
+p, role_view2, data2, read
+p, role_view1, data1, read
+
+g, admin, role_data1
+g, admin, role_data2
+g, role_data1, role_view1
+g, role_data2, role_view2
+g, alice, admin
+g, bob, role_data2

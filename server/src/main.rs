@@ -6,7 +6,10 @@ async fn main() {
     // issue: https://github.com/tokio-rs/tracing/issues/971
     let (_guard_file, _guard_stderr) = logger::log_create();
 
-    #[cfg(any(feature = "extra"))]
+    #[cfg(any(feature = "auth_lib"))]
+    auth::init().await;
+
+    #[cfg(any(feature = "extra_lib"))]
     extra::init().await;
 
     #[cfg(any(feature = "database_lib"))]
