@@ -6,6 +6,9 @@ async fn main() {
     // issue: https://github.com/tokio-rs/tracing/issues/971
     let (_guard_file, _guard_stderr) = logger::log_create();
 
+    #[cfg(any(feature="tokio_console"))]
+    console_subscriber::init();
+
     #[cfg(any(feature = "auth_lib"))]
     auth::init().await;
 

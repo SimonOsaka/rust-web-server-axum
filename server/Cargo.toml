@@ -28,6 +28,9 @@ api_warp_lib = ["warp-api"]
 api_axum_lib = ["axum-api"]
 extra_lib = ["extra/email"]
 auth_lib = ["auth/authorization", "auth/jwt"]
+# Append to default
+# command: RUSTFLAGS="--cfg tokio_unstable" cargo run
+tokio_console = ["tokio/tracing", "console-subscriber"]
 
 [dependencies]
 axum-api = { path = "../axum-api", optional = true }
@@ -40,3 +43,4 @@ logger = { path = "../logger" }
 auth = { path = "../auth", optional = true }
 dotenv = "0.15.0"
 tokio = { version = "1", features = ["macros"] }
+console-subscriber = { version = "0.1", optional = true }

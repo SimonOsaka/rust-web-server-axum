@@ -91,6 +91,36 @@ ALTER TABLE table_name DROP CONSTRAINT constraint_name;
     - `#[tracing::instrument(skip(transaction), fields(name=%u.username))]` output `name=xxxx`
     - `#[tracing::instrument(skip(transaction), fields(name=%u.username), err)]` err print
 
+## tokio-console
+Web: [github/tokio-console](https://github.com/tokio-rs/console)
+1. add dependency
+```toml
+console-subscriber = "0.1"
+# features['tracing'] required
+tokio = { version = "1", features = ["tracing"] }
+```
+2. add init code to main function
+```rust
+#[tokio::main]
+async fn main() {
+    console_subscriber::init();
+}
+```
+3. cargo run command with tokio-console
+```shell
+RUSTFLAGS="--cfg tokio_unstable" cargo run
+```
+4. install tokio-console
+```shell
+cargo install tokio-console
+```
+5. run tokio-console
+```shell
+tokio-console
+# 'command/ctrl + click' 'console_subscriber::init();' to see ENV variables.
+```
+*For further to see docs*.
+
 ## Docker
 ```shell
 docker build -t rust-web-server-example:0.1.0 .
