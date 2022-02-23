@@ -13,7 +13,7 @@ jwt = ["jsonwebtoken"]
 types = { path = "../types" }
 i18n = { path = "../i18n" }
 # jwt
-jsonwebtoken = { version = "7", optional = true }
+jsonwebtoken = { version = "8", optional = true }
 # casbin
 casbin = { version = "2.0.9", default-features = false, features = [
     "runtime-async-std",
