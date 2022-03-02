@@ -20,9 +20,10 @@ use crate::{
 use axum::{
     body::{Body, Bytes},
     error_handling::HandleErrorLayer,
+    extract::Extension,
     response::{IntoResponse, Response},
     routing::{get, post, put},
-    AddExtensionLayer, Json, Router,
+    Json, Router,
 };
 use hyper::{Request, StatusCode};
 use serde_json::json;
@@ -41,7 +42,7 @@ pub fn routes(state: AppState) -> Router {
         .layer(AsyncFilterLayer::new(map_request))
         .layer(AndThenLayer::new(map_response))
         .timeout(Duration::from_secs(30))
-        .layer(AddExtensionLayer::new(state));
+        .layer(Extension(state));
 
     Router::new()
         .route("/", get(index))
