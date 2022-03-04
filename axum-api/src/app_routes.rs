@@ -21,6 +21,7 @@ use axum::{
     body::{Body, Bytes},
     error_handling::HandleErrorLayer,
     extract::Extension,
+    middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::{get, post, put},
     Json, Router,
@@ -28,9 +29,8 @@ use axum::{
 use hyper::{Request, StatusCode};
 use serde_json::json;
 use std::time::Duration;
-use tower::{filter::AsyncFilterLayer, util::AndThenLayer, BoxError, ServiceBuilder};
+use tower::{BoxError, ServiceBuilder};
 use tower_http::trace::TraceLayer;
-use tracing::debug;
 
 use crate::app_state::AppState;
 
@@ -38,10 +38,9 @@ pub fn routes(state: AppState) -> Router {
     // don't change layer order, or errors happen...
     let middleware_stack = ServiceBuilder::new()
         .layer(HandleErrorLayer::new(handle_error))
-        .layer(TraceLayer::new_for_http())
-        .layer(AsyncFilterLayer::new(map_request))
-        .layer(AndThenLayer::new(map_response))
         .timeout(Duration::from_secs(30))
+        .layer(TraceLayer::new_for_http())
+        .layer(middleware::from_fn(print_request_response))
         .layer(Extension(state));
 
     Router::new()
@@ -69,32 +68,45 @@ pub fn routes(state: AppState) -> Router {
         .route("/api/users/me", get(me))
         .route("/api/users/password", put(change_password))
         .route("/api/users/username", put(change_username))
-        .layer(middleware_stack)
+        .layer(middleware_stack.into_inner())
 }
 
-async fn map_request(req: Request<Body>) -> Result<Request<Body>, BoxError> {
+async fn print_request_response(
+    req: Request<Body>,
+    next: Next<Body>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
     let (parts, body) = req.into_parts();
     let bytes = buffer_and_print("request", body).await?;
     let req = Request::from_parts(parts, Body::from(bytes));
-    Ok(req)
-}
 
-async fn map_response(res: Response) -> Result<Response<Body>, BoxError> {
+    let res = next.run(req).await;
+
     let (parts, body) = res.into_parts();
     let bytes = buffer_and_print("response", body).await?;
     let res = Response::from_parts(parts, Body::from(bytes));
+
     Ok(res)
 }
 
-async fn buffer_and_print<B>(direction: &str, body: B) -> Result<Bytes, BoxError>
+async fn buffer_and_print<B>(direction: &str, body: B) -> Result<Bytes, (StatusCode, String)>
 where
     B: axum::body::HttpBody<Data = Bytes>,
-    B::Error: Into<BoxError>,
+    B::Error: std::fmt::Display,
 {
-    let bytes = hyper::body::to_bytes(body).await.map_err(Into::into)?;
+    let bytes = match hyper::body::to_bytes(body).await {
+        Ok(bytes) => bytes,
+        Err(err) => {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                format!("failed to read {} body: {}", direction, err),
+            ));
+        }
+    };
+
     if let Ok(body) = std::str::from_utf8(&bytes) {
-        debug!("{} body = {:?}", direction, body);
+        tracing::debug!("{} body = {:?}", direction, body);
     }
+
     Ok(bytes)
 }
 
