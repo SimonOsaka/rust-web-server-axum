@@ -20,7 +20,7 @@ path = "src/main.rs"
 name = "app"
 
 [features]
-default = ["database_lib", "search_lib", "api_warp_lib"]
+default = ["database_lib", "search_lib", "api_axum_lib"]
 redis_lib = ["redis"]
 database_lib = ["repository"]
 search_lib = ["search"]
