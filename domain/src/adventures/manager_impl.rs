@@ -6,14 +6,14 @@ use crate::{Adventures, AdventuresQuery, DomainError, GetAdventureError, PlayLis
 
 use anyhow::Result;
 
-use meilisearch_sdk::progress::UpdateStatus;
+use meilisearch_sdk::tasks::Task;
 use repository::db::Repo;
 use repository::{
     create_journey, delete_one_adventure, find_adventure_title_crypto, find_adventures_by_user_id,
     find_one_adventure, NewMyAdventuresJourney,
 };
 use search::adventures::{search_by_play_list, search_latest, search_one};
-use search::meilisearch::operation::{add_documents, del_documents};
+use search::meilisearch::operation::{add_documents, del_documents, get_client};
 use tracing::debug;
 use types::ID;
 
@@ -129,22 +129,21 @@ impl super::AdventuresManager for AdventuresManagerImpl {
 
         transaction.commit().await.expect("");
 
-        let progress = match result {
+        let task = match result {
             Some(ad) => add_documents(vec![ad])
                 .await
                 .map_err(search_to_domain_error)?,
             None => return Err(CreateAdventureError::AdventureNotFound { adventure_id: id }),
         };
 
-        match progress.wait_for_pending_update(None, None).await {
-            Some(o) => match o {
-                Ok(s) => match s {
-                    UpdateStatus::Processed { .. } => return Ok(id),
-                    _ => return Err(CreateAdventureError::AddDocuments),
-                },
-                Err(_) => return Err(CreateAdventureError::AddDocuments),
-            },
-            None => return Err(CreateAdventureError::AddDocuments),
+        let status = task
+            .wait_for_completion(get_client(), None, None)
+            .await
+            .map_err(search_to_domain_error)?;
+
+        match status {
+            Task::Succeeded { .. } => return Ok(id),
+            _ => return Err(CreateAdventureError::AddDocuments),
         }
     }
 
@@ -170,19 +169,18 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         transaction.commit().await.expect("commit error");
 
         if is_db_del {
-            let progress = del_documents(vec![id])
+            let task = del_documents(vec![id])
                 .await
                 .map_err(|e| DeleteAdventureError::DomainError(search_to_domain_error(e)))?;
 
-            match progress.wait_for_pending_update(None, None).await {
-                Some(o) => match o {
-                    Ok(s) => match s {
-                        UpdateStatus::Processed { .. } => return Ok(true),
-                        _ => return Err(DeleteAdventureError::DelDocuments),
-                    },
-                    Err(_) => return Err(DeleteAdventureError::DelDocuments),
-                },
-                None => return Err(DeleteAdventureError::DelDocuments),
+            let status = task
+                .wait_for_completion(get_client(), None, None)
+                .await
+                .map_err(search_to_domain_error)?;
+
+            match status {
+                Task::Succeeded { .. } => return Ok(true),
+                _ => return Err(DeleteAdventureError::DelDocuments),
             }
         }
 

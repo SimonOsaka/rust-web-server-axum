@@ -1,31 +1,37 @@
 use std::convert::TryInto;
 
 use meilisearch_sdk::{
-    document::Document, errors::Error, progress::Progress, search::SearchResult,
+    client::Client, document::Document, errors::Error, search::SearchResult, tasks::Task,
 };
 
 use crate::MEILISEARCH;
 
+pub fn get_client() -> &'static Client {
+    let meilisearch = MEILISEARCH.get().unwrap();
+
+    &meilisearch.adventures_client
+}
+
 /// add documents
-pub async fn add_documents<T>(vec: Vec<T>) -> Result<Progress, Error>
+pub async fn add_documents<T>(vec: Vec<T>) -> Result<Task, Error>
 where
     T: Document,
 {
     let meilisearch = MEILISEARCH.get().unwrap();
 
-    let index = &meilisearch.adventures_index;
+    let index = &meilisearch.adventures_client.index("adventures_index");
 
     Ok(index.add_documents(&vec, Some("id")).await?)
 }
 
 /// delete documents
-pub async fn del_documents<T>(uids: Vec<T>) -> Result<Progress, Error>
+pub async fn del_documents<T>(uids: Vec<T>) -> Result<Task, Error>
 where
     T: std::fmt::Display + serde::ser::Serialize + std::fmt::Debug,
 {
     let meilisearch = MEILISEARCH.get().unwrap();
 
-    let index = &meilisearch.adventures_index;
+    let index = &meilisearch.adventures_client.index("adventures_index");
 
     Ok(index.delete_documents(&uids).await?)
 }
@@ -104,7 +110,7 @@ where
 {
     let meilisearch = MEILISEARCH.get().unwrap();
 
-    let index = &meilisearch.adventures_index;
+    let index = &meilisearch.adventures_client.index("adventures_index");
 
     let mut query = index.search();
 
