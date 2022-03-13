@@ -12,6 +12,7 @@ members = [
     "logger",
     "extra",
     "i18n",
+    "util",
 ]
 
 [profile.dev]
