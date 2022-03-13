@@ -3,20 +3,20 @@ use time::error::{ComponentRange, Format, InvalidFormatDescription, Parse};
 
 #[derive(Error, Debug)]
 pub enum DateError {
-    #[error("{}", "")]
+    #[error("{}", "format date error.")]
     Format { e: Format },
-    #[error("{}", "")]
+    #[error("{}", "format date is out of range.")]
     FormatRange { e: ComponentRange },
-    #[error("{}", "")]
+    #[error("{}", "format pattern error.")]
     FormatInvalid {
         fmt: String,
         e: InvalidFormatDescription,
     },
-    #[error("{}", "")]
-    ParseError { date_str: String, e: Parse },
-    #[error("{}", "")]
-    ParseInvalidFormatError {
-        date_str: String,
+    #[error("{}", "parse date error.")]
+    ParseError { pattern: String, e: Parse },
+    #[error("{}", "parse pattern {pattern} error.")]
+    ParseInvalidPatternError {
+        pattern: String,
         e: InvalidFormatDescription,
     },
 }

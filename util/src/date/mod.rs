@@ -163,14 +163,15 @@ impl Date {
     /// "2022-07-01 02:30:57 +00:30"
     /// ```
     pub fn parse_with(date_str: &str, pattern: &str) -> Result<OffsetDateTime, DateError> {
-        let format =
-            format_description::parse(pattern).map_err(|e| DateError::ParseInvalidFormatError {
-                date_str: date_str.into(),
+        let format = format_description::parse(pattern).map_err(|e| {
+            DateError::ParseInvalidPatternError {
+                pattern: pattern.into(),
                 e,
-            })?;
+            }
+        })?;
 
         OffsetDateTime::parse(date_str, &format).map_err(|e| DateError::ParseError {
-            date_str: date_str.into(),
+            pattern: pattern.into(),
             e,
         })
     }
