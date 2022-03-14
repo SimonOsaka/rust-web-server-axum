@@ -21,6 +21,7 @@
     - tracing
 - extra: extra's tools
 - i18n: multi-languages
+- util: utilities, include date
 
 ## Prepare
 - Install Rust 1.56+
