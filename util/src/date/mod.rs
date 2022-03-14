@@ -12,6 +12,9 @@ use self::{
     },
 };
 
+pub type DateResult = Result<OffsetDateTime, DateError>;
+pub type DateStringResult = Result<String, DateError>;
+
 /// `OffsetDateTime`'s util
 /// - Format `OffsetDateTime` to String
 /// - Parse String to `OffsetDateTime`
@@ -21,13 +24,13 @@ pub struct Date;
 impl Date {
     /// get utc `OffsetDateTime`
     #[cfg(not(feature = "local"))]
-    pub fn get_now() -> Result<OffsetDateTime, DateError> {
+    pub fn get_now() -> DateResult {
         Ok(OffsetDateTime::now_utc())
     }
 
     /// get local `OffsetDateTime`
     #[cfg(any(feature = "local"))]
-    pub fn get_now() -> Result<OffsetDateTime, DateError> {
+    pub fn get_now() -> DateResult {
         use self::timezone::TIMEZONE;
 
         Self::get_now_with_tz(TIMEZONE.0, TIMEZONE.1)
@@ -39,12 +42,12 @@ impl Date {
     }
 
     /// from `timestamp` to `OffsetDateTime`
-    pub fn from_unix_timestamp(ts: i64) -> Result<OffsetDateTime, DateError> {
+    pub fn from_unix_timestamp(ts: i64) -> DateResult {
         OffsetDateTime::from_unix_timestamp(ts).map_err(|e| DateError::FormatRange { e })
     }
 
     /// get datetime with timezone
-    pub fn get_now_with_tz(hour: i8, minute: u8) -> Result<OffsetDateTime, DateError> {
+    pub fn get_now_with_tz(hour: i8, minute: u8) -> DateResult {
         Ok(OffsetDateTime::now_utc().to_offset(
             UtcOffset::from_hms(hour, minute as i8, 0).map_err(|e| DateError::FormatRange { e })?,
         ))
@@ -55,7 +58,7 @@ impl Date {
     /// ```
     /// [year]-[month]-[day] [hour]:[minute]:[second] [offset_hour sign:mandatory]:[offset_minute]:[offset_second]
     /// ```
-    pub fn format_with(odt: OffsetDateTime, fmt: &str) -> Result<String, DateError> {
+    pub fn format_with(odt: OffsetDateTime, fmt: &str) -> DateStringResult {
         let f = format_description::parse(fmt)
             .map_err(|e| DateError::FormatInvalid { fmt: fmt.into(), e })?;
         odt.format(&f).map_err(|e| DateError::Format { e })
@@ -66,7 +69,7 @@ impl Date {
     /// ```
     /// [year]
     /// ```
-    pub fn format_with_year(odt: OffsetDateTime) -> Result<String, DateError> {
+    pub fn format_with_year(odt: OffsetDateTime) -> DateStringResult {
         Self::format_with(odt, FORMAT_PATTERN_YEAR)
     }
 
@@ -75,7 +78,7 @@ impl Date {
     /// ```
     /// [month]
     /// ```
-    pub fn format_with_month(odt: OffsetDateTime) -> Result<String, DateError> {
+    pub fn format_with_month(odt: OffsetDateTime) -> DateStringResult {
         Self::format_with(odt, FORMAT_PATTERN_MONTH)
     }
 
@@ -84,7 +87,7 @@ impl Date {
     /// ```
     /// [day]
     /// ```
-    pub fn format_with_day(odt: OffsetDateTime) -> Result<String, DateError> {
+    pub fn format_with_day(odt: OffsetDateTime) -> DateStringResult {
         Self::format_with(odt, FORMAT_PATTERN_DAY)
     }
 
@@ -93,7 +96,7 @@ impl Date {
     /// ```
     /// [year]-[month]-[day]
     /// ```
-    pub fn format_with_ymd(odt: OffsetDateTime) -> Result<String, DateError> {
+    pub fn format_with_ymd(odt: OffsetDateTime) -> DateStringResult {
         Ok(format!(
             "{}-{}-{}",
             Self::format_with_year(odt)?,
@@ -107,7 +110,7 @@ impl Date {
     /// ```
     /// [hour]
     /// ```
-    pub fn format_with_hour(odt: OffsetDateTime) -> Result<String, DateError> {
+    pub fn format_with_hour(odt: OffsetDateTime) -> DateStringResult {
         Self::format_with(odt, FORMAT_PATTERN_HOUR)
     }
 
@@ -116,7 +119,7 @@ impl Date {
     /// ```
     /// [minute]
     /// ```
-    pub fn format_with_minute(odt: OffsetDateTime) -> Result<String, DateError> {
+    pub fn format_with_minute(odt: OffsetDateTime) -> DateStringResult {
         Self::format_with(odt, FORMAT_PATTERN_MINUTE)
     }
 
@@ -125,7 +128,7 @@ impl Date {
     /// ```
     /// [second]
     /// ```
-    pub fn format_with_second(odt: OffsetDateTime) -> Result<String, DateError> {
+    pub fn format_with_second(odt: OffsetDateTime) -> DateStringResult {
         Self::format_with(odt, FORMAT_PATTERN_SECOND)
     }
 
@@ -134,7 +137,7 @@ impl Date {
     /// ```
     /// [hour]:[minute]:[second]
     /// ```
-    pub fn format_with_hms(odt: OffsetDateTime) -> Result<String, DateError> {
+    pub fn format_with_hms(odt: OffsetDateTime) -> DateStringResult {
         Ok(format!(
             "{}:{}:{}",
             Self::format_with_hour(odt)?,
@@ -148,7 +151,7 @@ impl Date {
     /// ```
     /// '[year]-[month]-[day] [hour]:[minute]:[second]'
     /// ```
-    pub fn format_with_ymd_hms(odt: OffsetDateTime) -> Result<String, DateError> {
+    pub fn format_with_ymd_hms(odt: OffsetDateTime) -> DateStringResult {
         Ok(format!(
             "{} {}",
             Self::format_with_ymd(odt)?,
@@ -162,7 +165,7 @@ impl Date {
     /// "[year]-[month]-[day] [hour]:[minute]:[second] [offset_hour sign:mandatory]:[offset_minute]"
     /// "2022-07-01 02:30:57 +00:30"
     /// ```
-    pub fn parse_with(date_str: &str, pattern: &str) -> Result<OffsetDateTime, DateError> {
+    pub fn parse_with(date_str: &str, pattern: &str) -> DateResult {
         let format = format_description::parse(pattern).map_err(|e| {
             DateError::ParseInvalidPatternError {
                 pattern: pattern.into(),
@@ -182,7 +185,7 @@ impl Date {
     /// Pattern: [year]-[month]-[day] [hour]:[minute]:[second]
     /// Example: "2022-07-01 02:30:57"
     /// ```
-    pub fn parse_with_ymd_hms(date_str: &str) -> Result<OffsetDateTime, DateError> {
+    pub fn parse_with_ymd_hms(date_str: &str) -> DateResult {
         Self::parse_with(
             format!("{} {}", date_str, Self::gen_timezone()).as_str(),
             FORMAT_PATTERN_YMD_HMS_TZ,
@@ -195,7 +198,7 @@ impl Date {
     /// Pattern: [year]-[month]-[day]
     /// Example: "2022-07-01"
     /// ```
-    pub fn parse_with_ymd(date_str: &str) -> Result<OffsetDateTime, DateError> {
+    pub fn parse_with_ymd(date_str: &str) -> DateResult {
         Self::parse_with(
             format!("{} 00:00:00 {}", date_str, Self::gen_timezone()).as_str(),
             FORMAT_PATTERN_YMD_HMS_TZ,
