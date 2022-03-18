@@ -103,7 +103,7 @@ impl Excel {
     /// let rows = vec![cols];
     /// let sheets_and_rows = HashMap::new();
     /// sheets_and_rows.insert("sheet1", rows);
-    /// Excel::write_with_sheet_and_get_bytes(sheets_and_rows, "path/to/demo.xlsx");
+    /// Excel::write_with_sheet_and_get_bytes(sheets_and_rows);
     /// ```
     pub fn write_with_sheet_and_get_bytes(
         sheets_and_rows: HashMap<&str, Vec<Vec<&str>>>,
