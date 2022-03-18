@@ -3695,7 +3695,7 @@ name = "tracing-appender"
 version = "0.2.0"
 dependencies = [
  "crossbeam-channel",
- "parking_lot 0.11.2",
+ "parking_lot 0.12.0",
  "tempfile",
  "time 0.3.7",
  "tracing 0.2.0",
