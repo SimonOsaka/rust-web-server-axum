@@ -79,12 +79,32 @@ impl Excel {
         Ok(())
     }
 
+    /// export a sheet with data, return bytes
+    /// - `rows`: export rows and columns
+    ///
+    /// # Example
+    /// ```rust
+    /// let cols = vec!["cell1", "cell2"];
+    /// let rows = vec![cols];
+    /// Excel::write_and_get_bytes(rows);
+    /// ```
     pub fn write_and_get_bytes(rows: Vec<Vec<&str>>) -> Result<Vec<u8>, ExcelError> {
         let mut sheets_and_rows = HashMap::new();
         sheets_and_rows.insert("sheet1", rows);
         Self::write_with_sheet_and_get_bytes(sheets_and_rows)
     }
 
+    /// export multi sheets with data, return bytes
+    /// - `sheets_and_rows`: export sheet with data rows and columns
+    ///
+    /// # Example
+    /// ```rust
+    /// let cols = vec!["cell1", "cell2"];
+    /// let rows = vec![cols];
+    /// let sheets_and_rows = HashMap::new();
+    /// sheets_and_rows.insert("sheet1", rows);
+    /// Excel::write_with_sheet_and_get_bytes(sheets_and_rows, "path/to/demo.xlsx");
+    /// ```
     pub fn write_with_sheet_and_get_bytes(
         sheets_and_rows: HashMap<&str, Vec<Vec<&str>>>,
     ) -> Result<Vec<u8>, ExcelError> {
