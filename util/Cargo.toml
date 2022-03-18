@@ -13,6 +13,11 @@ Shanghai = []
 Hawaii = []
 
 [dependencies]
+# date
 time = { version = "0.3", features = ["local-offset", "formatting", "parsing"] }
 once_cell = "1.10.0"
 thiserror = "1.0"
+
+# excel
+xlsxwriter = "0.3.5"
+uuid = { version = "0.8", features = ["v4"] }

@@ -75,5 +75,3 @@ pub enum JWTError {
     #[error("{}", i18n("jwt-invalid"))]
     Invalid,
 }
-
-impl warp::reject::Reject for JWTError {}

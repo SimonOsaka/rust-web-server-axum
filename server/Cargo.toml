@@ -24,7 +24,6 @@ default = ["database_lib", "search_lib", "api_axum_lib"]
 redis_lib = ["redis"]
 database_lib = ["repository"]
 search_lib = ["search"]
-api_warp_lib = ["warp-api"]
 api_axum_lib = ["axum-api"]
 extra_lib = ["extra/email"]
 auth_lib = ["auth/authorization", "auth/jwt"]
@@ -34,7 +33,6 @@ tokio_console = ["tokio/tracing", "console-subscriber"]
 
 [dependencies]
 axum-api = { path = "../axum-api", optional = true }
-warp-api = { path = "../warp-api", optional = true }
 redis = { path = "../redis", optional = true }
 repository = { path = "../repository", optional = true }
 search = { path = "../search", optional = true }

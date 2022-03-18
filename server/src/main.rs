@@ -24,9 +24,6 @@ async fn main() {
     #[cfg(any(feature = "search_lib"))]
     search::meilisearch::MeiliSearch::create().await;
 
-    #[cfg(any(feature = "api_warp_lib"))]
-    warp_api::start().await;
-
     #[cfg(any(feature = "api_axum_lib"))]
     axum_api::start().await;
 }

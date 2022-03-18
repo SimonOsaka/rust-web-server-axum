@@ -5,6 +5,7 @@ use crate::{
     change_password::change_password,
     change_username::change_username,
     delete::delete_adventure,
+    excel::download,
     favorite::{favorite, unfavorite},
     journey::journey,
     list::list_adventures,
@@ -68,6 +69,7 @@ pub fn routes(state: AppState) -> Router {
         .route("/api/users/me", get(me))
         .route("/api/users/password", put(change_password))
         .route("/api/users/username", put(change_username))
+        .route("/download/excel", get(download))
         .layer(middleware_stack.into_inner())
 }
 

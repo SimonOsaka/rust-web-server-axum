@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "warp-api",
     "repository",
     "domain",
     "types",

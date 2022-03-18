@@ -9,6 +9,7 @@ edition = "2021"
 types = { path = "../types" }
 domain = { path = "../domain" }
 auth = { path = "../auth" }
+util = { path = "../util" }
 axum = { version = "0.4" }
 tokio = { version = "1.0", features = ["full"] }
 tower = { version = "0.4", features = ["util", "filter", "timeout"] }

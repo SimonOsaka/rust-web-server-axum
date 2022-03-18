@@ -8,6 +8,7 @@ use axum::{
 use domain::{CreateAdventureError, DomainError, FavoriteError, GetAdventureError, GetUserError};
 use serde_json::json;
 use thiserror::Error;
+use util::excel::error::ExcelError;
 use validator::ValidationErrors;
 
 use crate::app_response::{AppError, ErrorMessage};
@@ -160,6 +161,15 @@ impl From<FavoriteError> for AppError {
             FavoriteError::AlreadyExist { .. } => forbidden(e.to_string()),
             FavoriteError::DomainError(_) => internal_server_error(e.to_string()),
             FavoriteError::AdventureNotFound { .. } => not_found(e.to_string()),
+        }
+    }
+}
+
+impl From<ExcelError> for AppError {
+    fn from(e: ExcelError) -> Self {
+        match &e {
+            ExcelError::Export(_) => internal_server_error(e.to_string()),
+            ExcelError::IO(_) => internal_server_error(e.to_string()),
         }
     }
 }
