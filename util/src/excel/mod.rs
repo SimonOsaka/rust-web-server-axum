@@ -60,7 +60,7 @@ impl Excel {
         for (sheet, rows) in sheets_and_rows {
             let mut sheet1 = workbook
                 .add_worksheet(Some(sheet))
-                .map_err(|e| ExcelError::Export(e))?;
+                .map_err(ExcelError::Export)?;
             for (row_index, row) in rows.into_iter().enumerate() {
                 for (col_index, col) in row.into_iter().enumerate() {
                     sheet1
@@ -70,11 +70,11 @@ impl Excel {
                             col,
                             None,
                         )
-                        .map_err(|e| ExcelError::Export(e))?;
+                        .map_err(ExcelError::Export)?;
                 }
             }
         }
-        workbook.close().map_err(|e| ExcelError::Export(e))?;
+        workbook.close().map_err(ExcelError::Export)?;
 
         Ok(())
     }
@@ -90,8 +90,8 @@ impl Excel {
     ) -> Result<Vec<u8>, ExcelError> {
         let uuid = Uuid::new_v4().to_string();
         Self::write_with_sheet(sheets_and_rows, &uuid)?;
-        let result = read(&uuid).map_err(|e| ExcelError::IO(e))?;
-        remove_file(&uuid).map_err(|e| ExcelError::IO(e))?;
+        let result = read(&uuid).map_err(ExcelError::IO)?;
+        remove_file(&uuid).map_err(ExcelError::IO)?;
         Ok(result)
     }
 }
