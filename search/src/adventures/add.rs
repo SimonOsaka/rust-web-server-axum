@@ -13,9 +13,9 @@ pub async fn add_adventures(ads: Vec<MyAdventures>) -> Result<bool, SearchError>
     let status = add_documents(ads).await?;
 
     match status {
-        MeiliSearchStatus::Succeeded => return Ok(true),
-        _ => return Ok(false),
-    };
+        MeiliSearchStatus::Succeeded => Ok(true),
+        _ => Ok(false),
+    }
 }
 
 #[tracing::instrument]
@@ -27,9 +27,9 @@ pub async fn delete_adventure(uid: i64) -> Result<bool, SearchError> {
     let status = del_documents(vec![uid]).await?;
 
     match status {
-        MeiliSearchStatus::Succeeded => return Ok(true),
-        _ => return Ok(false),
-    };
+        MeiliSearchStatus::Succeeded => Ok(true),
+        _ => Ok(false),
+    }
 }
 
 #[tracing::instrument]
@@ -37,7 +37,7 @@ pub async fn delete_adventures(uids: Vec<i64>) -> Result<bool, SearchError> {
     let status = del_documents(uids).await?;
 
     match status {
-        MeiliSearchStatus::Succeeded => return Ok(true),
-        _ => return Ok(false),
-    };
+        MeiliSearchStatus::Succeeded => Ok(true),
+        _ => Ok(false),
+    }
 }
