@@ -5,7 +5,7 @@ use crate::{
 };
 use repository::users::models::{MyUsers, NewMyUsers};
 use serde::Serialize;
-use types::ID;
+use vars::ID;
 
 #[derive(Serialize, Debug, Clone)]
 pub struct Users {

@@ -1,20 +1,25 @@
+use crate::i18n::{i18n, i18n_with_vars};
 use thiserror::Error;
 use time::error::{ComponentRange, Format, InvalidFormatDescription, Parse};
 
 #[derive(Error, Debug)]
 pub enum DateError {
-    #[error("{}", "format date error.")]
+    #[error("{}", i18n("date-format-error"))]
     Format { e: Format },
-    #[error("{}", "format date is out of range.")]
+
+    #[error("{}", i18n("date-out-of-range"))]
     FormatRange { e: ComponentRange },
-    #[error("{}", "format pattern error.")]
+
+    #[error("{}", i18n_with_vars("date-pattern-error", vec![fmt.to_string()]))]
     FormatInvalid {
         fmt: String,
         e: InvalidFormatDescription,
     },
-    #[error("{}", "parse date error.")]
+
+    #[error("{}", i18n_with_vars("date-parse-error", vec![pattern.to_string()]))]
     ParseError { pattern: String, e: Parse },
-    #[error("{}", "parse pattern {pattern} error.")]
+
+    #[error("{}", i18n_with_vars("date-parse-pattern-error", vec![pattern.to_string()]))]
     ParseInvalidPatternError {
         pattern: String,
         e: InvalidFormatDescription,

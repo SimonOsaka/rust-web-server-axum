@@ -3,24 +3,46 @@
 
 ## Structure
 - api: web request & response
-    - axum
-- domain: business service & impl
-- db: wrap database operation & sql
-    - postgresql
-    - sqlx
-- types: type for all module
-- server: boot & logger
-- redis: nosql db
-    - redis
-- search: search engine
-    - meilisearch
-- auth: jwt token auth
-    - jwt web token
-- logger: log everything
+    - use axum
+
+- crates: third part crates, some crates are not latest, so clone and include it
+    - lettre
     - tracing
-- extra: extra's tools
-- i18n: multi-languages
-- util: utilities, include date
+
+- domain: business service & impl
+
+- extra:
+    - authorization: rbac auth
+        - use casbin
+    - email: send email
+        - use lettre
+    - logger: log for everything
+        - use tracing
+    - meilisearch: search engine
+        - use meilisearch
+    - redis: memory and disk store
+        - use redis
+
+- repository: wrap database operation & sql
+    - use postgresql
+    - use sqlx
+
+- search: business service for search
+
+- server_app: main entry
+
+- server_lib: boot
+
+- util:
+    - date: date format and parse
+        - use time
+    - excel: export data to excel
+        - use xlsxwriter
+    - i18n: multi-languages
+    - jwt: resource auth
+        - use jsonwebtoken
+
+- vars: variables for all module
 
 ## Prepare
 - Install Rust 1.56+

@@ -1,0 +1,22 @@
+[package]
+name = "server_lib"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = []
+database_lib = ["repository"]
+api_lib = ["api"]
+# Append to default
+# command: RUSTFLAGS="--cfg tokio_unstable" cargo run
+tokio_console = ["tokio/tracing", "console-subscriber"]
+
+[dependencies]
+api = { path = "../api", optional = true }
+repository = { path = "../repository", optional = true }
+search = { path = "../search", optional = true }
+extra = { path = "../extra" }
+
+dotenv = "0.15.0"
+tokio = { version = "1", features = ["macros"] }
+console-subscriber = { version = "0.1", optional = true }

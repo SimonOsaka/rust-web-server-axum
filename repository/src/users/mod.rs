@@ -1,4 +1,4 @@
 pub mod models;
-pub mod repository;
+pub mod repo;
 pub use models::*;
-pub use repository::*;
+pub use repo::*;

@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use types::{DateTime, ID, U8I16};
+use vars::{DateTime, ID, U8I16};
 
 #[derive(sqlx::FromRow, Deserialize, sqlx::Type, Debug)]
 #[sqlx(type_name = "RECORD")]

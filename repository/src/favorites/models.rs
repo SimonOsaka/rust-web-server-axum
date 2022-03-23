@@ -1,4 +1,4 @@
-use types::ID;
+use vars::ID;
 
 #[derive(sqlx::FromRow, Debug)]
 pub struct MyFavorites {

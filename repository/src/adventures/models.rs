@@ -1,4 +1,4 @@
-use types::{MyAdventures, ID, U8I16};
+use vars::{MyAdventures, ID, U8I16};
 
 use crate::MyUsers;
 

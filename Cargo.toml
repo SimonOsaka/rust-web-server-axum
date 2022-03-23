@@ -2,15 +2,12 @@
 members = [
     "repository",
     "domain",
-    "types",
-    "redis",
+    "vars",
     "search",
-    "axum-api",
-    "server",
-    "auth",
-    "logger",
+    "api",
+    "server_lib",
+    "server_app",
     "extra",
-    "i18n",
     "util",
 ]
 

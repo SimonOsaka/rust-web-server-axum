@@ -1,8 +1,10 @@
 use anyhow::Error as OpaqueError;
-use i18n::i18n;
 use repository::SqlxError;
+use search::adventures::error::SearchError;
 use tracing::debug;
-pub fn search_to_domain_error(e: meilisearch_sdk::errors::Error) -> DomainError {
+use util::i18n::i18n;
+
+pub fn search_to_domain_error(e: SearchError) -> DomainError {
     debug!("search_to_domain_error: {}", e);
     DomainError::from(OpaqueError::from(e))
 }

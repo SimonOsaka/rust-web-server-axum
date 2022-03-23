@@ -6,16 +6,16 @@ use crate::{Adventures, AdventuresQuery, DomainError, GetAdventureError, PlayLis
 
 use anyhow::Result;
 
-use meilisearch_sdk::tasks::Task;
 use repository::db::Repo;
 use repository::{
     create_journey, delete_one_adventure, find_adventure_title_crypto, find_adventures_by_user_id,
     find_one_adventure, NewMyAdventuresJourney,
 };
-use search::adventures::{search_by_play_list, search_latest, search_one};
-use search::meilisearch::operation::{add_documents, del_documents, get_client};
+use search::adventures::{
+    add_adventure, add_adventures, delete_adventure, search_by_play_list, search_latest, search_one,
+};
 use tracing::debug;
-use types::ID;
+use vars::ID;
 
 #[derive(Clone, Debug)]
 pub struct AdventuresManagerImpl;
@@ -88,13 +88,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         let result = find_one_adventure(id, None).await;
         match result {
             Ok(opt_my) => match opt_my {
-                Some(my) => {
-                    add_documents(vec![my])
-                        .await
-                        .map_err(search_to_domain_error)
-                        .unwrap();
-                    Ok(true)
-                }
+                Some(my) => Ok(add_adventure(my).await.map_err(search_to_domain_error)?),
                 None => {
                     println!("NONE, not exist");
                     Ok(false)
@@ -129,21 +123,17 @@ impl super::AdventuresManager for AdventuresManagerImpl {
 
         transaction.commit().await.expect("");
 
-        let task = match result {
-            Some(ad) => add_documents(vec![ad])
+        let status = match result {
+            Some(ad) => add_adventures(vec![ad])
                 .await
                 .map_err(search_to_domain_error)?,
             None => return Err(CreateAdventureError::AdventureNotFound { adventure_id: id }),
         };
 
-        let status = task
-            .wait_for_completion(get_client(), None, None)
-            .await
-            .map_err(search_to_domain_error)?;
-
-        match status {
-            Task::Succeeded { .. } => return Ok(id),
-            _ => return Err(CreateAdventureError::AddDocuments),
+        if status {
+            Ok(id)
+        } else {
+            Err(CreateAdventureError::AddDocuments)
         }
     }
 
@@ -169,18 +159,14 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         transaction.commit().await.expect("commit error");
 
         if is_db_del {
-            let task = del_documents(vec![id])
+            let status = delete_adventure(id)
                 .await
                 .map_err(|e| DeleteAdventureError::DomainError(search_to_domain_error(e)))?;
 
-            let status = task
-                .wait_for_completion(get_client(), None, None)
-                .await
-                .map_err(search_to_domain_error)?;
-
-            match status {
-                Task::Succeeded { .. } => return Ok(true),
-                _ => return Err(DeleteAdventureError::DelDocuments),
+            if status {
+                return Ok(true);
+            } else {
+                return Err(DeleteAdventureError::DelDocuments);
             }
         }
 

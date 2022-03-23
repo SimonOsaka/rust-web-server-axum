@@ -1,5 +1,5 @@
 use anyhow::Result;
-use types::ID;
+use vars::ID;
 
 use crate::{
     Adventures, AdventuresQuery, CreateAdventureError, DeleteAdventureError, DomainError,

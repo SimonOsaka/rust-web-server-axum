@@ -1,6 +1,6 @@
-use i18n::{i18n, i18n_with_vars};
 use thiserror::Error;
-use types::ID;
+use util::i18n::{i18n, i18n_with_vars};
+use vars::ID;
 
 use crate::DomainError;
 

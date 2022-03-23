@@ -1,6 +1,6 @@
 use repository::favorites::MyFavorites;
 use serde::Serialize;
-use types::ID;
+use vars::ID;
 
 #[derive(Serialize, Debug, Clone)]
 pub struct Favorite {

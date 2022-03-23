@@ -44,6 +44,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4361135be9122e0870de935d7c439aef945b9f9ddd4199a553b5270b49c82a27"
 
 [[package]]
+name = "api"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "axum",
+ "domain",
+ "headers",
+ "http-body",
+ "hyper",
+ "jsonwebtoken",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio 1.17.0",
+ "tower",
+ "tower-http",
+ "tracing 0.2.0",
+ "util",
+ "validator",
+ "vars",
+]
+
+[[package]]
 name = "arc-swap"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -225,22 +248,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "auth"
-version = "0.1.0"
-dependencies = [
- "casbin",
- "chrono",
- "i18n",
- "jsonwebtoken",
- "once_cell",
- "serde",
- "thiserror",
- "tokio 1.17.0",
- "tracing 0.2.0",
- "types",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -274,30 +281,6 @@ dependencies = [
  "tower-http",
  "tower-layer",
  "tower-service",
-]
-
-[[package]]
-name = "axum-api"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "auth",
- "axum",
- "domain",
- "headers",
- "http-body",
- "hyper",
- "jsonwebtoken",
- "serde",
- "serde_json",
- "thiserror",
- "tokio 1.17.0",
- "tower",
- "tower-http",
- "tracing 0.2.0",
- "types",
- "util",
- "validator",
 ]
 
 [[package]]
@@ -616,9 +599,9 @@ dependencies = [
 
 [[package]]
 name = "cpufeatures"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95059428f66df56b63431fdb4e1947ed2190586af5c5a8a8b71122bdf5a7f469"
+checksum = "59a6001667ab124aebae2a495118e11d30984c3a653e99d86d58971708cf5e4b"
 dependencies = [
  "libc",
 ]
@@ -670,9 +653,9 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-channel"
-version = "0.5.3"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdbfe11fe19ff083c48923cf179540e8cd0535903dc35e178a1fdeeb59aef51f"
+checksum = "5aaa7bd5fb665c6864b5f963dd9097905c54125909c7aa94c9e18507cdbe6c53"
 dependencies = [
  "cfg-if 1.0.0",
  "crossbeam-utils 0.8.8",
@@ -815,9 +798,9 @@ dependencies = [
 
 [[package]]
 name = "ctor"
-version = "0.1.21"
+version = "0.1.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ccc0a48a9b826acdf4028595adc9db92caea352f7af011a3034acd172a52a0aa"
+checksum = "f877be4f7c9f246b183111634f75baa039715e3f46ce860677d3b19a69fb229c"
 dependencies = [
  "quote",
  "syn",
@@ -922,9 +905,6 @@ dependencies = [
  "async-trait",
  "base64",
  "chrono",
- "i18n",
- "meilisearch-sdk",
- "redis 0.1.0",
  "repository",
  "ring",
  "search",
@@ -932,7 +912,8 @@ dependencies = [
  "serde_json",
  "thiserror",
  "tracing 0.2.0",
- "types",
+ "util",
+ "vars",
 ]
 
 [[package]]
@@ -985,10 +966,20 @@ checksum = "77f3309417938f28bf8228fcff79a4a37103981e3e186d2ccd19c74b38f4eb71"
 name = "extra"
 version = "0.1.0"
 dependencies = [
+ "casbin",
  "lettre",
+ "meilisearch-sdk",
  "once_cell",
+ "redis",
+ "serde",
+ "serde_json",
  "thiserror",
+ "time 0.3.7",
  "tokio 1.17.0",
+ "tracing 0.2.0",
+ "tracing-appender",
+ "tracing-subscriber 0.3.0",
+ "util",
 ]
 
 [[package]]
@@ -1419,15 +1410,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "i18n"
-version = "0.1.0"
-dependencies = [
- "once_cell",
- "toml",
- "walkdir",
-]
-
-[[package]]
 name = "idna"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1605,7 +1587,7 @@ dependencies = [
  "rustls 0.20.4",
  "rustls-pemfile",
  "tokio 1.17.0",
- "tokio-rustls 0.23.2",
+ "tokio-rustls 0.23.3",
  "webpki-roots 0.22.2",
 ]
 
@@ -1624,9 +1606,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.120"
+version = "0.2.121"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad5c14e80759d0939d013e6ca49930e59fc53dd8e5009132f76240c179380c09"
+checksum = "efaa7b300f3b5fe8eb6bf21ce3895e1751d9665086af2d64b42f19701015ff4f"
 
 [[package]]
 name = "libloading"
@@ -1696,17 +1678,6 @@ checksum = "51b9bbe6c47d51fc3e1a9b945965946b4c44142ab8792c50835a980d362c2710"
 dependencies = [
  "cfg-if 1.0.0",
  "value-bag",
-]
-
-[[package]]
-name = "logger"
-version = "0.1.0"
-dependencies = [
- "once_cell",
- "time 0.3.7",
- "tracing 0.2.0",
- "tracing-appender",
- "tracing-subscriber 0.3.0",
 ]
 
 [[package]]
@@ -2285,7 +2256,7 @@ dependencies = [
  "prost-types",
  "regex",
  "tempfile",
- "which 4.2.4",
+ "which 4.2.5",
 ]
 
 [[package]]
@@ -2392,15 +2363,6 @@ dependencies = [
 
 [[package]]
 name = "redis"
-version = "0.1.0"
-dependencies = [
- "once_cell",
- "redis 0.21.5",
- "tracing 0.2.0",
-]
-
-[[package]]
-name = "redis"
 version = "0.21.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a80b5f38d7f5a020856a0e16e40a9cfabf88ae8f0e4c2dcd8a3114c1e470852"
@@ -2495,7 +2457,7 @@ dependencies = [
  "sql-builder",
  "sqlx",
  "tracing 0.2.0",
- "types",
+ "vars",
 ]
 
 [[package]]
@@ -2674,12 +2636,11 @@ dependencies = [
 name = "search"
 version = "0.1.0"
 dependencies = [
- "meilisearch-sdk",
- "once_cell",
- "serde",
- "serde_json",
+ "extra",
+ "thiserror",
  "tracing 0.2.0",
- "types",
+ "util",
+ "vars",
 ]
 
 [[package]]
@@ -2757,16 +2718,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "server"
+name = "server_app"
 version = "0.1.0"
 dependencies = [
- "auth",
- "axum-api",
+ "server_lib",
+ "tokio 1.17.0",
+]
+
+[[package]]
+name = "server_lib"
+version = "0.1.0"
+dependencies = [
+ "api",
  "console-subscriber",
  "dotenv",
  "extra",
- "logger",
- "redis 0.1.0",
  "repository",
  "search",
  "tokio 1.17.0",
@@ -3413,9 +3379,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-rustls"
-version = "0.23.2"
+version = "0.23.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a27d5f2b839802bd8267fa19b0530f5a08b9c08cd417976be2a65d130fe1c11b"
+checksum = "4151fda0cf2798550ad0b34bcfc9b9dcc2a9d2471c895c68f3a8818e54f2389e"
 dependencies = [
  "rustls 0.20.4",
  "tokio 1.17.0",
@@ -3837,19 +3803,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dcf81ac59edc17cc8697ff311e8f5ef2d99fcbd9817b34cec66f90b6c3dfd987"
 
 [[package]]
-name = "types"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "i18n",
- "meilisearch-sdk",
- "serde",
- "sqlx",
- "tracing 0.2.0",
- "validator",
-]
-
-[[package]]
 name = "unicode-bidi"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3910,10 +3863,15 @@ dependencies = [
 name = "util"
 version = "0.1.0"
 dependencies = [
+ "chrono",
+ "jsonwebtoken",
  "once_cell",
+ "serde",
  "thiserror",
  "time 0.3.7",
+ "toml",
  "uuid",
+ "walkdir",
  "xlsxwriter",
 ]
 
@@ -3983,6 +3941,18 @@ checksum = "79923f7731dc61ebfba3633098bf3ac533bbd35ccd8c57e7088d9a5eebe0263f"
 dependencies = [
  "ctor",
  "version_check",
+]
+
+[[package]]
+name = "vars"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "meilisearch-sdk",
+ "serde",
+ "sqlx",
+ "tracing 0.2.0",
+ "validator",
 ]
 
 [[package]]
@@ -4200,9 +4170,9 @@ dependencies = [
 
 [[package]]
 name = "which"
-version = "4.2.4"
+version = "4.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a5a7e487e921cf220206864a94a89b6c6905bfc19f1057fa26a4cb360e5c1d2"
+checksum = "5c4fb54e6113b6a8772ee41c3404fb0301ac79604489467e0a9ce1f3e97c24ae"
 dependencies = [
  "either",
  "lazy_static",

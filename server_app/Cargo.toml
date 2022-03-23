@@ -1,0 +1,30 @@
+[package]
+name = "server_app"
+version = "0.1.0"
+edition = "2021"
+autotests = false
+authors = ["Simon Osaka <geniusmickymouse@qq.com>"]
+include = ["src/**/*", "Cargo.toml", "README.md"]
+description = "A example of rust web server to develop api"
+repository = "https://github.com/SimonOsaka/rust-web-server-example"
+documentation = ""
+homepage = ""
+keywords = ["web", "api", "db"]
+categories = []
+license = "MIT"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+bench = false
+path = "src/main.rs"
+name = "app"
+
+[dependencies]
+server_lib = { path = "../server_lib", default-features = false, features = [
+    "database_lib",
+    "api_lib",
+] }
+
+tokio = { version = "1", features = ["macros"] }

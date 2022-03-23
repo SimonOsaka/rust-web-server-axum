@@ -6,20 +6,20 @@
         {
             "text": "▶︎ run",
             "color": "lightgreen",
-            "tooltip": "cargo run",
+            "tooltip": "cargo run --no-default-features",
             "language": "rust",
             "commandType": "palette",
-            "command": "workbench.action.tasks.runTask|cargo run",
+            "command": "workbench.action.tasks.runTask|cargo run --no-default-features",
             "alignment": "left",
             "priority": 10
         },
         {
             "text": "▷ build",
             "color": "yellow",
-            "tooltip": "cargo build",
+            "tooltip": "cargo build --no-default-features",
             "language": "rust",
             "commandType": "palette",
-            "command": "workbench.action.tasks.runTask|cargo build",
+            "command": "workbench.action.tasks.runTask|cargo build --no-default-features",
             "alignment": "left",
             "priority": 9
         },
@@ -36,20 +36,20 @@
         {
             "text": "⚡︎ release",
             "color": "LightSteelBlue",
-            "tooltip": "cargo build --release",
+            "tooltip": "cargo build --no-default-features --release",
             "language": "rust",
             "commandType": "palette",
-            "command": "workbench.action.tasks.runTask|cargo build --release",
+            "command": "workbench.action.tasks.runTask|cargo build --no-default-features --release",
             "alignment": "left",
             "priority": 7
         },
         {
             "text": "⚡︎ release linux",
             "color": "pink",
-            "tooltip": "cargo build --release --target=x86_64-unknown-linux-musl",
+            "tooltip": "cargo build --no-default-features --release --target=x86_64-unknown-linux-musl",
             "language": "rust",
             "commandType": "palette",
-            "command": "workbench.action.tasks.runTask|cargo build --release --target=x86_64-unknown-linux-musl",
+            "command": "workbench.action.tasks.runTask|cargo build --no-default-features --release --target=x86_64-unknown-linux-musl",
             "alignment": "left",
             "priority": 6
         },

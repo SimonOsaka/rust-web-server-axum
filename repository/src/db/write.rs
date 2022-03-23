@@ -2,7 +2,7 @@ use super::{SqlParams, REPOSITORY};
 use sql_builder::SqlBuilder;
 use sqlx::{Error, Postgres, Row, Transaction};
 use tracing::debug;
-use types::ID;
+use vars::ID;
 
 #[async_trait]
 pub trait SqlWriter {

@@ -4,24 +4,24 @@
         {
             "type": "shell",
             "command": [
-                "cargo run"
+                "cargo run --no-default-features"
             ],
             "problemMatcher": [
                 "$rustc"
             ],
             "group": "build",
-            "label": "cargo run"
+            "label": "cargo run --no-default-features"
         },
         {
             "type": "shell",
             "command": [
-                "cargo build"
+                "cargo build --no-default-features"
             ],
             "problemMatcher": [
                 "$rustc"
             ],
             "group": "build",
-            "label": "cargo build"
+            "label": "cargo build --no-default-features"
         },
         {
             "type": "shell",
@@ -37,24 +37,24 @@
         {
             "type": "shell",
             "command": [
-                "cargo build --release"
+                "cargo build --no-default-features --release"
             ],
             "problemMatcher": [
                 "$rustc"
             ],
             "group": "build",
-            "label": "cargo build --release"
+            "label": "cargo build --no-default-features --release"
         },
         {
             "type": "shell",
             "command": [
-                "OPENSSL_DIR=/usr/local/opt/openssl@1.1 CC_x86_64_unknown_linux_musl=x86_64-linux-musl-gcc cargo build --release --target=x86_64-unknown-linux-musl"
+                "OPENSSL_DIR=/usr/local/opt/openssl@1.1 CC_x86_64_unknown_linux_musl=x86_64-linux-musl-gcc cargo build --no-default-features --release --target=x86_64-unknown-linux-musl"
             ],
             "problemMatcher": [
                 "$rustc"
             ],
             "group": "build",
-            "label": "cargo build --release --target=x86_64-unknown-linux-musl"
+            "label": "cargo build --no-default-features --release --target=x86_64-unknown-linux-musl"
         }
     ]
 }

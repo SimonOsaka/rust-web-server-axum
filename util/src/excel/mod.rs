@@ -120,7 +120,7 @@ impl Excel {
 mod tests {
     use std::{collections::HashMap, vec};
 
-    use crate::Excel;
+    use super::Excel;
 
     #[test]
     fn test_write() {

@@ -4,7 +4,7 @@ use repository::{
 };
 use search::adventures::model::{AdventuresFilter, PlayListFilter};
 use serde::Serialize;
-use types::{DateTime, MyAdventures, ID, U8I16};
+use vars::{DateTime, MyAdventures, ID, U8I16};
 
 use crate::{utils::hash, Users};
 

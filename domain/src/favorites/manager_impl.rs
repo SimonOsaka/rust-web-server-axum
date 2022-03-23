@@ -3,7 +3,7 @@ use repository::{
     favorites::{delete, get_favorite, insert, DeleteMyFavorite, GetMyFavorite, NewMyFavorite},
     find_one_adventure, update_adventure_fav, FavCountKind,
 };
-use search::meilisearch::operation::add_documents;
+use search::adventures::add_adventure;
 
 use crate::{
     database_to_domain_error, search_to_domain_error, AddFavorite, DelFavorite, Favorite,
@@ -70,7 +70,7 @@ impl super::FavoritesManager for FavoritesManagerImpl {
             .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
 
         if let Some(my) = result {
-            add_documents(vec![my])
+            add_adventure(my)
                 .await
                 .map_err(|e| FavoriteError::DomainError(search_to_domain_error(e)))?;
         }
@@ -139,7 +139,7 @@ impl super::FavoritesManager for FavoritesManagerImpl {
             .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
 
         if let Some(my) = result {
-            add_documents(vec![my])
+            add_adventure(my)
                 .await
                 .map_err(|e| FavoriteError::DomainError(search_to_domain_error(e)))?;
         }
