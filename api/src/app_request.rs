@@ -8,7 +8,8 @@ use axum::{
     async_trait,
     body::HttpBody,
     extract::{FromRequest, Path, Query, RequestParts},
-    BoxError, Json,
+    headers::{authorization::Bearer, Authorization},
+    BoxError, Json, TypedHeader,
 };
 use http_body::Body;
 use serde::de::DeserializeOwned;
@@ -26,22 +27,14 @@ where
     type Rejection = AppError;
 
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
-        if let Some(headers) = req.headers() {
-            match headers.get("Authorization") {
-                Some(k) => match k.to_str().ok().and_then(|x| decode_token(x).ok()) {
-                    Some(k) => Ok(Self(k)),
-                    None => Err(AppError::from(JWTError::Invalid)),
-                },
-                // for no login user
-                None =>
-                //Ok(Self(role_view())),
-                {
-                    Err(AppError::from(JWTError::Missing))
-                }
-            }
-        } else {
-            // Ok(Self(role_view()))
-            Err(AppError::from(JWTError::Missing))
+        let TypedHeader(Authorization(bearer)) =
+            TypedHeader::<Authorization<Bearer>>::from_request(req)
+                .await
+                .map_err(|_| JWTError::Invalid)?;
+
+        match decode_token(bearer.token()) {
+            Ok(k) => Ok(Self(k)),
+            Err(_) => Err(AppError::from(JWTError::Invalid)),
         }
     }
 }

@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 
 static TOKEN_SECRET: Lazy<String> =
     Lazy::new(|| std::env::var("JWT_SECRET").expect("jwt secret must set"));
-const TOKEN_PREFIX: &str = "Token ";
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Claims {
@@ -50,7 +49,7 @@ pub fn encode_token(sub: i64, name: String, roles: Vec<String>) -> String {
 
 pub fn decode_token(token: &str) -> Result<Claims> {
     decode::<Claims>(
-        token.trim_start_matches(TOKEN_PREFIX),
+        token,
         &DecodingKey::from_secret(TOKEN_SECRET.as_ref()),
         &Validation::default(),
     )
