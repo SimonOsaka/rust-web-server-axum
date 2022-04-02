@@ -1,15 +1,17 @@
 use super::{
     error::SearchError,
-    model::{AdventuresFilter, PlayListFilter},
+    model::{AdventuresFilter, PlayListFilter, SearchedAdventures},
 };
 use extra::meilisearch::operation::{
     search_documents_with_filter, Condition, Page, Sort, SortDirect, SortProperty,
 };
 use tracing::debug;
-use vars::{MyAdventures, ID};
+use vars::ID;
 
 #[tracing::instrument(err)]
-pub async fn search_latest(query: AdventuresFilter) -> Result<Vec<MyAdventures>, SearchError> {
+pub async fn search_latest(
+    query: AdventuresFilter,
+) -> Result<Vec<SearchedAdventures>, SearchError> {
     let mut filter = vec!["is_deleted = 0".to_string()];
     if query.item_id != 0 {
         filter.push(format!("item_type = {}", query.item_id));
@@ -31,14 +33,16 @@ pub async fn search_latest(query: AdventuresFilter) -> Result<Vec<MyAdventures>,
 
     debug!("condition: {:?}", condition);
 
-    let search_results = search_documents_with_filter::<MyAdventures>(condition).await;
+    let search_results = search_documents_with_filter::<SearchedAdventures>(condition).await;
 
-    let result: Vec<MyAdventures> = search_results?.into_iter().map(|sr| sr.result).collect();
+    let result: Vec<SearchedAdventures> = search_results?.into_iter().map(|sr| sr.result).collect();
     Ok(result)
 }
 
 #[tracing::instrument(err)]
-pub async fn search_by_play_list(query: PlayListFilter) -> Result<Vec<MyAdventures>, SearchError> {
+pub async fn search_by_play_list(
+    query: PlayListFilter,
+) -> Result<Vec<SearchedAdventures>, SearchError> {
     let mut condition = Condition::new();
     condition.filter = Some(format!(
         "play_list = {} AND is_deleted = 0",
@@ -48,24 +52,24 @@ pub async fn search_by_play_list(query: PlayListFilter) -> Result<Vec<MyAdventur
 
     debug!("condition: {:?}", condition);
 
-    let search_results = search_documents_with_filter::<MyAdventures>(condition).await;
+    let search_results = search_documents_with_filter::<SearchedAdventures>(condition).await;
 
-    let result: Vec<MyAdventures> = search_results?.into_iter().map(|sr| sr.result).collect();
+    let result: Vec<SearchedAdventures> = search_results?.into_iter().map(|sr| sr.result).collect();
 
     Ok(result)
 }
 
 #[tracing::instrument(err)]
-pub async fn search_one(id: ID) -> Result<Option<MyAdventures>, SearchError> {
+pub async fn search_one(id: ID) -> Result<Option<SearchedAdventures>, SearchError> {
     let mut condition = Condition::new();
     condition.filter = Some(format!("id = {} AND is_deleted = 0", id));
     condition.page = Some(Page::one());
 
     debug!("condition: {:?}", condition);
 
-    let search_results = search_documents_with_filter::<MyAdventures>(condition).await;
+    let search_results = search_documents_with_filter::<SearchedAdventures>(condition).await;
 
-    let result: Vec<MyAdventures> = search_results?.into_iter().map(|sr| sr.result).collect();
+    let result: Vec<SearchedAdventures> = search_results?.into_iter().map(|sr| sr.result).collect();
 
     if result.len() == 1 {
         Ok(Some(result.get(0).unwrap().to_owned()))

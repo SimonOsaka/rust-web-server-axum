@@ -6,8 +6,8 @@ use repository::{
 use search::adventures::add_adventure;
 
 use crate::{
-    database_to_domain_error, search_to_domain_error, AddFavorite, DelFavorite, Favorite,
-    FavoriteError,
+    database_to_domain_error, my_to_searched, search_to_domain_error, AddFavorite, DelFavorite,
+    Favorite, FavoriteError,
 };
 
 #[derive(Clone, Debug)]
@@ -70,7 +70,7 @@ impl super::FavoritesManager for FavoritesManagerImpl {
             .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
 
         if let Some(my) = result {
-            add_adventure(my)
+            add_adventure(my_to_searched(my))
                 .await
                 .map_err(|e| FavoriteError::DomainError(search_to_domain_error(e)))?;
         }
@@ -139,7 +139,7 @@ impl super::FavoritesManager for FavoritesManagerImpl {
             .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
 
         if let Some(my) = result {
-            add_adventure(my)
+            add_adventure(my_to_searched(my))
                 .await
                 .map_err(|e| FavoriteError::DomainError(search_to_domain_error(e)))?;
         }

@@ -1,15 +1,14 @@
 use extra::meilisearch::operation::{add_documents, del_documents, MeiliSearchStatus};
-use vars::MyAdventures;
 
-use super::error::SearchError;
+use super::{error::SearchError, model::SearchedAdventures};
 
 #[tracing::instrument]
-pub async fn add_adventure(ad: MyAdventures) -> Result<bool, SearchError> {
+pub async fn add_adventure(ad: SearchedAdventures) -> Result<bool, SearchError> {
     add_adventures(vec![ad]).await
 }
 
 #[tracing::instrument]
-pub async fn add_adventures(ads: Vec<MyAdventures>) -> Result<bool, SearchError> {
+pub async fn add_adventures(ads: Vec<SearchedAdventures>) -> Result<bool, SearchError> {
     let status = add_documents(ads).await?;
 
     match status {

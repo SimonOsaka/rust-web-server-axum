@@ -1,6 +1,6 @@
 use crate::{
-    database_to_domain_error, search_to_domain_error, CreateAdventureError, DeleteAdventureError,
-    NewJourneyData, Users,
+    database_to_domain_error, my_to_searched, search_to_domain_error, CreateAdventureError,
+    DeleteAdventureError, NewJourneyData, Users,
 };
 use crate::{Adventures, AdventuresQuery, DomainError, GetAdventureError, PlayListQuery};
 
@@ -88,7 +88,9 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         let result = find_one_adventure(id, None).await;
         match result {
             Ok(opt_my) => match opt_my {
-                Some(my) => Ok(add_adventure(my).await.map_err(search_to_domain_error)?),
+                Some(my) => Ok(add_adventure(my_to_searched(my))
+                    .await
+                    .map_err(search_to_domain_error)?),
                 None => {
                     println!("NONE, not exist");
                     Ok(false)
@@ -124,7 +126,7 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         transaction.commit().await.expect("");
 
         let status = match result {
-            Some(ad) => add_adventures(vec![ad])
+            Some(ad) => add_adventures(vec![my_to_searched(ad)])
                 .await
                 .map_err(search_to_domain_error)?,
             None => return Err(CreateAdventureError::AdventureNotFound { adventure_id: id }),

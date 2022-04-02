@@ -1,11 +1,11 @@
 use crate::adventures::models::{AdventuresWhere, NewMyAdventuresJourney, PlayListWhere};
 use crate::db::write::SqlWriter;
 use crate::db::{SqlBuilder, SqlParams, SqlReader};
-use crate::{AdventureUser, FavCountKind, MyUsers, MY_USERS_STRUCT_FIELDS};
+use crate::{AdventureUser, FavCountKind, MyAdventures, MyUsers, MY_USERS_STRUCT_FIELDS};
 use sql_builder::{name, SqlName};
 use sqlx::{Error, Postgres, Transaction};
 use tracing::debug;
-use vars::{MyAdventures, ID};
+use vars::ID;
 
 const MY_ADVENTURES_FIELDS: &[&str; 18] = &[
     "ad.id",
