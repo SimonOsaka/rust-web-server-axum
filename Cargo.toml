@@ -9,6 +9,7 @@ members = [
     "server_app",
     "extra",
     "util",
+    "macros",
 ]
 
 [profile.dev]

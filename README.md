@@ -23,6 +23,9 @@
     - redis: memory and disk store
         - use redis
 
+- macros
+    - use proc-macro2
+
 - repository: wrap database operation & sql
     - use postgresql
     - use sqlx
@@ -142,6 +145,20 @@ tokio-console
 # 'command/ctrl + click' 'console_subscriber::init();' to see ENV variables.
 ```
 *For further to see docs*.
+
+## proc-macro2
+### macro
+- `#[proc_macro]`
+- `#[proc_macro_derive(MyDerive)]`
+- `#[proc_macro_attribute]`
+### required
+- proc-macro
+- syn
+- quote
+### watch macro expand
+Install cargo-expand `cargo install cargo-expand` and shell run `cargo expand`
+
+**Tips**: run `cargo expand --lib <full mod path>` to watch macro expand of path 
 
 ## Docker
 ```shell

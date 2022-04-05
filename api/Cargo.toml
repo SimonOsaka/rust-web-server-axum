@@ -10,7 +10,7 @@ vars = { path = "../vars" }
 domain = { path = "../domain" }
 util = { path = "../util", features = ["excel", "jwt"] }
 
-axum = { version = "0.5.0", features = ["headers"] }
+axum = { version = "0.5", features = ["headers"] }
 tokio = { version = "1.0", features = ["full"] }
 tower = { version = "0.4", features = ["util", "filter", "timeout"] }
 tower-http = { version = "0.2", features = ["trace", "add-extension"] }
@@ -24,3 +24,4 @@ validator = { version = "0.14.0", features = ["derive"] }
 http-body = "0.4"
 thiserror = "1.0"
 tracing = { path = "../crates/tracing", version = "0.2" }
+chrono = { version = "0.4", features = ["serde"] }

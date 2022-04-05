@@ -21,10 +21,10 @@ pub struct JourneyForm {
     #[validate(url(code = "adventure-journey-valid-link"))]
     link: String,
 
-    #[validate(custom(function = "vars::validate_source"))]
+    #[validate(custom(function = "crate::app_request::validate_source"))]
     source: u8,
 
-    #[validate(custom(function = "vars::validate_journey_destiny"))]
+    #[validate(custom(function = "crate::app_request::validate_journey_destiny"))]
     journey_destiny: String,
 }
 

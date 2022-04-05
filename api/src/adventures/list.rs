@@ -10,7 +10,7 @@ use crate::{
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct AdventuresQueryReq {
-    #[validate(custom(function = "vars::validate_item_id"))]
+    #[validate(custom(function = "crate::app_request::validate_item_id"))]
     pub item_id: u8,
     #[validate(range(min = 1, max = 20, code = "adventure-list-valid-limit"))]
     pub limit: Option<u32>,

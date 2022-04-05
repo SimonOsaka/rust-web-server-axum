@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
-use vars::{
-    my_date_format, my_item_type_format, my_journey_destiny, my_source, DateTime, ID, U8I16,
-};
+use vars::{my_item_type_format, my_journey_destiny, my_source, DateTime, ID, U8I16};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -200,4 +198,41 @@ impl From<Vec<(domain::Adventures, domain::Users)>> for MyAdventuresResponse {
 pub struct AdventureUser {
     pub adventure: Adventures,
     pub user: Users,
+}
+
+pub mod my_date_format {
+    use serde::{self, Deserialize, Deserializer, Serializer};
+    use vars::DateTime;
+
+    const FORMAT: &str = "%Y-%m-%d %H:%M:%S";
+
+    // The signature of a serialize_with function must follow the pattern:
+    //
+    //    fn serialize<S>(&T, S) -> Result<S::Ok, S::Error>
+    //    where
+    //        S: Serializer
+    //
+    // although it may also be generic over the input types T.
+    pub fn serialize<S>(date: &DateTime, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let s = format!("{}", date.format(FORMAT));
+        serializer.serialize_str(&s)
+    }
+
+    // The signature of a deserialize_with function must follow the pattern:
+    //
+    //    fn deserialize<'de, D>(D) -> Result<T, D::Error>
+    //    where
+    //        D: Deserializer<'de>
+    //
+    // although it may also be generic over the output types T.
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<chrono::NaiveDateTime, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        chrono::NaiveDateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
+    }
 }
