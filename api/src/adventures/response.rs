@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use vars::{my_item_type_format, my_journey_destiny, my_source, DateTime, ID, U8I16};
+use vars::{to_item_type_name, to_journey_destiny_name, to_source_name, DateTime, ID, U8I16};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -19,11 +19,11 @@ impl From<Vec<domain::Adventures>> for AdventuresResponse {
                 image_url: ad.image_url,
                 created_at: ad.created_at,
                 item_type: ad.item_type,
-                item_type_name: my_item_type_format::to_item_type_name(ad.item_type),
+                item_type_name: to_item_type_name(ad.item_type),
                 link: ad.link,
                 source: ad.source,
-                source_name: my_source::to_source_name(ad.source),
-                journey_destiny_name: my_journey_destiny::to_name(&ad.journey_destiny),
+                source_name: to_source_name(ad.source),
+                journey_destiny_name: to_journey_destiny_name(&ad.journey_destiny),
                 script_content: ad.script_content,
                 play_list: ad.play_list,
                 address: ad.address,
@@ -55,11 +55,11 @@ impl From<domain::Adventures> for AdventureResponse {
             image_url: ad.image_url,
             created_at: ad.created_at,
             item_type: ad.item_type,
-            item_type_name: my_item_type_format::to_item_type_name(ad.item_type),
+            item_type_name: to_item_type_name(ad.item_type),
             link: ad.link,
             source: ad.source,
-            source_name: my_source::to_source_name(ad.source),
-            journey_destiny_name: my_journey_destiny::to_name(&ad.journey_destiny),
+            source_name: to_source_name(ad.source),
+            journey_destiny_name: to_journey_destiny_name(&ad.journey_destiny),
             script_content: ad.script_content,
             play_list: ad.play_list,
             address: ad.address,
@@ -105,11 +105,11 @@ impl From<domain::Adventures> for Adventures {
             image_url: ad.image_url,
             created_at: ad.created_at,
             item_type: ad.item_type,
-            item_type_name: my_item_type_format::to_item_type_name(ad.item_type),
+            item_type_name: to_item_type_name(ad.item_type),
             link: ad.link,
             source: ad.source,
-            source_name: my_source::to_source_name(ad.source),
-            journey_destiny_name: my_journey_destiny::to_name(&ad.journey_destiny),
+            source_name: to_source_name(ad.source),
+            journey_destiny_name: to_journey_destiny_name(&ad.journey_destiny),
             script_content: ad.script_content,
             play_list: ad.play_list,
             address: ad.address,

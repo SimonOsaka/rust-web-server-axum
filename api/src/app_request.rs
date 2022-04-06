@@ -16,9 +16,7 @@ use serde::de::DeserializeOwned;
 use util::i18n::i18n;
 use util::jwt::{decode_token, Claims};
 use validator::{Validate, ValidationError, ValidationErrors};
-use vars::{
-    my_item_type_format::to_item_type_name, my_journey_destiny::to_name, my_source::to_source_name,
-};
+use vars::{to_item_type_name, to_journey_destiny_name, to_source_name};
 
 pub struct JwtAuth(pub Claims);
 
@@ -145,7 +143,7 @@ pub fn validate_source(source: u8) -> Result<(), ValidationError> {
 }
 
 pub fn validate_journey_destiny(journey_destiny: &str) -> Result<(), ValidationError> {
-    if to_name(journey_destiny).is_empty() {
+    if to_journey_destiny_name(journey_destiny).is_empty() {
         return Err(ValidationError::new(
             "adventure-journey-valid-journey_destiny",
         ));

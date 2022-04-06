@@ -1,6 +1,6 @@
 use axum::Json;
 use tracing::debug;
-use vars::my_item_type_format::to_item_type_name;
+use vars::to_item_type_name;
 
 use crate::{
     adventures::response::{Tabs, TabsResponse},
