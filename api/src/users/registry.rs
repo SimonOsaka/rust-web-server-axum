@@ -1,6 +1,7 @@
 use axum::extract::Extension;
 use axum::Json;
 use domain::{RegistryUsers, UsersManager};
+use macros::router;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -23,6 +24,7 @@ pub struct RegistryResponse {
 }
 
 #[tracing::instrument(skip(state, registry_form))]
+#[router(path = "/api/users/registry", method = "post")]
 pub async fn registry(
     ValidatedJson(registry_form): ValidatedJson<RegistryForm>,
     Extension(state): Extension<AppState>,

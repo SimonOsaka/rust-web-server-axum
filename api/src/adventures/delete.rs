@@ -1,6 +1,7 @@
 use axum::extract::Extension;
 use domain::{DeleteAdventureError, UsersManager};
 use hyper::StatusCode;
+use macros::router;
 use serde::Deserialize;
 use tracing::debug;
 use validator::Validate;
@@ -18,6 +19,7 @@ pub struct DeleteAdventureReq {
 }
 
 #[tracing::instrument(skip(user, state))]
+#[router(path = "/api/adventures/:id", method = "delete")]
 pub async fn delete_adventure(
     ValidatedPath(req): ValidatedPath<DeleteAdventureReq>,
     JwtAuth(user): JwtAuth,

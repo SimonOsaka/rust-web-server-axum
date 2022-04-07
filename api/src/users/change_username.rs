@@ -1,6 +1,7 @@
 use axum::extract::Extension;
 use domain::UsersManager;
 use hyper::StatusCode;
+use macros::router;
 use serde::Deserialize;
 use validator::Validate;
 
@@ -18,6 +19,7 @@ pub struct ChangeUsernameForm {
 }
 
 #[tracing::instrument(skip(auth_user, state))]
+#[router(path = "/api/users/username", method = "put")]
 pub async fn change_username(
     JwtAuth(auth_user): JwtAuth,
     ValidatedJson(change_username_form): ValidatedJson<ChangeUsernameForm>,

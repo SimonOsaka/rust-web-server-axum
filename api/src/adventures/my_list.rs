@@ -1,5 +1,6 @@
 use axum::{extract::Extension, Json};
 use domain::UsersManager;
+use macros::router;
 use tracing::debug;
 
 use crate::{
@@ -7,6 +8,7 @@ use crate::{
 };
 
 #[tracing::instrument(skip(state))]
+#[router(path = "/api/adventures/my")]
 pub async fn my_list_adventures(
     JwtAuth(user): JwtAuth,
     Extension(state): Extension<AppState>,

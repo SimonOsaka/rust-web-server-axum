@@ -3,12 +3,14 @@ use axum::{
     Json,
 };
 use domain::AdventuresManager;
+use macros::router;
 use tracing::debug;
 use vars::ID;
 
 use crate::{app_request::JwtAuth, app_response::AppError, AppState};
 
 #[tracing::instrument(skip(user, state))]
+#[router(path = "/api/sync/:id")]
 pub async fn sync_adventure(
     Path(_id): Path<ID>,
     JwtAuth(user): JwtAuth,

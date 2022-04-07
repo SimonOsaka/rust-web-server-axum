@@ -1,4 +1,5 @@
 use axum::Json;
+use macros::router;
 use tracing::debug;
 use vars::to_item_type_name;
 
@@ -8,6 +9,7 @@ use crate::{
 };
 
 #[tracing::instrument]
+#[router(path = "/api/adventures/tabs", method = "get")]
 pub async fn tabs_adventures() -> Result<Json<TabsResponse>, AppError> {
     let tabs: Vec<Tabs> = vec![
         Tabs {

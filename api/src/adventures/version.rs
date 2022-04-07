@@ -1,5 +1,6 @@
 use crate::{adventures::response::VersionUpdateResponse, app_response::AppError};
 use axum::{extract::Query, Json};
+use macros::router;
 use serde::Deserialize;
 use tracing::debug;
 
@@ -10,6 +11,7 @@ pub struct VersionUpdateReq {
 }
 
 #[tracing::instrument]
+#[router(path="/api/adventures/update")]
 pub async fn version_update_adventures(
     query: Query<VersionUpdateReq>,
 ) -> Result<Json<VersionUpdateResponse>, AppError> {

@@ -1,5 +1,6 @@
 use axum::{extract::Extension, Json};
 use domain::{GetUserError, UsersManager};
+use macros::router;
 use serde::Serialize;
 
 use crate::{app_request::JwtAuth, app_response::AppError, AppState};
@@ -11,6 +12,7 @@ pub struct MeResponse {
 }
 
 #[tracing::instrument(skip(auth_user, state))]
+#[router(path="/api/users/me")]
 pub async fn me(
     JwtAuth(auth_user): JwtAuth,
     Extension(state): Extension<AppState>,

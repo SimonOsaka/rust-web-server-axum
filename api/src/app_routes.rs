@@ -1,30 +1,10 @@
-use crate::{
-    adventures::get::get_adventure,
-    app_index::index,
-    app_response::{AppError, ErrorMessage},
-    change_password::change_password,
-    change_username::change_username,
-    delete::delete_adventure,
-    excel::download,
-    favorite::{favorite, unfavorite},
-    journey::journey,
-    list::list_adventures,
-    login::login,
-    me::me,
-    my_list::my_list_adventures,
-    play_list::play_list_adventures,
-    registry::registry,
-    sync::sync_adventure,
-    tabs::tabs_adventures,
-    version::version_update_adventures,
-};
+use crate::app_response::{AppError, ErrorMessage};
 use axum::{
     body::{Body, Bytes},
     error_handling::HandleErrorLayer,
     extract::Extension,
     middleware::{self, Next},
     response::{IntoResponse, Response},
-    routing::{get, post, put},
     Json, Router,
 };
 use hyper::{Request, StatusCode};
@@ -45,31 +25,27 @@ pub fn routes(state: AppState) -> Router {
         .layer(Extension(state));
 
     Router::new()
-        .route("/", get(index))
+        .merge(crate::app_index::get_index())
         // adventures
-        .route(
-            "/api/adventures/:id",
-            get(get_adventure).delete(delete_adventure),
-        )
-        .route("/api/adventures", get(list_adventures).post(journey))
-        .route(
-            "/api/adventures/playlist/:play_list",
-            get(play_list_adventures),
-        )
-        .route("/api/adventures/update", get(version_update_adventures))
-        .route("/api/adventures/tabs", get(tabs_adventures))
-        .route("/api/adventures/:id/favorite", post(favorite))
-        .route("/api/adventures/:id/unfavorite", post(unfavorite))
-        .route("/api/adventures/my", get(my_list_adventures))
+        .merge(crate::get::get_get_adventure())
+        .merge(crate::delete::delete_delete_adventure())
+        .merge(crate::list::get_list_adventures())
+        .merge(crate::journey::post_journey())
+        .merge(crate::play_list::get_play_list_adventures())
+        .merge(crate::version::get_version_update_adventures())
+        .merge(crate::tabs::get_tabs_adventures())
+        .merge(crate::favorite::post_favorite())
+        .merge(crate::favorite::post_unfavorite())
+        .merge(crate::my_list::get_my_list_adventures())
         // sync
-        .route("/api/sync/:id", get(sync_adventure))
+        .merge(crate::sync::get_sync_adventure())
         // users
-        .route("/api/users/registry", post(registry))
-        .route("/api/users/login", post(login))
-        .route("/api/users/me", get(me))
-        .route("/api/users/password", put(change_password))
-        .route("/api/users/username", put(change_username))
-        .route("/download/excel", get(download))
+        .merge(crate::registry::post_registry())
+        .merge(crate::login::post_login())
+        .merge(crate::me::get_me())
+        .merge(crate::change_password::put_change_password())
+        .merge(crate::change_username::put_change_username())
+        .merge(crate::excel::get_download())
         .layer(middleware_stack.into_inner())
 }
 

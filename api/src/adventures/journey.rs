@@ -1,5 +1,6 @@
 use axum::{extract::Extension, Json};
 use domain::{NewJourney, UsersManager};
+use macros::router;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use vars::ID;
@@ -34,6 +35,7 @@ pub struct JourneyResponse {
 }
 
 #[tracing::instrument(skip(auth_user, state))]
+#[router(path="/api/adventures",method="post")]
 pub async fn journey(
     ValidatedJson(form): ValidatedJson<JourneyForm>,
     JwtAuth(auth_user): JwtAuth,

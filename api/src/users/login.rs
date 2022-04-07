@@ -1,5 +1,6 @@
 use axum::{extract::Extension, Json};
 use domain::UsersManager;
+use macros::router;
 use serde::{Deserialize, Serialize};
 use util::jwt::encode_token;
 use validator::Validate;
@@ -20,6 +21,7 @@ pub struct LoginResponse {
 }
 
 #[tracing::instrument(skip(state))]
+#[router(path="/api/users/login",method="post")]
 pub async fn login(
     ValidatedJson(login_form): ValidatedJson<LoginForm>,
     Extension(state): Extension<AppState>,

@@ -1,6 +1,7 @@
 use axum::extract::Extension;
 use domain::UsersManager;
 use hyper::StatusCode;
+use macros::router;
 use serde::Deserialize;
 use validator::Validate;
 
@@ -19,6 +20,7 @@ pub struct ChangePasswordForm {
 }
 
 #[tracing::instrument(skip(auth_user, state, change_password_form))]
+#[router(path = "/api/users/password", method = "put")]
 pub async fn change_password(
     JwtAuth(auth_user): JwtAuth,
     ValidatedJson(change_password_form): ValidatedJson<ChangePasswordForm>,

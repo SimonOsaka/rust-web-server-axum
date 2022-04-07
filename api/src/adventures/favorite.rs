@@ -1,5 +1,6 @@
 use axum::{extract::Extension, Json};
 use domain::UsersManager;
+use macros::router;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -26,6 +27,7 @@ enum Action {
 }
 
 #[tracing::instrument(skip(auth_user, state))]
+#[router(path = "/api/adventures/:id/favorite", method = "post")]
 pub async fn favorite(
     ValidatedPath(form): ValidatedPath<FavoriteForm>,
     JwtAuth(auth_user): JwtAuth,
@@ -35,6 +37,7 @@ pub async fn favorite(
 }
 
 #[tracing::instrument(skip(auth_user, state))]
+#[router(path = "/api/adventures/:id/unfavorite", method = "post")]
 pub async fn unfavorite(
     ValidatedPath(form): ValidatedPath<FavoriteForm>,
     JwtAuth(auth_user): JwtAuth,

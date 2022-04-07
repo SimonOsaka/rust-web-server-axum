@@ -1,5 +1,6 @@
 use axum::{extract::Extension, Json};
 use domain::{AdventuresManager, AdventuresQuery};
+use macros::router;
 use serde::Deserialize;
 use tracing::debug;
 use validator::Validate;
@@ -32,6 +33,7 @@ impl From<AdventuresQueryReq> for AdventuresQuery {
 }
 
 #[tracing::instrument(skip(state))]
+#[router(path = "/api/adventures")]
 pub async fn list_adventures(
     ValidatedQuery(query): ValidatedQuery<AdventuresQueryReq>,
     Extension(state): Extension<AppState>,

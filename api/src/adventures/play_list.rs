@@ -3,11 +3,13 @@ use axum::{
     Json,
 };
 use domain::{AdventuresManager, PlayListQuery};
+use macros::router;
 use tracing::debug;
 
 use crate::{app_response::AppError, response::AdventuresResponse, AppState};
 
 #[tracing::instrument(skip(state))]
+#[router(path="/api/adventures/playlist/:play_list")]
 pub async fn play_list_adventures(
     Path(play_list): Path<String>,
     Extension(state): Extension<AppState>,

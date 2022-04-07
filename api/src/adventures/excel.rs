@@ -4,12 +4,14 @@ use axum::{
     Json,
 };
 use hyper::StatusCode;
+use macros::router;
 use serde_json::json;
 use util::excel::Excel;
 
 use crate::app_response::{AppError, ErrorMessage};
 
 #[tracing::instrument]
+#[router(path = "/download/excel")]
 pub async fn download() -> Result<impl IntoResponse, AppError> {
     let cols = vec!["cell1", "cell2"];
     let rows = vec![cols];
