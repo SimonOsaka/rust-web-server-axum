@@ -25,8 +25,8 @@ pub enum ValidateError {
 pub enum LoginError {
     #[error("{}", i18n("login-password-not-correct"))]
     WrongPassword,
-    #[error("{}", i18n("login-user-not-exist"))]
-    UserNotExist,
+    // #[error("{}", i18n("login-user-not-exist"))]
+    // UserNotExist,
 }
 
 #[derive(Error, Debug)]
@@ -43,8 +43,8 @@ pub enum ChangeUsernameError {
 
 #[derive(thiserror::Error, Clone, Debug)]
 pub enum JWTError {
-    #[error("{}", i18n("jwt-missing"))]
-    Missing,
+    // #[error("{}", i18n("jwt-missing"))]
+    // Missing,
     #[error("{}", i18n("jwt-invalid"))]
     Invalid,
 }
@@ -101,7 +101,7 @@ impl From<JWTError> for AppError {
     fn from(e: JWTError) -> AppError {
         match &e {
             JWTError::Invalid => unauthorized(e.to_string()),
-            JWTError::Missing => unauthorized(e.to_string()),
+            // JWTError::Missing => unauthorized(e.to_string()),
         }
     }
 }
@@ -131,7 +131,7 @@ impl From<LoginError> for AppError {
     fn from(e: LoginError) -> Self {
         match &e {
             LoginError::WrongPassword => forbidden(e.to_string()),
-            LoginError::UserNotExist => unauthorized(e.to_string()),
+            // LoginError::UserNotExist => unauthorized(e.to_string()),
         }
     }
 }
