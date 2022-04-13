@@ -32,9 +32,9 @@ impl Users {
         new_password: String,
         manager: &impl UsersManager,
     ) -> Result<bool, DomainError> {
-        Ok(manager
+        manager
             .change_password(self.username.to_string(), new_password)
-            .await?)
+            .await
     }
 
     pub async fn change_username(
@@ -42,9 +42,9 @@ impl Users {
         new_username: String,
         manager: &impl UsersManager,
     ) -> Result<bool, DomainError> {
-        Ok(manager
+        manager
             .change_username(self.username.to_string(), new_username)
-            .await?)
+            .await
     }
 
     pub async fn add_journey(
@@ -52,12 +52,12 @@ impl Users {
         new_journey: NewJourney,
         manager: &impl AdventuresManager,
     ) -> Result<ID, CreateAdventureError> {
-        Ok(manager
+        manager
             .add_journey(NewJourneyData {
                 nj: new_journey,
                 u: self.to_owned(),
             })
-            .await?)
+            .await
     }
 
     pub async fn favorite(
@@ -65,12 +65,12 @@ impl Users {
         adventure_id: ID,
         manager: &impl FavoritesManager,
     ) -> Result<Favorite, FavoriteError> {
-        Ok(manager
+        manager
             .add_favorite(AddFavorite {
                 user_id: self.id,
                 adventure_id,
             })
-            .await?)
+            .await
     }
 
     pub async fn unfavorite(
@@ -78,12 +78,12 @@ impl Users {
         adventure_id: ID,
         manager: &impl FavoritesManager,
     ) -> Result<bool, FavoriteError> {
-        Ok(manager
+        manager
             .del_favorite(DelFavorite {
                 user_id: self.id,
                 adventure_id,
             })
-            .await?)
+            .await
     }
 
     pub async fn delete_adventure(
@@ -91,14 +91,14 @@ impl Users {
         adventure_id: ID,
         manager: &impl AdventuresManager,
     ) -> Result<bool, DeleteAdventureError> {
-        Ok(manager.delete_adventure(adventure_id, self.id).await?)
+        manager.delete_adventure(adventure_id, self.id).await
     }
 
     pub async fn find_adventures(
         &self,
         manager: &impl AdventuresManager,
     ) -> Result<Vec<(Adventures, Users)>, DomainError> {
-        Ok(manager.find_by_user_id(self.id).await?)
+        manager.find_by_user_id(self.id).await
     }
 }
 

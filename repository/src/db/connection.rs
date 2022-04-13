@@ -51,6 +51,6 @@ impl Repo {
 
     pub async fn transaction<'c>() -> Result<Transaction<'static, Postgres>, Error> {
         let pool = &REPOSITORY.get().unwrap().connection_pool;
-        Ok(pool.begin().await?)
+        pool.begin().await
     }
 }

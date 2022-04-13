@@ -1,7 +1,11 @@
 mod api;
+mod args;
+mod repository;
+mod util;
 
 use api::{from_error::expand_from_error, router::expand_router};
 use proc_macro::TokenStream;
+use repository::from_model::expand_from_model;
 
 /// Api function macro
 /// - generate Router
@@ -37,4 +41,77 @@ pub fn router(args: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_derive(FromError, attributes(from_error))]
 pub fn from_error_derive(input: TokenStream) -> TokenStream {
     expand_from_error(input)
+}
+
+/// Database model generate `insert`, `update`, `delete`, `get` method,
+/// - struct `#[derive(FromModel)]`
+/// - struct `#[from_model(table_name = "...")]`
+/// - field primary_key `#[from_model(primary_key)]`
+/// - field foreign_key `#[from_model(table_name = "...", model = "...")]`
+///
+/// Note:
+/// - if primary_key not set, only insert method will be generated.
+/// - foreign_key depend primary_key.
+///
+/// # Examples
+/// ```rust
+/// #[derive(FromModel)]
+/// #[from_model(table_name = "test_car")]
+/// struct TestCar {
+///     #[from_model(primary_key)]
+///     id: i64,
+///     name: String,
+///     #[from_model(table_name = "test_user", model = "TestUser", primary_key = "id")]
+///     user_id: i64,
+/// }
+///
+/// #[derive(FromModel)]
+/// #[from_model(table_name = "test_user")]
+/// struct TestUser {
+///     #[from_model(primary_key)]
+///     id: i64,
+///     name: String,
+/// }
+///
+/// // generated code
+/// const TESTCAR_SINGLE_FIELDS: &[&str; 3] = &[
+///     "test_car.id",
+///     "test_car.name",
+///     "test_car.user_id",
+/// ];
+/// const TESTCAR_MULTI_FIELDS: &[&str; #multi_size] = &[
+///     "(",
+///     "test_car.id",
+///     "test_car.name",
+///     "test_car.user_id",       
+///     ") AS \"test_car\"",
+/// ];
+/// impl TestCar {
+///     fn insert(&self) -> ... {
+///         ...
+///     }
+///     fn update(&self) -> ... {
+///         ...
+///     }
+///     fn delete(&self) -> ... {
+///         ...
+///     }
+///     fn get(id: ID) -> ... {
+///         ...
+///     }
+/// }
+/// struct TestCarTestUser {
+///     test_car: TestCar,
+///     test_user: TestUser,
+/// }
+/// impl TestCarTestUser {
+///     fn find(...) -> Result<Vec<(TestCar, TestUser)>, ...> {
+///         ...
+///     }
+/// }
+/// // TestUser same as TestCar
+/// ```
+#[proc_macro_derive(FromModel, attributes(from_model))]
+pub fn from_model_derive(input: TokenStream) -> TokenStream {
+    expand_from_model(input)
 }

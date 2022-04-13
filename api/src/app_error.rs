@@ -18,8 +18,8 @@ pub enum LoginError {
     // #[error("{}", i18n("login-password-not-correct"))]
     #[from_error(code = "login-password-not-correct", status = "forbidden")]
     WrongPassword,
-    #[from_error(code = "login-user-not-exist", status = "unauthorized")]
-    UserNotExist,
+    // #[from_error(code = "login-user-not-exist", status = "unauthorized")]
+    // UserNotExist,
 }
 
 #[derive(FromError, Debug)]

@@ -1,9 +1,12 @@
-use serde::Deserialize;
+use macros::FromModel;
+use serde::{Deserialize, Serialize};
 use vars::{DateTime, ID, U8I16};
 
-#[derive(sqlx::FromRow, Deserialize, sqlx::Type, Debug)]
+#[derive(FromModel, sqlx::FromRow, Serialize, Deserialize, sqlx::Type, Debug, Clone, PartialEq)]
 #[sqlx(type_name = "RECORD")]
+#[from_model(table_name = "my_users")]
 pub struct MyUsers {
+    #[from_model(primary_key)]
     pub id: ID,
     pub username: String,
     pub password: String,
@@ -12,7 +15,8 @@ pub struct MyUsers {
     pub created_at: DateTime,
 }
 
-#[derive(Debug)]
+#[derive(FromModel, Debug)]
+#[from_model(table_name = "my_users")]
 pub struct NewMyUsers {
     pub username: String,
     pub password: String,

@@ -6,6 +6,8 @@ use syn::{
     Token,
 };
 
+use crate::args::Args;
+
 pub fn expand_from_error(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = parse_macro_input!(input as DeriveInput);
 
@@ -59,22 +61,6 @@ pub fn expand_from_error(input: TokenStream) -> TokenStream {
         }
     }
     .into()
-}
-
-#[derive(Debug)]
-struct Args {
-    key: Ident,
-    val: LitStr,
-}
-
-impl Parse for Args {
-    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let key: Ident = input.parse()?;
-        let _: Token![=] = input.parse()?;
-        let val: LitStr = input.parse()?;
-
-        Ok(Args { key, val })
-    }
 }
 
 #[derive(Debug)]

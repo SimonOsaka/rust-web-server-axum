@@ -1,11 +1,13 @@
+use crate::{MyUsers, MYUSERS_MULTI_FIELDS};
+use macros::FromModel;
 use serde::{Deserialize, Serialize};
 use vars::{DateTime, ID, U8I16};
 
-use crate::MyUsers;
-
-#[derive(sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[sqlx(type_name = "RECORD")]
+#[from_model(table_name = "my_adventures")]
 pub struct MyAdventures {
+    #[from_model(primary_key)]
     pub id: ID,
     pub title: String,
     pub image_url: String,
@@ -22,6 +24,7 @@ pub struct MyAdventures {
     pub province: String,
     pub city: String,
     pub district: String,
+    #[from_model(table_name = "my_users", model = "MyUsers", primary_key = "id")]
     pub user_id: ID,
     pub fav_count: i64,
 }
@@ -39,7 +42,9 @@ pub struct PlayListWhere {
     pub play_list: String,
 }
 
-#[derive(Debug)]
+#[derive(FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[sqlx(type_name = "RECORD")]
+#[from_model(table_name = "my_adventures")]
 pub struct NewMyAdventuresJourney {
     pub title: String,
     pub title_crypto: String,
@@ -65,4 +70,11 @@ pub struct AdventureUser {
 pub enum FavCountKind {
     Fav,
     UnFav,
+}
+
+#[derive(FromModel, Debug, Clone)]
+#[from_model(table_name = "my_adventures")]
+pub struct DeleteMyAdventure {
+    #[from_model(primary_key)]
+    pub id: ID,
 }

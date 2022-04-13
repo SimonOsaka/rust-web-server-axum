@@ -1,5 +1,5 @@
 use repository::{
-    find_user_by_username, insert, update_user_password, update_username, users::models::NewMyUsers,
+    find_user_by_username, update_user_password, update_username, users::models::NewMyUsers,
 };
 
 use crate::{
@@ -15,14 +15,12 @@ pub struct UsersManagerImpl;
 impl super::UsersManager for UsersManagerImpl {
     #[tracing::instrument(skip(self,reg_user),fields(reg_user.username=%reg_user.username))]
     async fn add_user(&self, reg_user: RegistryUsers) -> Result<Users, DomainError> {
-        let inserted_my_user_id = insert(
-            NewMyUsers {
-                username: reg_user.username.clone(),
-                password: hash_password(reg_user.password),
-                roles: reg_user.roles.clone(),
-            },
-            None,
-        )
+        let inserted_my_user_id = NewMyUsers {
+            username: reg_user.username.clone(),
+            password: hash_password(reg_user.password),
+            roles: reg_user.roles.clone(),
+        }
+        .insert(None)
         .await
         .map_err(database_to_domain_error)?;
 
