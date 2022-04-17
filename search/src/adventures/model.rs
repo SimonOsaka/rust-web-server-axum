@@ -1,6 +1,6 @@
 use extra::meilisearch::meilisearch_sdk::document::Document;
 use serde::{Deserialize, Serialize};
-use vars::{DateTime, ID, U8I16};
+use vars::{DateTime, ID};
 
 #[derive(Clone, Debug)]
 pub struct AdventuresFilter {
@@ -21,10 +21,10 @@ pub struct SearchedAdventures {
     pub title: String,
     pub image_url: String,
     pub created_at: DateTime,
-    pub is_deleted: U8I16,
-    pub item_type: U8I16,
+    pub is_deleted: i16,
+    pub item_type: i16,
     pub link: String,
-    pub source: U8I16,
+    pub source: i16,
     pub journey_destiny: String,
     pub script_content: String,
     pub play_list: String,

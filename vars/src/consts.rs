@@ -1,11 +1,10 @@
-use crate::types::U8I16;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 
 const NONE: &str = "";
 
-static ITEM_TYPE: Lazy<HashMap<U8I16, &str>> = Lazy::new(|| {
-    let mut map = HashMap::<U8I16, &str>::new();
+static ITEM_TYPE: Lazy<HashMap<i16, &str>> = Lazy::new(|| {
+    let mut map = HashMap::<i16, &str>::new();
     map.insert(0, "全部");
     map.insert(1, "日常");
     map.insert(2, "搞笑");
@@ -18,15 +17,15 @@ static ITEM_TYPE: Lazy<HashMap<U8I16, &str>> = Lazy::new(|| {
     map
 });
 
-pub fn to_item_type_name(item_type: U8I16) -> String {
+pub fn to_item_type_name(item_type: i16) -> String {
     match ITEM_TYPE.get(&item_type) {
         Some(v) => v.to_string(),
         None => NONE.into(),
     }
 }
 
-static SOURCE_TYPE: Lazy<HashMap<U8I16, &str>> = Lazy::new(|| {
-    let mut map = HashMap::<U8I16, &str>::new();
+static SOURCE_TYPE: Lazy<HashMap<i16, &str>> = Lazy::new(|| {
+    let mut map = HashMap::<i16, &str>::new();
     map.insert(1, "抖音");
     map.insert(2, "哔哩哔哩");
     map.insert(3, "西瓜视频");
@@ -34,7 +33,7 @@ static SOURCE_TYPE: Lazy<HashMap<U8I16, &str>> = Lazy::new(|| {
     map
 });
 
-pub fn to_source_name(source: U8I16) -> String {
+pub fn to_source_name(source: i16) -> String {
     match SOURCE_TYPE.get(&source) {
         Some(v) => v.to_string(),
         None => NONE.to_owned(),

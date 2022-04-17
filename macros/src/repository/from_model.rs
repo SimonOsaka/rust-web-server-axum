@@ -1,8 +1,10 @@
 use crate::args::Args;
 use crate::util::{ident, litint, litstr};
+use heck::ToUpperCamelCase;
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, TokenStream as TokenStream2};
 use quote::quote;
+use syn::Type;
 use syn::{parse::Parse, parse_macro_input, DeriveInput, LitStr, Token};
 
 pub fn expand_from_model(input: TokenStream) -> TokenStream {
@@ -37,6 +39,8 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
     let mut update_sets_ts = TokenStream2::new();
     let mut single_fields_ts = TokenStream2::new();
     let mut multi_fields_ts = TokenStream2::new();
+    let mut model_fields_ts = TokenStream2::new();
+    let mut conditions_ts = TokenStream2::new();
 
     let mut primary_key_opt = None;
 
@@ -79,8 +83,66 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
             variant_name_ident,
         ));
 
+        let model_fields_name_ident = ident(format!(
+            "{}",
+            variant_name_litstr.value().as_str().to_upper_camel_case(),
+        ));
+
         single_fields_ts.extend(quote!(#single_fields_name_litstr,));
         multi_fields_ts.extend(quote!(#multi_fields_name_litstr,));
+        model_fields_ts.extend(quote! {
+            #model_fields_name_ident(crate::db::types::Operation),
+        });
+        let struct_name_fields_ident = ident(format!("{}Fields", struct_name_ident));
+        let table_name_variant_name_litstr = litstr(format!(
+            "{}.{}",
+            table_name_litstr.value(),
+            variant_name_litstr.value()
+        ));
+        let ty = &variant_data.ty;
+        if let Type::Path(ty) = ty {
+            if ty.path.is_ident("ID") || ty.path.is_ident("i64") || ty.path.is_ident("i16") {
+                conditions_ts.extend(quote! {
+                    #struct_name_fields_ident::#model_fields_name_ident(op) => match op {
+                        crate::db::types::Operation::Eq(value) => {
+                            if let crate::db::types::Value::Integer(v) = value {
+                                sql_builder.and_where_eq(#table_name_variant_name_litstr, params.add_value(v));
+                            }
+                        },
+                        crate::db::types::Operation::Between(lv, rv) => {
+                            if let (crate::db::types::Value::Integer(lv), crate::db::types::Value::Integer(rv)) =
+                    (lv, rv) {
+                            sql_builder.and_where_between(#table_name_variant_name_litstr, params.add_value(lv), params.add_value(rv));
+                            }
+                        },
+                    },
+                });
+            } else if ty.path.is_ident("String") {
+                conditions_ts.extend(quote! {
+                    #struct_name_fields_ident::#model_fields_name_ident(op) => match op {
+                        crate::db::types::Operation::Eq(value) => {
+                            if let crate::db::types::Value::String(v) = value {
+                                sql_builder.and_where_eq(#table_name_variant_name_litstr, params.add_value(v));
+                            }
+                        },
+                        crate::db::types::Operation::Between(lv, rv) => {
+                            panic!("{} Not support 'crate::db::types::Operation::Between'", #table_name_variant_name_litstr);
+                        },
+                    },
+                });
+            } else {
+                conditions_ts.extend(quote! {
+                    #struct_name_fields_ident::#model_fields_name_ident(op) => match op {
+                        crate::db::types::Operation::Eq(_) => {
+                            panic!("{} Not support 'crate::db::types::Operation::Between'", #table_name_variant_name_litstr);
+                        },
+                        crate::db::types::Operation::Between(_, _) => {
+                            panic!("{} Not support 'crate::db::types::Operation::Between'", #table_name_variant_name_litstr);
+                        },
+                    },
+                });
+            }
+        }
 
         match from_model_attr_opt {
             // from_model exist
@@ -171,6 +233,8 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
         &struct_name_litstr,
         &single_fields_ts,
         &multi_fields_ts,
+        &model_fields_ts,
+        &conditions_ts,
         struct_data.fields.len(),
     );
     let insert_expand_ts = insert_expand(
@@ -178,12 +242,7 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
         &non_from_model_column_names_ts,
         &non_from_model_column_values_ts,
     );
-    let get_expand_ts = get_expand(
-        struct_name_ident,
-        &table_name_litstr,
-        input_primary_keys_ts,
-        where_primary_keys_ts,
-    );
+    let get_expand_ts = get_expand(struct_name_ident, &table_name_litstr);
     let delete_expand_ts = delete_expand(&table_name_litstr, &primary_keys_ts);
     let update_expand_ts = update_expand(&table_name_litstr, &primary_keys_ts, &update_sets_ts);
 
@@ -246,12 +305,23 @@ impl Parse for ForeignAttr {
     }
 }
 
-fn single_column_names(str: String) -> Ident {
-    ident(format!("{}_SINGLE_FIELDS", str))
+fn single_column_names(model_name_uppercase: String) -> Ident {
+    ident(format!("{}_SINGLE_FIELDS", model_name_uppercase))
 }
 
-fn multi_column_names(str: String) -> Ident {
-    ident(format!("{}_MULTI_FIELDS", str))
+fn multi_column_names(model_name_uppercase: String) -> Ident {
+    ident(format!("{}_MULTI_FIELDS", model_name_uppercase))
+}
+
+fn fields_name(model_name: String) -> Ident {
+    ident(format!("{}Fields", model_name))
+}
+
+fn fields_sqlquery_fn_name(model_name: String) -> Ident {
+    ident(format!(
+        "{}_fields_sqlquery",
+        model_name.as_str().to_ascii_lowercase()
+    ))
 }
 
 fn insert_expand(
@@ -335,28 +405,28 @@ fn update_expand(
     }
 }
 
-fn get_expand(
-    struct_name: &Ident,
-    table_name: &LitStr,
-    input_primary_keys_ts: TokenStream2,
-    where_primary_keys_ts: TokenStream2,
-) -> TokenStream2 {
-    let fields_name = single_column_names(struct_name.to_string().to_ascii_uppercase());
+fn get_expand(struct_name_ident: &Ident, table_name: &LitStr) -> TokenStream2 {
+    let fields_name = single_column_names(struct_name_ident.to_string().to_ascii_uppercase());
+
+    let fields_name_ident = ident(format!("{}Fields", struct_name_ident));
+
+    let fields_name_sqlquery_ident = fields_sqlquery_fn_name(struct_name_ident.to_string());
 
     quote! {
         #[tracing::instrument(skip(transaction), err)]
         pub async fn get<'a>(
-            #input_primary_keys_ts
+            fields: Vec<#fields_name_ident>,
             transaction: Option<&'a mut sqlx::Transaction<'static, sqlx::Postgres>>,
-        ) -> Result<Option<#struct_name>, sqlx::Error> {
+        ) -> Result<Option<#struct_name_ident>, sqlx::Error> {
             use crate::db::read::SqlReader;
 
             let mut params = crate::db::SqlParams::new();
             let mut sql_builder = sql_builder::SqlBuilder::select_from(#table_name);
-            sql_builder
-                .fields(#fields_name)
-                .and_where_eq("is_deleted", 0)
-                #where_primary_keys_ts;
+            sql_builder.fields(#fields_name).and_where_eq("is_deleted", 0);
+
+            for field in fields {
+                #fields_name_sqlquery_ident(field, &mut sql_builder, &mut params);
+            }
 
             let my = sql_builder.query_one_optinal(params, transaction).await?;
             Ok(my)
@@ -368,12 +438,22 @@ fn fields_expand(
     model_name: &LitStr,
     single_fields: &TokenStream2,
     multi_fields: &TokenStream2,
+    model_fields: &TokenStream2,
+    conditions_ts: &TokenStream2,
     len: usize,
 ) -> TokenStream2 {
+    // MYUSERS_SINGLE_FIELDS
     let single_name_ident = single_column_names(model_name.value().to_ascii_uppercase());
     let size = litint(len.to_string());
 
+    // MYUSERS_MULTI_FIELDS
     let multi_name_ident = multi_column_names(model_name.value().to_ascii_uppercase());
+
+    // MyUsersFields
+    let fields_name_ident = fields_name(model_name.value());
+
+    // myusers_fields_sqlquery
+    let fields_name_sqlquery_ident = fields_sqlquery_fn_name(model_name.value());
 
     quote! {
         pub(crate) const #single_name_ident: &[&str; #size] = &[
@@ -383,6 +463,17 @@ fn fields_expand(
         pub(crate) const #multi_name_ident: &[&str; #size] = &[
             #multi_fields
         ];
+
+        #[derive(Debug)]
+        pub enum #fields_name_ident {
+            #model_fields
+        }
+
+        pub(crate) fn #fields_name_sqlquery_ident(field: #fields_name_ident, sql_builder: &mut sql_builder::SqlBuilder, params: &mut crate::db::SqlParams) {
+            match field {
+                #conditions_ts
+            }
+        }
     }
 }
 
@@ -402,7 +493,6 @@ fn multi_expand(
     let t1_multi_fields_name_ident = multi_column_names(m1_ident.to_string().to_ascii_uppercase());
     let t2_ident = ident(t2_litstr.value());
     let t2_multi_fields_name_ident = multi_column_names(m2_litstr.value().to_ascii_uppercase());
-    let t1_foreign_key_ident = ident(t1_foreign_key_litstr.value());
     let on = litstr(format!(
         "{t1}.{t1_fk} = {t2}.{t2_pk} and {t2}.is_deleted = 0",
         t1 = t1_litstr.value(),
@@ -410,6 +500,14 @@ fn multi_expand(
         t1_fk = t1_foreign_key_litstr.value(),
         t2_pk = t2_primary_key_litstr.value()
     ));
+    let m1_fields_name_ident = ident(format!("{}Fields", m1_ident));
+    let m2_fields_name_ident = ident(format!("{}Fields", m2_ident));
+
+    let fields1_name_sqlquery_ident = fields_sqlquery_fn_name(m1_ident.to_string());
+    let fields2_name_sqlquery_ident = fields_sqlquery_fn_name(m2_litstr.value());
+
+    let t1_fields_ident = ident(format!("{}_fields", t1_ident));
+    let t2_fields_ident = ident(format!("{}_fields", t2_ident));
 
     quote! {
         #[derive(Debug, sqlx::FromRow)]
@@ -421,7 +519,8 @@ fn multi_expand(
         impl #struct_name_ident {
             #[tracing::instrument(skip(transaction), err)]
             pub async fn find<'a>(
-                #t1_foreign_key_ident: vars::types::ID,
+                #t1_fields_ident: Vec<#m1_fields_name_ident>,
+                #t2_fields_ident: Vec<#m2_fields_name_ident>,
                 transaction: Option<&'a mut sqlx::Transaction<'static, sqlx::Postgres>>,
             ) -> Result<Vec<(#m1_ident, #m2_ident)>, sqlx::Error> {
                 use crate::db::read::SqlReader;
@@ -436,9 +535,17 @@ fn multi_expand(
                     .left()
                     .join(#t2_litstr)
                     .on(#on)
-                    .and_where_eq(sql_builder::name!(#t1_litstr, "is_deleted"), 0)
-                    .and_where_eq(sql_builder::name!(#t2_litstr, #t2_primary_key_litstr), params.add_value(#t1_foreign_key_ident))
-                    .order_desc(sql_builder::name!(#t1_litstr, #t1_primary_key_litstr));
+                    .and_where_eq(sql_builder::name!(#t1_litstr, "is_deleted"), 0);
+
+                    for field in #t1_fields_ident {
+                       #fields1_name_sqlquery_ident(field, &mut sql_builder, &mut params);
+                    }
+
+                    for field in #t2_fields_ident {
+                        #fields2_name_sqlquery_ident(field, &mut sql_builder, &mut params);
+                     }
+
+                    sql_builder.order_desc(sql_builder::name!(#t1_litstr, #t1_primary_key_litstr));
 
                 let list: Vec<#struct_name_ident> = sql_builder.query_list(params, transaction).await?;
 

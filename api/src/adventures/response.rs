@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use vars::{to_item_type_name, to_journey_destiny_name, to_source_name, DateTime, ID, U8I16};
+use vars::{to_item_type_name, to_journey_destiny_name, to_source_name, DateTime, ID};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -81,10 +81,10 @@ pub struct Adventures {
     pub image_url: String,
     #[serde(with = "my_date_format")]
     pub created_at: DateTime,
-    pub item_type: U8I16,
+    pub item_type: i16,
     pub item_type_name: String,
     pub link: String,
-    pub source: U8I16,
+    pub source: i16,
     pub source_name: String,
     pub journey_destiny_name: String,
     pub script_content: String,

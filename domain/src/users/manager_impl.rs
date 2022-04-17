@@ -1,5 +1,8 @@
 use repository::{
-    find_user_by_username, update_user_password, update_username, users::models::NewMyUsers,
+    db::types::{Operation, Value},
+    update_user_password, update_username,
+    users::models::NewMyUsers,
+    MyUsers, MyUsersFields,
 };
 
 use crate::{
@@ -34,9 +37,14 @@ impl super::UsersManager for UsersManagerImpl {
 
     #[tracing::instrument(skip(self))]
     async fn get_user_by_username(&self, username: String) -> Result<Users, GetUserError> {
-        let user = find_user_by_username(username.clone(), None)
+        let mut fields = Vec::new();
+        fields.push(MyUsersFields::Username(Operation::Eq(Value::from(
+            username.clone(),
+        ))));
+        let user = MyUsers::get(fields, None)
             .await
             .map_err(database_to_domain_error)?;
+
         match user {
             Some(u) => Ok(Users::from(u)),
             None => Err(GetUserError::NotFound {
@@ -47,9 +55,14 @@ impl super::UsersManager for UsersManagerImpl {
 
     #[tracing::instrument(skip(self))]
     async fn get_user(&self, username: String, password: String) -> Result<Users, GetUserError> {
-        let user = find_user_by_username(username.clone(), None)
+        let mut fields = Vec::new();
+        fields.push(MyUsersFields::Username(Operation::Eq(Value::from(
+            username.clone(),
+        ))));
+        let user = MyUsers::get(fields, None)
             .await
             .map_err(database_to_domain_error)?;
+
         match user {
             Some(u) => {
                 if u.password == hash_password(password) {
@@ -72,9 +85,14 @@ impl super::UsersManager for UsersManagerImpl {
         username: String,
         login_password: String,
     ) -> Result<(bool, Users), GetUserError> {
-        let my_user = find_user_by_username(username.clone(), None)
+        let mut fields = Vec::new();
+        fields.push(MyUsersFields::Username(Operation::Eq(Value::from(
+            username.clone(),
+        ))));
+        let my_user = MyUsers::get(fields, None)
             .await
             .map_err(database_to_domain_error);
+
         let result = match my_user {
             Ok(mu) => match mu {
                 Some(u) => Ok(Users::from(u)),

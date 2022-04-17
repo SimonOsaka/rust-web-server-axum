@@ -4,7 +4,7 @@ use repository::{
 };
 use search::adventures::model::{AdventuresFilter, PlayListFilter, SearchedAdventures};
 use serde::Serialize;
-use vars::{DateTime, ID, U8I16};
+use vars::{DateTime, ID};
 
 use crate::{utils::hash, Users};
 
@@ -55,9 +55,9 @@ pub struct Adventures {
     pub title: String,
     pub image_url: String,
     pub created_at: DateTime,
-    pub item_type: U8I16,
+    pub item_type: i16,
     pub link: String,
-    pub source: U8I16,
+    pub source: i16,
     pub journey_destiny: String,
     pub script_content: String,
     pub play_list: String,
@@ -188,7 +188,7 @@ pub struct NewJourney {
     pub title: String,
     pub image_url: String,
     pub link: String,
-    pub source: U8I16,
+    pub source: i16,
     pub journey_destiny: String,
 }
 

@@ -43,7 +43,10 @@ pub fn from_error_derive(input: TokenStream) -> TokenStream {
     expand_from_error(input)
 }
 
-/// Database model generate `insert`, `update`, `delete`, `get` method,
+/// Database one model will generate `insert`, `update`, `delete`, `get` method.
+/// Two combine model will generate `find` method. `**Fields` for `get` and `find` method to add conditions.
+///
+/// # Macro
 /// - struct `#[derive(FromModel)]`
 /// - struct `#[from_model(table_name = "...")]`
 /// - field primary_key `#[from_model(primary_key)]`
@@ -65,6 +68,7 @@ pub fn from_error_derive(input: TokenStream) -> TokenStream {
 ///     user_id: i64,
 /// }
 ///
+/// // One model
 /// #[derive(FromModel)]
 /// #[from_model(table_name = "test_user")]
 /// struct TestUser {
@@ -96,16 +100,18 @@ pub fn from_error_derive(input: TokenStream) -> TokenStream {
 ///     fn delete(&self) -> ... {
 ///         ...
 ///     }
-///     fn get(id: ID) -> ... {
+///     fn get(fields: Vec<XxxFields>, ...) -> ... {
 ///         ...
 ///     }
 /// }
+///
+/// // Two combine model
 /// struct TestCarTestUser {
 ///     test_car: TestCar,
 ///     test_user: TestUser,
 /// }
 /// impl TestCarTestUser {
-///     fn find(...) -> Result<Vec<(TestCar, TestUser)>, ...> {
+///     fn find(test_car_fields: Vec<TestCarFields>, test_user_fields: Vec<TestUserFields>, ...) -> Result<Vec<(TestCar, TestUser)>, ...> {
 ///         ...
 ///     }
 /// }

@@ -1,9 +1,9 @@
 pub mod connection;
 pub mod params;
 pub mod read;
-mod types;
+pub mod types;
 pub mod write;
-use self::types::*;
+use types::*;
 
 pub use connection::Repo;
 

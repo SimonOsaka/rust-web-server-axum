@@ -3,9 +3,11 @@ use crate::{
     DeleteAdventureError, NewJourneyData, Users,
 };
 use crate::{Adventures, AdventuresQuery, DomainError, GetAdventureError, PlayListQuery};
+use repository::MyAdventuresFields;
 
 use anyhow::Result;
 
+use repository::db::types::{Operation, Value};
 use repository::db::Repo;
 use repository::{
     find_adventure_title_crypto, find_one_adventure, DeleteMyAdventure, MyAdventures,
@@ -85,7 +87,9 @@ impl super::AdventuresManager for AdventuresManagerImpl {
 
     #[tracing::instrument(skip(self))]
     async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError> {
-        let result = MyAdventures::get(id, None).await;
+        let mut fields = Vec::new();
+        fields.push(MyAdventuresFields::Id(Operation::Eq(Value::from(id))));
+        let result = MyAdventures::get(fields, None).await;
         match result {
             Ok(opt_my) => match opt_my {
                 Some(my) => Ok(add_adventure(my_to_searched(my))
@@ -144,7 +148,9 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     async fn delete_adventure(&self, id: ID, user_id: ID) -> Result<bool, DeleteAdventureError> {
         let mut transaction = Repo::transaction().await.expect("");
 
-        let result = MyAdventures::get(id, Some(&mut transaction))
+        let mut fields = Vec::new();
+        fields.push(MyAdventuresFields::Id(Operation::Eq(Value::from(id))));
+        let result = MyAdventures::get(fields, Some(&mut transaction))
             .await
             .map_err(|e| DeleteAdventureError::DomainError(database_to_domain_error(e)))?;
 
@@ -180,7 +186,11 @@ impl super::AdventuresManager for AdventuresManagerImpl {
 
     #[tracing::instrument(skip(self))]
     async fn find_by_user_id(&self, user_id: ID) -> Result<Vec<(Adventures, Users)>, DomainError> {
-        let result = MyAdventuresMyUsers::find(user_id, None)
+        let mut ad_fields = Vec::new();
+        ad_fields.push(MyAdventuresFields::UserId(Operation::Eq(Value::from(
+            user_id,
+        ))));
+        let result = MyAdventuresMyUsers::find(ad_fields, Vec::new(), None)
             .await
             .map_err(database_to_domain_error)?;
 

@@ -7,7 +7,7 @@ use sqlx::{Error, Postgres, Transaction};
 use tracing::debug;
 use vars::ID;
 
-const MY_ADVENTURES_FIELDS: &[&str; 18] = &[
+const MY_ADVENTURES_SINGLE_FIELDS: &[&str; 18] = &[
     "ad.id",
     "ad.title",
     "ad.created_at",
@@ -28,7 +28,7 @@ const MY_ADVENTURES_FIELDS: &[&str; 18] = &[
     "ad.fav_count",
 ];
 
-const MY_ADVENTURES_STRUCT_FIELDS: &[&str; 18] = &[
+const MY_ADVENTURES_MULTI_FIELDS: &[&str; 18] = &[
     "(ad.id",
     "ad.title",
     "ad.image_url",
@@ -56,7 +56,7 @@ pub async fn find_latest_adventures<'a>(
 ) -> Result<Vec<MyAdventures>, sqlx::Error> {
     let mut pgsql_builder = SqlBuilder::select_from(name!("my_adventures";"ad"));
     pgsql_builder
-        .fields(MY_ADVENTURES_FIELDS)
+        .fields(MY_ADVENTURES_SINGLE_FIELDS)
         .and_where_eq(name!("ad", "is_deleted"), 0);
 
     let mut param = SqlParams::new();
@@ -109,7 +109,7 @@ pub async fn find_adventures_by_play_list<'a>(
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::select_from(name!("my_adventures";"ad"));
     sql_builder
-        .fields(MY_ADVENTURES_FIELDS)
+        .fields(MY_ADVENTURES_SINGLE_FIELDS)
         .and_where_eq(name!("ad", "is_deleted"), 0)
         .and_where_eq(name!("ad", "play_list"), param.add_value(query.play_list));
     let my_adventures = sql_builder.query_list(param, transaction).await?;
@@ -124,7 +124,7 @@ pub async fn find_one_adventure<'a>(
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::select_from(name!("my_adventures";"ad"));
     sql_builder
-        .fields(MY_ADVENTURES_FIELDS)
+        .fields(MY_ADVENTURES_SINGLE_FIELDS)
         .and_where_eq(name!("ad", "is_deleted"), 0)
         .and_where_eq(name!("ad", "id"), param.add_value(id as i64));
 
@@ -178,7 +178,7 @@ pub async fn find_adventure_title_crypto<'a>(
     let mut param = SqlParams::new();
     let mut sql_builder = SqlBuilder::select_from(name!("my_adventures";"ad"));
     sql_builder
-        .fields(MY_ADVENTURES_FIELDS)
+        .fields(MY_ADVENTURES_SINGLE_FIELDS)
         .and_where_eq(name!("ad", "is_deleted"), 0)
         .and_where_eq(name!("ad", "title_crypto"), param.add_value(title_crypto))
         .and_where_eq(name!("ad", "user_id"), param.add_value(user_id));
@@ -213,7 +213,7 @@ pub async fn find_adventures_by_user_id<'a>(
     let mut sql_builder = SqlBuilder::select_from(name!("my_adventures";"ad"));
 
     sql_builder
-        .fields(MY_ADVENTURES_STRUCT_FIELDS)
+        .fields(MY_ADVENTURES_MULTI_FIELDS)
         .fields(MY_USERS_STRUCT_FIELDS)
         .left()
         .join(name!("my_users";"u"))
