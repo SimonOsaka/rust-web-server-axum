@@ -1,10 +1,10 @@
 # development
-## MeiliSearch
+## MeiliSearch v0.25.2
 ### search
  ```shell
- curl 'http://127.0.0.1:7700/indexes/adventures_index/search' --header "Authorization: Bearer meili-master-key" --data '{"q":"s"}'
+ curl 'http://127.0.0.1:7700/indexes/adventures_index/search' --header "Authorization: Bearer meili-master-key" -H 'Content-Type: application/json' --data-binary '{"q":"s"}'
 
- curl 'http://127.0.0.1:7700/indexes/adventures_index/search' --header "Authorization: Bearer meili-master-key" --data '{"filter":"id=796"}'
+ curl 'http://127.0.0.1:7700/indexes/adventures_index/search' --header "Authorization: Bearer meili-master-key" -H 'Content-Type: application/json' --data-binary '{"filter":"id=796"}'
 ```
 ### stats
 ```shell
