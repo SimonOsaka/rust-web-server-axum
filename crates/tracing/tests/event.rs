@@ -5,9 +5,6 @@
 // The alternative would be for each of these tests to be defined in a separate
 // file, which is :(
 #![cfg(feature = "std")]
-mod support;
-
-use self::support::*;
 
 use tracing::{
     collect::with_default,
@@ -15,6 +12,7 @@ use tracing::{
     field::{debug, display},
     info, trace, warn, Level,
 };
+use tracing_mock::*;
 
 macro_rules! event_without_message {
     ($name:ident: $e:expr) => {
@@ -83,12 +81,10 @@ fn message_without_delims() {
                 field::mock("answer")
                     .with_value(&42)
                     .and(field::mock("question").with_value(&"life, the universe, and everything"))
-                    .and(
-                        field::mock("message").with_value(&tracing::field::debug(format_args!(
-                            "hello from my event! tricky? {:?}!",
-                            true
-                        ))),
-                    )
+                    .and(field::msg(format_args!(
+                        "hello from my event! tricky? {:?}!",
+                        true
+                    )))
                     .only(),
             ),
         )
@@ -112,11 +108,7 @@ fn string_message_without_delims() {
                 field::mock("answer")
                     .with_value(&42)
                     .and(field::mock("question").with_value(&"life, the universe, and everything"))
-                    .and(
-                        field::mock("message").with_value(&tracing::field::debug(format_args!(
-                            "hello from my event"
-                        ))),
-                    )
+                    .and(field::msg(format_args!("hello from my event")))
                     .only(),
             ),
         )
@@ -371,6 +363,30 @@ fn explicit_child_at_levels() {
         info!(parent: foo.id(), "c");
         warn!(parent: foo.id(), "d");
         error!(parent: foo.id(), "e");
+    });
+
+    handle.assert_finished();
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen_test::wasm_bindgen_test)]
+#[test]
+fn string_field() {
+    let (collector, handle) = collector::mock()
+        .event(event::mock().with_fields(field::mock("my_string").with_value(&"hello").only()))
+        .event(
+            event::mock().with_fields(field::mock("my_string").with_value(&"hello world!").only()),
+        )
+        .done()
+        .run_with_handle();
+    with_default(collector, || {
+        let mut my_string = String::from("hello");
+
+        tracing::event!(Level::INFO, my_string);
+
+        // the string is not moved by using it as a field!
+        my_string.push_str(" world!");
+
+        tracing::event!(Level::INFO, my_string);
     });
 
     handle.assert_finished();
