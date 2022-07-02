@@ -83,10 +83,13 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
             variant_name_ident,
         ));
 
-        let model_fields_name_ident = ident(format!(
-            "{}",
-            variant_name_litstr.value().as_str().to_upper_camel_case(),
-        ));
+        let model_fields_name_ident = ident(
+            variant_name_litstr
+                .value()
+                .as_str()
+                .to_upper_camel_case()
+                .to_string(),
+        );
 
         single_fields_ts.extend(quote!(#single_fields_name_litstr,));
         multi_fields_ts.extend(quote!(#multi_fields_name_litstr,));

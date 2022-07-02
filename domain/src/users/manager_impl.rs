@@ -37,10 +37,9 @@ impl super::UsersManager for UsersManagerImpl {
 
     #[tracing::instrument(skip(self))]
     async fn get_user_by_username(&self, username: String) -> Result<Users, GetUserError> {
-        let mut fields = Vec::new();
-        fields.push(MyUsersFields::Username(Operation::Eq(Value::from(
+        let fields = vec![MyUsersFields::Username(Operation::Eq(Value::from(
             username.clone(),
-        ))));
+        )))];
         let user = MyUsers::get(fields, None)
             .await
             .map_err(database_to_domain_error)?;
@@ -55,10 +54,9 @@ impl super::UsersManager for UsersManagerImpl {
 
     #[tracing::instrument(skip(self))]
     async fn get_user(&self, username: String, password: String) -> Result<Users, GetUserError> {
-        let mut fields = Vec::new();
-        fields.push(MyUsersFields::Username(Operation::Eq(Value::from(
+        let fields = vec![MyUsersFields::Username(Operation::Eq(Value::from(
             username.clone(),
-        ))));
+        )))];
         let user = MyUsers::get(fields, None)
             .await
             .map_err(database_to_domain_error)?;
@@ -85,10 +83,9 @@ impl super::UsersManager for UsersManagerImpl {
         username: String,
         login_password: String,
     ) -> Result<(bool, Users), GetUserError> {
-        let mut fields = Vec::new();
-        fields.push(MyUsersFields::Username(Operation::Eq(Value::from(
+        let fields = vec![MyUsersFields::Username(Operation::Eq(Value::from(
             username.clone(),
-        ))));
+        )))];
         let my_user = MyUsers::get(fields, None)
             .await
             .map_err(database_to_domain_error);

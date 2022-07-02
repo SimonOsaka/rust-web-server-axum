@@ -22,10 +22,9 @@ impl super::FavoritesManager for FavoritesManagerImpl {
     async fn add_favorite(&self, add_favorite: AddFavorite) -> Result<Favorite, FavoriteError> {
         let mut transaction = Repo::transaction().await.expect("");
 
-        let mut fields = Vec::new();
-        fields.push(MyAdventuresFields::Id(Operation::Eq(Value::from(
+        let fields = vec![MyAdventuresFields::Id(Operation::Eq(Value::from(
             add_favorite.adventure_id,
-        ))));
+        )))];
         let result_adventure = MyAdventures::get(fields, Some(&mut transaction)).await;
         if let Ok(result) = result_adventure {
             if result.is_none() {
@@ -35,13 +34,10 @@ impl super::FavoritesManager for FavoritesManagerImpl {
             }
         }
 
-        let mut fields = Vec::new();
-        fields.push(MyFavoritesFields::UserId(Operation::Eq(Value::from(
-            add_favorite.user_id,
-        ))));
-        fields.push(MyFavoritesFields::AdventureId(Operation::Eq(Value::from(
-            add_favorite.user_id,
-        ))));
+        let fields = vec![
+            MyFavoritesFields::UserId(Operation::Eq(Value::from(add_favorite.user_id))),
+            MyFavoritesFields::AdventureId(Operation::Eq(Value::from(add_favorite.user_id))),
+        ];
         let result_optional = MyFavorites::get(fields, Some(&mut transaction)).await;
 
         match result_optional {
@@ -69,10 +65,9 @@ impl super::FavoritesManager for FavoritesManagerImpl {
         .await
         .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
 
-        let mut fields = Vec::new();
-        fields.push(MyAdventuresFields::Id(Operation::Eq(Value::from(
+        let fields = vec![MyAdventuresFields::Id(Operation::Eq(Value::from(
             add_favorite.adventure_id,
-        ))));
+        )))];
         let result = MyAdventures::get(fields, Some(&mut transaction))
             .await
             .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
@@ -96,10 +91,9 @@ impl super::FavoritesManager for FavoritesManagerImpl {
     async fn del_favorite(&self, del_favorite: DelFavorite) -> Result<bool, FavoriteError> {
         let mut transaction = Repo::transaction().await.expect("");
 
-        let mut fields = Vec::new();
-        fields.push(MyAdventuresFields::Id(Operation::Eq(Value::from(
+        let fields = vec![MyAdventuresFields::Id(Operation::Eq(Value::from(
             del_favorite.adventure_id,
-        ))));
+        )))];
         let result_adventure = MyAdventures::get(fields, Some(&mut transaction)).await;
         if let Ok(result) = result_adventure {
             if result.is_none() {
@@ -109,13 +103,10 @@ impl super::FavoritesManager for FavoritesManagerImpl {
             }
         }
 
-        let mut fields = Vec::new();
-        fields.push(MyFavoritesFields::UserId(Operation::Eq(Value::from(
-            del_favorite.user_id,
-        ))));
-        fields.push(MyFavoritesFields::AdventureId(Operation::Eq(Value::from(
-            del_favorite.adventure_id,
-        ))));
+        let fields = vec![
+            MyFavoritesFields::UserId(Operation::Eq(Value::from(del_favorite.user_id))),
+            MyFavoritesFields::AdventureId(Operation::Eq(Value::from(del_favorite.adventure_id))),
+        ];
         let result_optional = MyFavorites::get(fields, Some(&mut transaction)).await;
 
         let success = match result_optional {
@@ -139,10 +130,9 @@ impl super::FavoritesManager for FavoritesManagerImpl {
         .await
         .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
 
-        let mut fields = Vec::new();
-        fields.push(MyAdventuresFields::Id(Operation::Eq(Value::from(
+        let fields = vec![MyAdventuresFields::Id(Operation::Eq(Value::from(
             del_favorite.adventure_id,
-        ))));
+        )))];
         let result = MyAdventures::get(fields, Some(&mut transaction))
             .await
             .map_err(|e| FavoriteError::DomainError(database_to_domain_error(e)))?;
