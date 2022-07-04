@@ -21,8 +21,7 @@ impl Repo {
         let connection_pool = PoolOptions::new()
             .max_connections(10)
             .min_connections(1)
-            .connect_timeout(std::time::Duration::from_secs(30))
-            .after_connect(|conn| {
+            .after_connect(|conn, _meta| {
                 Box::pin(async move {
                     conn.execute("SET TIME ZONE 'Asia/Shanghai';").await?;
 
