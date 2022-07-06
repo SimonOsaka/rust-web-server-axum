@@ -11,5 +11,5 @@ extra = { path = "../extra", features = ["lib_meilisearch"] }
 util = { path = "../util", default-features = false }
 
 serde = { version = "1.0", features = ["derive"] }
-tracing = { path = "../crates/tracing", version = "0.2" }
+tracing = { version = "0.1" }
 thiserror = "1.0"

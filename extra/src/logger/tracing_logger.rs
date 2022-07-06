@@ -1,7 +1,8 @@
 use once_cell::sync::Lazy;
 use time::{format_description, OffsetDateTime, UtcOffset};
 use tracing_appender::non_blocking::WorkerGuard;
-use tracing_subscriber::{subscribe::CollectExt, util::SubscriberInitExt, EnvFilter};
+use tracing_subscriber::prelude::*;
+use tracing_subscriber::EnvFilter;
 
 const TS_S: &str = "[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:6] \
                     [offset_hour sign:mandatory]:[offset_minute]";
@@ -38,7 +39,7 @@ pub fn log_create() -> (WorkerGuard, WorkerGuard) {
 
     let (stderr_writer, _guard_stderr) = tracing_appender::non_blocking(std::io::stderr());
 
-    let fmt_stderr = tracing_subscriber::fmt::Subscriber::new()
+    let fmt_stderr = tracing_subscriber::fmt::layer()
         .with_timer(offset_tz.clone())
         .with_ansi(true)
         .with_thread_ids(true)
@@ -53,7 +54,7 @@ pub fn log_create() -> (WorkerGuard, WorkerGuard) {
     let file_appender = tracing_appender::rolling::hourly("/apps/log/rust", "example.log");
     let (file_appender_writer, _guard_file) = tracing_appender::non_blocking(file_appender);
 
-    let fmt_file = tracing_subscriber::fmt::Subscriber::new()
+    let fmt_file = tracing_subscriber::fmt::layer()
         .json()
         .with_timer(offset_tz)
         .with_ansi(false)
@@ -63,13 +64,13 @@ pub fn log_create() -> (WorkerGuard, WorkerGuard) {
         .with_target(true)
         .with_writer(file_appender_writer);
 
-    let env_filter = EnvFilter::try_from_default_env()
+    let filter_layer = EnvFilter::try_from_default_env()
         .or_else(|_| EnvFilter::try_new("debug"))
         .unwrap();
 
     // let subscriber =
     let default_layer = tracing_subscriber::registry()
-        .with(env_filter)
+        .with(filter_layer)
         // .with(EnvFilter::from_default_env().add_directive(tracing::Level::TRACE.into()))
         .with(fmt_file);
     // .with(tracing_subscriber::fmt::Subscriber::new().with_writer(non_blocking))

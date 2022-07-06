@@ -29,7 +29,7 @@ time = { version = "0.3", features = [
 
 # excel
 xlsxwriter = { version = "0.3.5", optional = true }
-uuid = { version = "0.8", features = ["v4"], optional = true }
+uuid = { version = "1", features = ["v4"], optional = true }
 
 # jwt
 jsonwebtoken = { version = "8", optional = true }

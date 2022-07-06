@@ -29,7 +29,7 @@ redis = { version = "0.21.5", features = [
 ], optional = true }
 
 # meilisearch
-meilisearch-sdk = { version = "0.15.0", default-features = false, features = [
+meilisearch-sdk = { version = "0.15", default-features = false, features = [
     "sync",
 ], optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
@@ -45,12 +45,13 @@ tokio = { version = "1", optional = true }
 
 # logger
 time = "0.3"
-tracing = { path = "../crates/tracing", version = "0.2" }
-tracing-subscriber = { path = "../crates/tracing-subscriber", version = "0.3", features = [
+tracing = { version = "0.1" }
+tracing-subscriber = { version = "0.3", features = [
     "env-filter",
     "json",
+    "local-time",
 ] }
-tracing-appender = { path = "../crates/tracing-appender" }
+tracing-appender = { version = "0.2" }
 
 util = { path = "../util", default-features = false }
 once_cell = "1.10.0"
