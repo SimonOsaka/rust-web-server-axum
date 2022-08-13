@@ -15,7 +15,7 @@ pub struct PlayListFilter {
     pub play_list: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq,Eq)]
 pub struct SearchedAdventures {
     pub id: ID,
     pub title: String,

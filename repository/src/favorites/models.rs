@@ -2,7 +2,7 @@ use macros::FromModel;
 use serde::{Deserialize, Serialize};
 use vars::ID;
 
-#[derive(FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq,Eq)]
 #[sqlx(type_name = "RECORD")]
 #[from_model(table_name = "my_favorites")]
 pub struct MyFavorites {
@@ -12,7 +12,7 @@ pub struct MyFavorites {
     pub adventure_id: ID,
 }
 
-#[derive(FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq,Eq)]
 #[sqlx(type_name = "RECORD")]
 #[from_model(table_name = "my_favorites")]
 pub struct NewMyFavorite {

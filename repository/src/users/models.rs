@@ -2,7 +2,9 @@ use macros::FromModel;
 use serde::{Deserialize, Serialize};
 use vars::{DateTime, ID};
 
-#[derive(FromModel, sqlx::FromRow, Serialize, Deserialize, sqlx::Type, Debug, Clone, PartialEq)]
+#[derive(
+    FromModel, sqlx::FromRow, Serialize, Deserialize, sqlx::Type, Debug, Clone, PartialEq, Eq,
+)]
 #[sqlx(type_name = "RECORD")]
 #[from_model(table_name = "my_users")]
 pub struct MyUsers {

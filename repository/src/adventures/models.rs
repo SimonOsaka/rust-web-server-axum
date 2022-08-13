@@ -3,7 +3,9 @@ use macros::FromModel;
 use serde::{Deserialize, Serialize};
 use vars::{DateTime, ID};
 
-#[derive(FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(
+    FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq, Eq,
+)]
 #[sqlx(type_name = "RECORD")]
 #[from_model(table_name = "my_adventures")]
 pub struct MyAdventures {
@@ -42,7 +44,9 @@ pub struct PlayListWhere {
     pub play_list: String,
 }
 
-#[derive(FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(
+    FromModel, sqlx::FromRow, sqlx::Type, Serialize, Deserialize, Debug, Clone, PartialEq, Eq,
+)]
 #[sqlx(type_name = "RECORD")]
 #[from_model(table_name = "my_adventures")]
 pub struct NewMyAdventuresJourney {

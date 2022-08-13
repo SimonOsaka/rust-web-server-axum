@@ -49,7 +49,7 @@ impl From<AdventuresQuery> for AdventuresFilter {
     }
 }
 
-#[derive(Clone, Debug, Serialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, PartialEq, Eq)]
 pub struct Adventures {
     pub id: ID,
     pub title: String,
