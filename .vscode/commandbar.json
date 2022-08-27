@@ -52,15 +52,6 @@
             "command": "workbench.action.tasks.runTask|cargo build --no-default-features --release --target=x86_64-unknown-linux-musl",
             "alignment": "left",
             "priority": 6
-        },
-        {
-            "text": "Terminal",
-            "color": "orange",
-            "tooltip": "open a terminal in vscode",
-            "commandType": "palette",
-            "command": "workbench.action.terminal.toggleTerminal",
-            "alignment": "right",
-            "priority": 1000
         }
     ]
 }
