@@ -1,16 +1,5 @@
 [workspace]
-members = [
-    "repository",
-    "domain",
-    "vars",
-    "search",
-    "api",
-    "server_lib",
-    "server_app",
-    "extra",
-    "util",
-    "macros",
-]
+members = ["server_app"]
 
 [profile.dev]
 lto = false
