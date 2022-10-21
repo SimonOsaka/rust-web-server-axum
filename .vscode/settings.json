@@ -4,6 +4,12 @@
     "editor.wordWrapColumn": 76,
     "workbench.colorCustomizations": {
         "editor.background": "#C7EDCC",
+        "sideBar.background": "#C7EDCC",
+        "sideBar.border": "#CCCCCC",
+        "editorSuggestWidget.background": "#C7EDCC",
+        "terminal.background": "#000000",
+        "terminal.foreground": "#28FE14",
+        "terminal.ansiBrightGreen": "#ff0000"
     },
     "editor.tokenColorCustomizations": {
         "textMateRules": [
