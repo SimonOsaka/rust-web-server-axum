@@ -21,7 +21,7 @@ jsonwebtoken = "8"
 headers = "0.3"
 async-trait = "0.1"
 hyper = { version = "0.14", features = ["full"] }
-validator = { version = "0.15", features = ["derive"] }
+validator = { version = "0.16", features = ["derive"] }
 http-body = "0.4"
 thiserror = "1.0"
 tracing = { version = "0.1" }
