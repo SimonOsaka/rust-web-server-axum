@@ -29,9 +29,12 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-      
-      - name: Build release
-        run: cargo build --no-default-features --release
+
+      - name: Install depends (ubuntu only)
+        if: matrix.os == '' || startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssl libssl-dev
 
       - name: Create gh release
         uses: taiki-e/create-gh-release-action@v1
@@ -47,5 +50,6 @@ jobs:
           tar: all
           zip: windows
           token: ${{ secrets.GITHUB_TOKEN }}
+          no_default_features: true
 
     
