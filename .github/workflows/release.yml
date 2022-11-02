@@ -37,7 +37,7 @@ jobs:
         if: matrix.os == '' || startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libssl-dev
+          sudo apt-get install -y libssl-dev pkg-config
 
       - name: Create gh release
         uses: taiki-e/create-gh-release-action@v1
