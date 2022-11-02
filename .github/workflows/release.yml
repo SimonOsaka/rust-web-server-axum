@@ -61,6 +61,10 @@ jobs:
           branch: main
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: |
+          docker build -t x86_64-musl_with_openssl -f Dockerfile-x86_64-unknown-linux-musl .
+
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: app

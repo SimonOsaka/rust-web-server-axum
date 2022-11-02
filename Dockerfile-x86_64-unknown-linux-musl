@@ -1,0 +1,6 @@
+# This is only used for cross build for x86_64-unknown-linux-musl
+
+FROM cross-rs/x86_64-unknown-linux-musl
+
+RUN apt-get update && \
+    apt-get install -y pkg-config libssl-dev
