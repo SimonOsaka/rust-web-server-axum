@@ -34,7 +34,7 @@ jobs:
       - name: Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "target/release/app"
+          artifacts: "target/release/app-${{ matrix.target }}"
           allowUpdates: true
           draft: true
           generateReleaseNotes: true
