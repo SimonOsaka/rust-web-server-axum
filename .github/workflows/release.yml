@@ -61,7 +61,7 @@ jobs:
           branch: main
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+      - if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }}
         run: |
           docker build -t x86_64-musl_with_openssl -f Dockerfile-x86_64-unknown-linux-musl .
 
