@@ -39,5 +39,5 @@ pub fn hash(to_encrypt: String) -> String {
         to_encrypt.as_bytes(),
         &mut to_store,
     );
-    base64::encode(&to_store)
+    base64::encode(to_store)
 }
