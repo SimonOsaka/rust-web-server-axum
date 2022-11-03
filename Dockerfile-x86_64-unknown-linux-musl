@@ -3,6 +3,6 @@
 FROM ghcr.io/cross-rs/x86_64-unknown-linux-musl
 
 RUN apt-get update && \
-    apt-get install -y wget
+    apt-get install -y wget libssl-dev
 
 RUN (cd / && wget https://www.openssl.org/source/openssl-1.1.1f.tar.gz && tar -xvf openssl-1.1.1f.tar.gz && cd openssl-1.1.1f && ./config --prefix=/usr/local --openssldir=/usr/local/openssl && make && make install && export OPENSSL_DIR=/usr/local/openssl && echo OPENSSL_DIR=/usr/local/openssl >> ~/.bashrc)
