@@ -48,12 +48,6 @@ jobs:
       - uses: taiki-e/install-action@cross
         if: matrix.os == '' || startsWith(matrix.os, 'ubuntu')
 
-      - name: Install depends (ubuntu only)
-        if: matrix.os == '' || startsWith(matrix.os, 'ubuntu')
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config libssl-dev 
-
       - name: Create gh release
         uses: taiki-e/create-gh-release-action@v1
         with:
@@ -61,11 +55,13 @@ jobs:
           branch: main
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }}
+      - name: Docker Build OPENSSL_DIR
+        if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }}
         run: |
           docker build -t x86_64-musl_with_openssl -f Dockerfile-x86_64-unknown-linux-musl .
 
-      - uses: taiki-e/upload-rust-binary-action@v1
+      - Upload binary
+        uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: app
           target: ${{ matrix.target }}
