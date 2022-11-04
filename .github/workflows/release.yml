@@ -42,9 +42,11 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Install Cross
-        uses: taiki-e/install-action@cross
-        if: matrix.os == '' || startsWith(matrix.os, 'ubuntu')
+      - name: Install cross-compilation tools
+        uses: taiki-e/setup-cross-toolchain-action@v1
+        if: startsWith(matrix.os, 'ubuntu')
+        with:
+          target: ${{ matrix.target }}
 
       - name: Create gh release
         uses: taiki-e/create-gh-release-action@v1
@@ -67,5 +69,6 @@ jobs:
           zip: windows
           token: ${{ secrets.GITHUB_TOKEN }}
           no_default_features: true
+          build_tool: cross
 
     
