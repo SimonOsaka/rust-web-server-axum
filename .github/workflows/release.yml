@@ -69,6 +69,6 @@ jobs:
           zip: windows
           token: ${{ secrets.GITHUB_TOKEN }}
           no_default_features: true
-          build_tool: cross
+          build_tool: cargo
 
     
