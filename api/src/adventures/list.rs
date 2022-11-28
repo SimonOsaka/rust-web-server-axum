@@ -1,4 +1,4 @@
-use axum::{extract::Extension, Json};
+use axum::{extract::State, Json};
 use domain::{AdventuresManager, AdventuresQuery};
 use macros::router;
 use serde::Deserialize;
@@ -35,8 +35,8 @@ impl From<AdventuresQueryReq> for AdventuresQuery {
 #[tracing::instrument(skip(state))]
 #[router(path = "/api/adventures")]
 pub async fn list_adventures(
+    State(state): State<AppState>,
     ValidatedQuery(query): ValidatedQuery<AdventuresQueryReq>,
-    Extension(state): Extension<AppState>,
 ) -> Result<Json<AdventuresResponse>, AppError> {
     debug!("query: {:?}, state: {:?}", query, state);
     let manager = &state.adventures_manager;

@@ -1,8 +1,10 @@
-use crate::app_response::{AppError, ErrorMessage};
+use crate::{
+    app_response::{AppError, ErrorMessage},
+    AppState,
+};
 use axum::{
     body::{Body, Bytes},
     error_handling::HandleErrorLayer,
-    extract::Extension,
     middleware::{self, Next},
     response::{IntoResponse, Response},
     Json, Router,
@@ -13,16 +15,13 @@ use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
 use tower_http::trace::TraceLayer;
 
-use crate::app_state::AppState;
-
 pub fn routes(state: AppState) -> Router {
     // don't change layer order, or errors happen...
     let middleware_stack = ServiceBuilder::new()
         .layer(HandleErrorLayer::new(handle_error))
         .timeout(Duration::from_secs(30))
         .layer(TraceLayer::new_for_http())
-        .layer(middleware::from_fn(print_request_response))
-        .layer(Extension(state));
+        .layer(middleware::from_fn(print_request_response));
 
     Router::new()
         .merge(crate::app_index::get_index())
@@ -47,6 +46,7 @@ pub fn routes(state: AppState) -> Router {
         .merge(crate::change_username::put_change_username())
         .merge(crate::excel::get_download())
         .layer(middleware_stack.into_inner())
+        .with_state(state)
 }
 
 async fn print_request_response(

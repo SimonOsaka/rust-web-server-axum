@@ -1,4 +1,4 @@
-use axum::extract::Extension;
+use axum::extract::State;
 use domain::{DeleteAdventureError, UsersManager};
 use hyper::StatusCode;
 use macros::router;
@@ -21,9 +21,9 @@ pub struct DeleteAdventureReq {
 #[tracing::instrument(skip(user, state))]
 #[router(path = "/api/adventures/:id", method = "delete")]
 pub async fn delete_adventure(
-    ValidatedPath(req): ValidatedPath<DeleteAdventureReq>,
     JwtAuth(user): JwtAuth,
-    Extension(state): Extension<AppState>,
+    State(state): State<AppState>,
+    ValidatedPath(req): ValidatedPath<DeleteAdventureReq>,
 ) -> Result<StatusCode, AppError> {
     debug!("req {:?}", req);
     let manager = &state.users_manager;

@@ -1,4 +1,4 @@
-use axum::extract::Extension;
+use axum::extract::State;
 use axum::Json;
 use domain::{RegistryUsers, UsersManager};
 use macros::router;
@@ -26,8 +26,8 @@ pub struct RegistryResponse {
 #[tracing::instrument(skip(state, registry_form))]
 #[router(path = "/api/users/registry", method = "post")]
 pub async fn registry(
+    State(state): State<AppState>,
     ValidatedJson(registry_form): ValidatedJson<RegistryForm>,
-    Extension(state): Extension<AppState>,
 ) -> Result<Json<RegistryResponse>, AppError> {
     let manager = &state.users_manager;
     if manager

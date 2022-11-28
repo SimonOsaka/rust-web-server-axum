@@ -1,4 +1,4 @@
-use axum::{extract::Extension, Json};
+use axum::{extract::State, Json};
 use domain::{NewJourney, UsersManager};
 use macros::router;
 use serde::{Deserialize, Serialize};
@@ -35,11 +35,11 @@ pub struct JourneyResponse {
 }
 
 #[tracing::instrument(skip(auth_user, state))]
-#[router(path="/api/adventures",method="post")]
+#[router(path = "/api/adventures", method = "post")]
 pub async fn journey(
-    ValidatedJson(form): ValidatedJson<JourneyForm>,
+    State(state): State<AppState>,
     JwtAuth(auth_user): JwtAuth,
-    Extension(state): Extension<AppState>,
+    ValidatedJson(form): ValidatedJson<JourneyForm>,
 ) -> Result<Json<JourneyResponse>, AppError> {
     let adventures_manager = &state.adventures_manager;
     let users_manager = &state.users_manager;

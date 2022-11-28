@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     Json,
 };
 use domain::AdventuresManager;
@@ -14,7 +14,7 @@ use crate::{app_request::JwtAuth, app_response::AppError, AppState};
 pub async fn sync_adventure(
     Path(_id): Path<ID>,
     JwtAuth(user): JwtAuth,
-    Extension(state): Extension<AppState>,
+    State(state): State<AppState>,
 ) -> Result<Json<bool>, AppError> {
     debug!("user: {:?}, _id: {:?}, state: {:?}", user, _id, state);
     let manager = &state.adventures_manager;

@@ -1,8 +1,6 @@
-use std::{env, net::SocketAddr, sync::Arc};
-
-use domain::{adventures::AdventuresManagerImpl, FavoritesManagerImpl, UsersManagerImpl};
-
 use crate::app_routes;
+use domain::{adventures::AdventuresManagerImpl, FavoritesManagerImpl, UsersManagerImpl};
+use std::{env, net::SocketAddr, sync::Arc};
 
 #[derive(Clone, Debug)]
 pub struct AppStateRaw {

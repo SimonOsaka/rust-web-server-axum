@@ -1,4 +1,4 @@
-use axum::extract::Extension;
+use axum::extract::State;
 use domain::UsersManager;
 use hyper::StatusCode;
 use macros::router;
@@ -23,8 +23,8 @@ pub struct ChangePasswordForm {
 #[router(path = "/api/users/password", method = "put")]
 pub async fn change_password(
     JwtAuth(auth_user): JwtAuth,
+    State(state): State<AppState>,
     ValidatedJson(change_password_form): ValidatedJson<ChangePasswordForm>,
-    Extension(state): Extension<AppState>,
 ) -> Result<StatusCode, AppError> {
     let manager = &state.users_manager;
 

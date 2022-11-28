@@ -1,4 +1,4 @@
-use axum::{extract::Extension, Json};
+use axum::{extract::State, Json};
 use domain::UsersManager;
 use macros::router;
 use serde::{Deserialize, Serialize};
@@ -21,10 +21,10 @@ pub struct LoginResponse {
 }
 
 #[tracing::instrument(skip(state))]
-#[router(path="/api/users/login",method="post")]
-pub async fn login(
+#[router(path = "/api/users/login", method = "post")]
+async fn login(
+    State(state): State<AppState>,
     ValidatedJson(login_form): ValidatedJson<LoginForm>,
-    Extension(state): Extension<AppState>,
 ) -> Result<Json<LoginResponse>, AppError> {
     let manager = &state.users_manager;
 

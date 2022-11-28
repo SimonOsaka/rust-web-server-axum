@@ -7,8 +7,9 @@ use crate::{
 use axum::{
     async_trait,
     body::HttpBody,
-    extract::{FromRequest, Path, Query, RequestParts},
+    extract::{FromRequest, FromRequestParts, Path, Query},
     headers::{authorization::Bearer, Authorization},
+    http::{request::Parts, Request},
     BoxError, Json, TypedHeader,
 };
 use http_body::Body;
@@ -21,15 +22,15 @@ use vars::{to_item_type_name, to_journey_destiny_name, to_source_name};
 pub struct JwtAuth(pub Claims);
 
 #[async_trait]
-impl<B> FromRequest<B> for JwtAuth
+impl<S> FromRequestParts<S> for JwtAuth
 where
-    B: Send,
+    S: Send + Sync,
 {
     type Rejection = AppError;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(req: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
         let TypedHeader(Authorization(bearer)) =
-            TypedHeader::<Authorization<Bearer>>::from_request(req)
+            TypedHeader::<Authorization<Bearer>>::from_request_parts(req, state)
                 .await
                 .map_err(|_| JWTError::Invalid)?;
 
@@ -44,17 +45,19 @@ where
 pub struct ValidatedQuery<T>(pub T);
 
 #[async_trait]
-impl<T, B> FromRequest<B> for ValidatedQuery<T>
+impl<S, B, T> FromRequest<S, B> for ValidatedQuery<T>
 where
     T: DeserializeOwned + Validate,
+    S: Send + Sync,
     B: Body + Send,
+    B: Send + 'static,
     B::Data: Send,
     B::Error: Into<BoxError>,
 {
     type Rejection = AppError;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
-        let Query(value) = Query::<T>::from_request(req)
+    async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
+        let Query(value) = Query::<T>::from_request(req, state)
             .await
             .map_err(|e| AppError::from(ValidateError::AxumQueryRejection(e)))?;
         value.validate().map_err(|e| {
@@ -69,17 +72,19 @@ where
 pub struct ValidatedJson<T>(pub T);
 
 #[async_trait]
-impl<T, B> FromRequest<B> for ValidatedJson<T>
+impl<S, B, T> FromRequest<S, B> for ValidatedJson<T>
 where
     T: DeserializeOwned + Validate,
+    S: Send + Sync,
     B: HttpBody + Send,
+    B: Send + 'static,
     B::Data: Send,
     B::Error: Into<BoxError>,
 {
     type Rejection = AppError;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
-        let Json(value) = Json::<T>::from_request(req)
+    async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
+        let Json(value) = Json::<T>::from_request(req, state)
             .await
             .map_err(|e| AppError::from(ValidateError::AxumJsonRejection(e)))?;
         value.validate().map_err(|e| {
@@ -94,15 +99,16 @@ where
 pub struct ValidatedPath<T>(pub T);
 
 #[async_trait]
-impl<T, B> FromRequest<B> for ValidatedPath<T>
+impl<S, B, T> FromRequest<S, B> for ValidatedPath<T>
 where
     T: DeserializeOwned + Validate + Send,
-    B: Send,
+    S: Send + Sync,
+    B: Send + 'static,
 {
     type Rejection = AppError;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
-        let Path(value) = Path::<T>::from_request(req)
+    async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
+        let Path(value) = Path::<T>::from_request(req, state)
             .await
             .map_err(|e| AppError::from(ValidateError::AxumPathRejection(e)))?;
         value.validate().map_err(|e| {

@@ -11,7 +11,7 @@ domain = { path = "../domain" }
 util = { path = "../util", features = ["excel", "jwt"] }
 macros = { path = "../macros" }
 
-axum = { version = "0.5", features = ["headers"] }
+axum = { version = "0.6", features = ["headers", "macros"] }
 tokio = { version = "1", features = ["full"] }
 tower = { version = "0.4", features = ["util", "filter", "timeout"] }
 tower-http = { version = "0.3", features = ["trace", "add-extension"] }

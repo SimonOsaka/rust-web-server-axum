@@ -1,6 +1,6 @@
 use crate::{app_response::AppError, response::AdventureResponse, AppState};
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     Json,
 };
 use domain::AdventuresManager;
@@ -12,7 +12,7 @@ use vars::ID;
 #[router(path = "/api/adventures/:id")]
 pub async fn get_adventure(
     Path(_id): Path<ID>,
-    Extension(state): Extension<AppState>,
+    State(state): State<AppState>,
 ) -> Result<Json<AdventureResponse>, AppError> {
     debug!("_id: {:?}, state: {:?}", _id, state);
 

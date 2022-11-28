@@ -15,7 +15,7 @@ pub(crate) fn expand_router(args: TokenStream, item: TokenStream) -> TokenStream
     let func_name = Ident::new(&func_name, Span::call_site());
 
     quote! {
-        pub fn #func_name() -> axum::Router {
+        pub fn #func_name() -> axum::Router<crate::AppState> {
             #ft
 
             axum::Router::new().route(#path, axum::routing::#method(#name))

@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     Json,
 };
 use domain::{AdventuresManager, PlayListQuery};
@@ -9,10 +9,10 @@ use tracing::debug;
 use crate::{app_response::AppError, response::AdventuresResponse, AppState};
 
 #[tracing::instrument(skip(state))]
-#[router(path="/api/adventures/playlist/:play_list")]
+#[router(path = "/api/adventures/playlist/:play_list")]
 pub async fn play_list_adventures(
     Path(play_list): Path<String>,
-    Extension(state): Extension<AppState>,
+    State(state): State<AppState>,
 ) -> Result<Json<AdventuresResponse>, AppError> {
     debug!("play_list: {:?}, state: {:?}", play_list, state);
     let manager = &state.adventures_manager;

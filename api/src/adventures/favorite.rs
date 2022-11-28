@@ -1,4 +1,4 @@
-use axum::{extract::Extension, Json};
+use axum::{extract::State, Json};
 use domain::UsersManager;
 use macros::router;
 use serde::{Deserialize, Serialize};
@@ -29,9 +29,9 @@ enum Action {
 #[tracing::instrument(skip(auth_user, state))]
 #[router(path = "/api/adventures/:id/favorite", method = "post")]
 pub async fn favorite(
-    ValidatedPath(form): ValidatedPath<FavoriteForm>,
+    State(state): State<AppState>,
     JwtAuth(auth_user): JwtAuth,
-    Extension(state): Extension<AppState>,
+    ValidatedPath(form): ValidatedPath<FavoriteForm>,
 ) -> Result<Json<FavoriteResponse>, AppError> {
     process(form, JwtAuth(auth_user), state, Action::Favorite).await
 }
@@ -39,9 +39,9 @@ pub async fn favorite(
 #[tracing::instrument(skip(auth_user, state))]
 #[router(path = "/api/adventures/:id/unfavorite", method = "post")]
 pub async fn unfavorite(
-    ValidatedPath(form): ValidatedPath<FavoriteForm>,
+    State(state): State<AppState>,
     JwtAuth(auth_user): JwtAuth,
-    Extension(state): Extension<AppState>,
+    ValidatedPath(form): ValidatedPath<FavoriteForm>,
 ) -> Result<Json<FavoriteResponse>, AppError> {
     process(form, JwtAuth(auth_user), state, Action::Unfavorite).await
 }
