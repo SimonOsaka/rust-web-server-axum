@@ -7,3 +7,5 @@ pub mod i18n;
 pub mod jwt;
 #[cfg(feature = "validation")]
 pub mod validation;
+#[cfg(feature="http")]
+pub mod http;
