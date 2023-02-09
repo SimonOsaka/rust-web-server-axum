@@ -1,4 +1,3 @@
-use extra::meilisearch::meilisearch_sdk::document::Document;
 use serde::{Deserialize, Serialize};
 use vars::{DateTime, ID};
 
@@ -15,7 +14,7 @@ pub struct PlayListFilter {
     pub play_list: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq,Eq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct SearchedAdventures {
     pub id: ID,
     pub title: String,
@@ -35,11 +34,4 @@ pub struct SearchedAdventures {
     pub district: String,
     pub user_id: ID,
     pub fav_count: i64,
-}
-
-impl Document for SearchedAdventures {
-    type UIDType = ID;
-    fn get_uid(&self) -> &Self::UIDType {
-        &self.id
-    }
 }

@@ -1,5 +1,5 @@
 # development
-## MeiliSearch v0.25.2
+## MeiliSearch v1.0.0
 ### search
  ```shell
  curl 'http://127.0.0.1:7700/indexes/adventures_index/search' --header "Authorization: Bearer meili-master-key" -H 'Content-Type: application/json' --data-binary '{"q":"s"}'

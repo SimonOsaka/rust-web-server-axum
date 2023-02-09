@@ -1,8 +1,7 @@
-use std::convert::TryInto;
-
-use meilisearch_sdk::{client::Client, document::Document, search::SearchResult, tasks::Task};
-
 use super::{error::MeiliSearchError, MEILISEARCH};
+use meilisearch_sdk::{client::Client, search::SearchResult, tasks::Task};
+use serde::{Deserialize, Serialize};
+use std::convert::TryInto;
 
 #[derive(Debug)]
 pub enum MeiliSearchStatus {
@@ -19,7 +18,7 @@ fn get_client() -> &'static Client {
 /// add documents
 pub async fn add_documents<T>(vec: Vec<T>) -> Result<MeiliSearchStatus, MeiliSearchError>
 where
-    T: Document,
+    T: Serialize,
 {
     let meilisearch = MEILISEARCH.get().unwrap();
 
@@ -128,7 +127,7 @@ pub async fn search_documents_with_filter<T>(
     condition: Condition,
 ) -> Result<Vec<SearchResult<T>>, MeiliSearchError>
 where
-    T: 'static + Document,
+    for<'a> T: Deserialize<'a> + 'static,
 {
     let meilisearch = MEILISEARCH.get().unwrap();
 
