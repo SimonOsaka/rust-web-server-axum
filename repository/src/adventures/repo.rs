@@ -126,7 +126,7 @@ pub async fn find_one_adventure<'a>(
     sql_builder
         .fields(MY_ADVENTURES_SINGLE_FIELDS)
         .and_where_eq(name!("ad", "is_deleted"), 0)
-        .and_where_eq(name!("ad", "id"), param.add_value(id as i64));
+        .and_where_eq(name!("ad", "id"), param.add_value(id));
 
     let my = sql_builder.query_one_optinal(param, transaction).await?;
     Ok(my)

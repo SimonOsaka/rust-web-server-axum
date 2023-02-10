@@ -53,5 +53,5 @@ fn main() {
     "    all",
     "});"];
     let dest_path = Path::new("./src/i18n").join("lang.rs");
-    fs::write(&dest_path, all_c.join("\n")).unwrap();
+    fs::write(dest_path, all_c.join("\n")).unwrap();
 }

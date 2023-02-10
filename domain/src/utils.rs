@@ -13,7 +13,7 @@ pub type Credential = [u8; CREDENTIAL_LEN];
 /// - output
 ///     - return `true` as same, `false` as not same
 pub fn verify(crypt_str: String, other_str: String) -> bool {
-    let str = base64::decode(&crypt_str).unwrap();
+    let str = base64::decode(crypt_str).unwrap();
 
     pbkdf2::verify(
         PBKDF2_ALG,
