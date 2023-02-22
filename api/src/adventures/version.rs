@@ -11,7 +11,7 @@ pub struct VersionUpdateReq {
 }
 
 #[tracing::instrument]
-#[router(path="/api/adventures/update")]
+#[router(path = "/api/adventures/update")]
 pub async fn version_update_adventures(
     query: Query<VersionUpdateReq>,
 ) -> Result<Json<VersionUpdateResponse>, AppError> {
