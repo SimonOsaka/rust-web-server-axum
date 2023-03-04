@@ -1,3 +1,4 @@
+use base64::{engine::general_purpose, Engine};
 use ring::{digest, pbkdf2};
 use std::num::NonZeroU32;
 
@@ -13,7 +14,7 @@ pub type Credential = [u8; CREDENTIAL_LEN];
 /// - output
 ///     - return `true` as same, `false` as not same
 pub fn verify(crypt_str: String, other_str: String) -> bool {
-    let str = base64::decode(crypt_str).unwrap();
+    let str = general_purpose::STANDARD.decode(crypt_str).unwrap(); //base64::decode(crypt_str).unwrap();
 
     pbkdf2::verify(
         PBKDF2_ALG,
@@ -39,5 +40,6 @@ pub fn hash(to_encrypt: String) -> String {
         to_encrypt.as_bytes(),
         &mut to_store,
     );
-    base64::encode(to_store)
+    // base64::encode(to_store)
+    general_purpose::STANDARD.encode(to_store)
 }

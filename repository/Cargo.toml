@@ -24,9 +24,7 @@ anyhow = "1.0"
 async-trait = "0.1"
 sql-builder = "3.1.1"
 once_cell = "1.10.0"
-meilisearch-sdk = { version = "0.15", default-features = false, features = [
-    "sync",
-] }
+meilisearch-sdk = { version = "0.22" }
 tracing = { version = "0.1" }
 
 [dev-dependencies]

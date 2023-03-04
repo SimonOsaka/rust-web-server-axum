@@ -55,7 +55,7 @@ impl Excel {
         sheets_and_rows: HashMap<&str, Vec<Vec<&str>>>,
         file_path: &str,
     ) -> Result<(), ExcelError> {
-        let workbook = Workbook::new(file_path);
+        let workbook = Workbook::new(file_path).map_err(ExcelError::Export)?;
 
         for (sheet, rows) in sheets_and_rows {
             let mut sheet1 = workbook
@@ -126,7 +126,8 @@ mod tests {
     fn test_write() {
         let cols = vec!["cell1", "cell2"];
         let rows = vec![cols];
-        Excel::write(rows, "/Volumes/code/temp/simple1.xlsx").unwrap();
+        let excel = Excel::write(rows, "/Volumes/code/temp/simple1.xlsx");
+        assert_eq!(true, excel.is_ok())
     }
 
     #[test]

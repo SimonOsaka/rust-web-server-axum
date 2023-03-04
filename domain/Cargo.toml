@@ -20,6 +20,6 @@ chrono = { version = "0.4", features = ["serde"] }
 thiserror = "1.0"
 async-trait = "0.1"
 anyhow = "1.0"
-base64 = "0.13"
+base64 = "0.21"
 ring = "0.16"
 tracing = { version = "0.1" }

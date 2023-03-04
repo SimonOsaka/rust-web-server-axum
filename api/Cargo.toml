@@ -14,7 +14,7 @@ macros = { path = "../macros" }
 axum = { version = "0.6", features = ["headers", "macros"] }
 tokio = { version = "1", features = ["full"] }
 tower = { version = "0.4", features = ["util", "filter", "timeout"] }
-tower-http = { version = "0.3", features = ["trace", "add-extension"] }
+tower-http = { version = "0.4", features = ["trace", "add-extension"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 jsonwebtoken = "8"

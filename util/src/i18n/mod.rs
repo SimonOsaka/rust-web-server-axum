@@ -61,7 +61,7 @@ pub fn i18n_with_language(key: &str, language: &str) -> String {
     if let Some(v) = ALL_LANGUAGES.get(language) {
         let lang = v.deref().to_owned();
         if let Some(vlang) = lang.get(key) {
-            (**vlang).to_string()
+            vlang.as_str().unwrap_or_default().into()
         } else {
             key.to_string()
         }
@@ -87,7 +87,7 @@ pub fn i18n_with_language_vars(key: &str, language: &str, vars: Vec<String>) -> 
     if let Some(v) = ALL_LANGUAGES.get(language) {
         let lang = v.deref().to_owned();
         if let Some(vlang) = lang.get(key) {
-            let mut ret = (**vlang).to_string();
+            let mut ret = vlang.as_str().unwrap_or_default().to_string();
             for (i, v) in (0_u8..).zip(vars.into_iter()) {
                 let p = vec!["{".to_string(), i.to_string(), "}".to_string()];
                 ret = ret.replace(p.join("").as_str(), &v);
@@ -105,7 +105,7 @@ pub fn i18n_with_language_vars(key: &str, language: &str, vars: Vec<String>) -> 
 mod test {
     use std::vec;
 
-    use crate::i18n::{self, i18n_with_language, i18n_with_language_vars, i18n_with_vars};
+    use crate::i18n::{i18n, i18n_with_language, i18n_with_language_vars, i18n_with_vars};
 
     #[test]
     fn test_i18n() {
