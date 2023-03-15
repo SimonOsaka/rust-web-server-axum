@@ -1,0 +1,319 @@
+[
+  {
+    "_id": "10929ba6-3ac9-40bd-8d87-2841d3dd1242",
+    "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+    "containerId": "",
+    "name": "login",
+    "url": "https://adventures.jicu.vip/api/users/login",
+    "method": "POST",
+    "sortNum": 20000,
+    "created": "2023-03-15T02:28:24.815Z",
+    "modified": "2023-03-15T03:07:50.044Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"username\":\"Kate778\",\n    \"password\":\"1234567890abcde1234567890abcdeBB\"\n}",
+      "form": []
+    },
+    "tests": []
+  },
+  {
+    "_id": "2e2a649f-135f-43bc-b577-58ab1d829d8c",
+    "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+    "containerId": "",
+    "name": "me",
+    "url": "https://adventures.jicu.vip/api/users/me",
+    "method": "GET",
+    "sortNum": 30000,
+    "created": "2023-03-15T02:38:15.678Z",
+    "modified": "2023-03-15T02:51:22.113Z",
+    "headers": [],
+    "params": [],
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{token}}"
+    },
+    "tests": []
+  },
+  {
+    "_id": "496968aa-940b-40b0-981d-4250b9f6b5cb",
+    "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+    "containerId": "",
+    "name": "registry",
+    "url": "https://adventures.jicu.vip/api/users/registry",
+    "method": "POST",
+    "sortNum": 40000,
+    "created": "2023-03-15T02:51:59.192Z",
+    "modified": "2023-03-15T02:55:53.875Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"username\":\"Charlotte\",\n    \"password\":\"1234567890abcde1234567890abcdeTT\"\n}",
+      "form": []
+    },
+    "tests": []
+  },
+  {
+    "_id": "c05693e9-6df9-4442-9ee2-fb2e2bf05162",
+    "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+    "containerId": "",
+    "name": "change_password",
+    "url": "https://adventures.jicu.vip/api/users/password",
+    "method": "PUT",
+    "sortNum": 50000,
+    "created": "2023-03-15T02:56:34.878Z",
+    "modified": "2023-03-15T02:57:23.473Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"old_password\": \"1234567890abcde1234567890abcdeTT\",\n  \"new_password\": \"1234567890abcde1234567890abcdeBB\"\n}",
+      "form": []
+    },
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{token}}"
+    },
+    "tests": []
+  },
+  {
+    "_id": "2194bbe7-c78f-4faf-a72f-dc463ae705c7",
+    "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+    "containerId": "",
+    "name": "change_username",
+    "url": "https://adventures.jicu.vip/api/users/username",
+    "method": "PUT",
+    "sortNum": 60000,
+    "created": "2023-03-15T02:58:31.991Z",
+    "modified": "2023-03-15T02:58:55.332Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n    \"new_username\":\"Kate778\"\n}",
+      "form": []
+    },
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{token}}"
+    },
+    "tests": []
+  },
+  {
+    "_id": "d9cecd89-08eb-4b39-bead-eb45a8b68988",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "playlist",
+    "url": "https://adventures.jicu.vip/api/adventures/playlist/64c6b3aabfb56fe1",
+    "method": "GET",
+    "sortNum": 10000,
+    "created": "2023-03-15T03:01:17.791Z",
+    "modified": "2023-03-15T03:01:42.643Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  },
+  {
+    "_id": "4040d304-85cd-4a9e-bcc9-cfef6fa5cb1f",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "tabs",
+    "url": "https://adventures.jicu.vip/api/adventures/tabs",
+    "method": "GET",
+    "sortNum": 20000,
+    "created": "2023-03-15T03:03:00.601Z",
+    "modified": "2023-03-15T03:03:11.038Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  },
+  {
+    "_id": "c065159c-a3dc-44fb-b9af-fdc0c44cd4d5",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "list",
+    "url": "https://adventures.jicu.vip/api/adventures?item_id=5&limit=10&offset=0&province_key=hebei",
+    "method": "GET",
+    "sortNum": 30000,
+    "created": "2023-03-15T03:03:32.799Z",
+    "modified": "2023-03-15T03:03:55.237Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "item_id",
+        "value": "5",
+        "isPath": false
+      },
+      {
+        "name": "limit",
+        "value": "10",
+        "isPath": false
+      },
+      {
+        "name": "offset",
+        "value": "0",
+        "isPath": false
+      },
+      {
+        "name": "province_key",
+        "value": "hebei",
+        "isPath": false
+      }
+    ],
+    "tests": []
+  },
+  {
+    "_id": "5804afd4-32ed-474a-b980-f35c0d7f1a2c",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "mylist",
+    "url": "https://adventures.jicu.vip/api/adventures/my",
+    "method": "GET",
+    "sortNum": 40000,
+    "created": "2023-03-15T03:04:52.470Z",
+    "modified": "2023-03-15T03:05:03.259Z",
+    "headers": [],
+    "params": [],
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{token}}"
+    },
+    "tests": []
+  },
+  {
+    "_id": "13e937dc-a6f7-4ea1-a91d-08e35aa77215",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "create",
+    "url": "https://adventures.jicu.vip/api/adventures",
+    "method": "POST",
+    "sortNum": 50000,
+    "created": "2023-03-15T03:06:02.938Z",
+    "modified": "2023-03-15T03:06:37.709Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"title\": \"潮白河公园x2g\",\n  \"image_url\": \"https://p3-search.byteimg.com/obj/labis/006399952391363ec5ae47c0c37977b5\",\n  \"link\": \"https://www.ixigua.com/7024859191864984072\",\n  \"source\": 3,\n  \"journey_destiny\": \"hebei\"\n}",
+      "form": []
+    },
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{token}}"
+    },
+    "tests": []
+  },
+  {
+    "_id": "aaeaa581-215e-4065-a56c-84fb952fc137",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "favorite",
+    "url": "https://adventures.jicu.vip/api/adventures/956/favorite",
+    "method": "POST",
+    "sortNum": 60000,
+    "created": "2023-03-15T03:08:54.747Z",
+    "modified": "2023-03-15T03:09:25.886Z",
+    "headers": [],
+    "params": [],
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{token}}"
+    },
+    "tests": []
+  },
+  {
+    "_id": "e52d89e4-27c4-4787-ad34-2ab4377c80d3",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "unfavorite",
+    "url": "https://adventures.jicu.vip/api/adventures/956/unfavorite",
+    "method": "POST",
+    "sortNum": 70000,
+    "created": "2023-03-15T03:10:10.894Z",
+    "modified": "2023-03-15T03:10:23.860Z",
+    "headers": [],
+    "params": [],
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{token}}"
+    },
+    "tests": []
+  },
+  {
+    "_id": "35594123-c4d1-43e1-8dfe-3175befd2558",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "detail",
+    "url": "https://adventures.jicu.vip/api/adventures/956",
+    "method": "GET",
+    "sortNum": 80000,
+    "created": "2023-03-15T03:10:47.171Z",
+    "modified": "2023-03-15T03:10:51.626Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  },
+  {
+    "_id": "c7a5a451-8711-4ae1-9c6e-a4daf153a48a",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "sync",
+    "url": "https://adventures.jicu.vip/api/sync/796",
+    "method": "GET",
+    "sortNum": 90000,
+    "created": "2023-03-15T03:11:11.683Z",
+    "modified": "2023-03-15T03:11:37.297Z",
+    "headers": [],
+    "params": [],
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{token}}"
+    },
+    "tests": []
+  },
+  {
+    "_id": "1247e725-1620-4b16-9b65-dc83341c1a66",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "delete",
+    "url": "https://adventures.jicu.vip/api/adventures/955",
+    "method": "DELETE",
+    "sortNum": 100000,
+    "created": "2023-03-15T03:11:57.818Z",
+    "modified": "2023-03-15T03:12:10.948Z",
+    "headers": [],
+    "params": [],
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{token}}"
+    },
+    "tests": []
+  },
+  {
+    "_id": "2754da3b-978e-423f-adbc-8d592c11bbd9",
+    "colId": "f655e7a6-72b1-4c8e-ae67-1223180af079",
+    "containerId": "",
+    "name": "version_check",
+    "url": "https://adventures.jicu.vip/api/adventures/update?appid=__UNI__410C039&version=1.3.0",
+    "method": "GET",
+    "sortNum": 110000,
+    "created": "2023-03-15T03:12:51.652Z",
+    "modified": "2023-03-15T03:12:56.343Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "appid",
+        "value": "__UNI__410C039",
+        "isPath": false
+      },
+      {
+        "name": "version",
+        "value": "1.3.0",
+        "isPath": false
+      }
+    ],
+    "tests": []
+  }
+]
