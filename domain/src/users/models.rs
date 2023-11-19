@@ -1,7 +1,9 @@
 use crate::{
-    AddFavorite, Adventures, AdventuresManager, CreateAdventureError, DelFavorite,
-    DeleteAdventureError, DomainError, Favorite, FavoriteError, FavoritesManager, NewJourney,
-    NewJourneyData, UsersManager,
+    adventures::Adventures, adventures::AdventuresManager,
+    adventures::CreateAdventureError, adventures::DeleteAdventureError,
+    adventures::NewJourney, adventures::NewJourneyData, favorites::AddFavorite,
+    favorites::DelFavorite, favorites::Favorite, favorites::FavoriteError,
+    favorites::FavoritesManager, DomainError, UsersManager,
 };
 use repository::users::models::{MyUsers, NewMyUsers};
 use serde::Serialize;

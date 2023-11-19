@@ -1,6 +1,9 @@
 use crate::app_response::AppError;
 use axum::extract::rejection::{JsonRejection, PathRejection, QueryRejection};
-use domain::{CreateAdventureError, DomainError, FavoriteError, GetAdventureError, GetUserError};
+use domain::{
+    adventures::CreateAdventureError, adventures::GetAdventureError,
+    favorites::FavoriteError, DomainError, GetUserError,
+};
 use macros::FromError;
 use util::excel::error::ExcelError;
 use validator::ValidationErrors;
@@ -51,8 +54,12 @@ impl From<DomainError> for AppError {
 impl From<GetAdventureError> for AppError {
     fn from(e: GetAdventureError) -> AppError {
         match &e {
-            GetAdventureError::NotFound { .. } => Self::not_found(e.to_string()),
-            GetAdventureError::DomainError(_) => Self::internal_server_error(e.to_string()),
+            GetAdventureError::NotFound { .. } => {
+                Self::not_found(e.to_string())
+            }
+            GetAdventureError::DomainError(_) => {
+                Self::internal_server_error(e.to_string())
+            }
         }
     }
 }
@@ -60,10 +67,18 @@ impl From<GetAdventureError> for AppError {
 impl From<ValidateError> for AppError {
     fn from(e: ValidateError) -> Self {
         match &e {
-            ValidateError::InvalidParam(v) => Self::bad_request(v.to_string().replace('\n', " , ")),
-            ValidateError::AxumQueryRejection(v) => Self::bad_request(v.to_string()),
-            ValidateError::AxumJsonRejection(v) => Self::bad_request(v.to_string()),
-            ValidateError::AxumPathRejection(v) => Self::bad_request(v.to_string()),
+            ValidateError::InvalidParam(v) => {
+                Self::bad_request(v.to_string().replace('\n', " , "))
+            }
+            ValidateError::AxumQueryRejection(v) => {
+                Self::bad_request(v.to_string())
+            }
+            ValidateError::AxumJsonRejection(v) => {
+                Self::bad_request(v.to_string())
+            }
+            ValidateError::AxumPathRejection(v) => {
+                Self::bad_request(v.to_string())
+            }
         }
     }
 }
@@ -72,8 +87,12 @@ impl From<GetUserError> for AppError {
     fn from(e: GetUserError) -> Self {
         match &e {
             GetUserError::NotFound { .. } => Self::not_found(e.to_string()),
-            GetUserError::PasswordNotCorrect { .. } => Self::forbidden(e.to_string()),
-            GetUserError::DomainError(_) => Self::internal_server_error(e.to_string()),
+            GetUserError::PasswordNotCorrect { .. } => {
+                Self::forbidden(e.to_string())
+            }
+            GetUserError::DomainError(_) => {
+                Self::internal_server_error(e.to_string())
+            }
         }
     }
 }
@@ -81,10 +100,16 @@ impl From<GetUserError> for AppError {
 impl From<CreateAdventureError> for AppError {
     fn from(e: CreateAdventureError) -> Self {
         match &e {
-            CreateAdventureError::AdventureNotFound { .. } => Self::not_found(e.to_string()),
+            CreateAdventureError::AdventureNotFound { .. } => {
+                Self::not_found(e.to_string())
+            }
             CreateAdventureError::Exist => Self::forbidden(e.to_string()),
-            CreateAdventureError::AddDocuments => Self::internal_server_error(e.to_string()),
-            CreateAdventureError::DomainError(_) => Self::internal_server_error(e.to_string()),
+            CreateAdventureError::AddDocuments => {
+                Self::internal_server_error(e.to_string())
+            }
+            CreateAdventureError::DomainError(_) => {
+                Self::internal_server_error(e.to_string())
+            }
         }
     }
 }
@@ -92,9 +117,15 @@ impl From<CreateAdventureError> for AppError {
 impl From<FavoriteError> for AppError {
     fn from(e: FavoriteError) -> Self {
         match &e {
-            FavoriteError::AlreadyExist { .. } => Self::forbidden(e.to_string()),
-            FavoriteError::DomainError(_) => Self::internal_server_error(e.to_string()),
-            FavoriteError::AdventureNotFound { .. } => Self::not_found(e.to_string()),
+            FavoriteError::AlreadyExist { .. } => {
+                Self::forbidden(e.to_string())
+            }
+            FavoriteError::DomainError(_) => {
+                Self::internal_server_error(e.to_string())
+            }
+            FavoriteError::AdventureNotFound { .. } => {
+                Self::not_found(e.to_string())
+            }
         }
     }
 }

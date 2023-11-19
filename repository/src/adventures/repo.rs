@@ -1,7 +1,12 @@
-use crate::adventures::models::{AdventuresWhere, NewMyAdventuresJourney, PlayListWhere};
+use crate::adventures::models::{
+    AdventuresWhere, NewMyAdventuresJourney, PlayListWhere,
+};
 use crate::db::write::SqlWriter;
 use crate::db::{SqlBuilder, SqlParams, SqlReader};
-use crate::{AdventureUser, FavCountKind, MyAdventures, MyUsers, MY_USERS_STRUCT_FIELDS};
+use crate::{
+    adventures::AdventureUser, adventures::FavCountKind,
+    adventures::MyAdventures, MyUsers, MY_USERS_STRUCT_FIELDS,
+};
 use sql_builder::{name, SqlName};
 use sqlx::{Error, Postgres, Transaction};
 use tracing::debug;
@@ -54,7 +59,8 @@ pub async fn find_latest_adventures<'a>(
     query: AdventuresWhere,
     transaction: Option<&'a mut Transaction<'static, Postgres>>,
 ) -> Result<Vec<MyAdventures>, sqlx::Error> {
-    let mut pgsql_builder = SqlBuilder::select_from(name!("my_adventures";"ad"));
+    let mut pgsql_builder =
+        SqlBuilder::select_from(name!("my_adventures";"ad"));
     pgsql_builder
         .fields(MY_ADVENTURES_SINGLE_FIELDS)
         .and_where_eq(name!("ad", "is_deleted"), 0);
@@ -111,7 +117,10 @@ pub async fn find_adventures_by_play_list<'a>(
     sql_builder
         .fields(MY_ADVENTURES_SINGLE_FIELDS)
         .and_where_eq(name!("ad", "is_deleted"), 0)
-        .and_where_eq(name!("ad", "play_list"), param.add_value(query.play_list));
+        .and_where_eq(
+            name!("ad", "play_list"),
+            param.add_value(query.play_list),
+        );
     let my_adventures = sql_builder.query_list(param, transaction).await?;
     Ok(my_adventures)
 }
@@ -180,7 +189,10 @@ pub async fn find_adventure_title_crypto<'a>(
     sql_builder
         .fields(MY_ADVENTURES_SINGLE_FIELDS)
         .and_where_eq(name!("ad", "is_deleted"), 0)
-        .and_where_eq(name!("ad", "title_crypto"), param.add_value(title_crypto))
+        .and_where_eq(
+            name!("ad", "title_crypto"),
+            param.add_value(title_crypto),
+        )
         .and_where_eq(name!("ad", "user_id"), param.add_value(user_id));
 
     let my = sql_builder.query_one_optinal(param, transaction).await?;
@@ -222,11 +234,14 @@ pub async fn find_adventures_by_user_id<'a>(
         .and_where_eq(name!("u", "id"), params.add_value(user_id))
         .order_desc(name!("ad", "id"));
 
-    let list: Vec<AdventureUser> = sql_builder.query_list(params, transaction).await?;
+    let list: Vec<AdventureUser> =
+        sql_builder.query_list(params, transaction).await?;
 
     let c = list
         .into_iter()
-        .map(|adventure_user| (adventure_user.my_adventures, adventure_user.my_users))
+        .map(|adventure_user| {
+            (adventure_user.my_adventures, adventure_user.my_users)
+        })
         .collect();
     Ok(c)
 }

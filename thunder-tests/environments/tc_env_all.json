@@ -1,0 +1,14 @@
+{
+    "_id": "72c2147d-49a0-4d1b-8371-2b54acc67a2a",
+    "name": "all",
+    "default": true,
+    "sortNum": 10000,
+    "created": "2023-03-15T02:24:19.281Z",
+    "modified": "2023-03-15T02:24:19.281Z",
+    "data": [
+        {
+            "name": "token",
+            "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjE0LCJleHAiOjE2ODE0NDE2NzAsIm5hbWUiOiJLYXRlNzc4Iiwicm9sZXMiOlsidXNlciJdfQ.Rlr4CZuEj1Nn5ZoMubDbFdGC_w8g65qJc5lMQXg2Rk4"
+        }
+    ]
+}

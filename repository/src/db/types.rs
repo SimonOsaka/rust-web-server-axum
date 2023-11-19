@@ -1,4 +1,4 @@
-use std::fmt::Display;
+// use std::fmt::Display;
 
 // SqlArguments
 pub type SqlArguments = sqlx::postgres::PgArguments;
@@ -18,11 +18,11 @@ pub enum Value {
     Integer(i64),
 }
 
-impl Display for Value {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{}", self))
-    }
-}
+// impl Display for Value {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         f.write_fmt(format_args!("{}", self))
+//     }
+// }
 
 impl From<i64> for Value {
     fn from(v: i64) -> Self {

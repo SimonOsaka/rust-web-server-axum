@@ -2,7 +2,7 @@ use axum::{
     extract::{Path, State},
     Json,
 };
-use domain::AdventuresManager;
+use domain::adventures::AdventuresManager;
 use macros::router;
 use tracing::debug;
 use vars::ID;

@@ -36,7 +36,9 @@ impl SqlWriter for SqlBuilder {
         debug!("insert_one sql: {}", sql);
 
         let result = if let Some(tx) = transaction {
-            sqlx::query_with(sql, args.fetch()).fetch_one(tx).await?
+            sqlx::query_with(sql, args.fetch())
+                .fetch_one(&mut **tx)
+                .await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;
             sqlx::query_with(sql, args.fetch()).fetch_one(pool).await?
@@ -54,7 +56,9 @@ impl SqlWriter for SqlBuilder {
         debug!("update_one sql: {}", sql);
 
         let result = if let Some(tx) = transaction {
-            sqlx::query_with(sql, args.fetch()).execute(tx).await?
+            sqlx::query_with(sql, args.fetch())
+                .execute(&mut **tx)
+                .await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;
             sqlx::query_with(sql, args.fetch()).execute(pool).await?
@@ -72,7 +76,9 @@ impl SqlWriter for SqlBuilder {
         debug!("delete_one sql: {}", sql);
 
         let result = if let Some(tx) = transaction {
-            sqlx::query_with(sql, args.fetch()).execute(tx).await?
+            sqlx::query_with(sql, args.fetch())
+                .execute(&mut **tx)
+                .await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;
             sqlx::query_with(sql, args.fetch()).execute(pool).await?

@@ -1,5 +1,5 @@
 use axum::{extract::State, Json};
-use domain::{NewJourney, UsersManager};
+use domain::{adventures::NewJourney, UsersManager};
 use macros::router;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
@@ -13,7 +13,11 @@ use crate::{
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]
 pub struct JourneyForm {
-    #[validate(length(min = 5, max = 40, code = "adventure-journey-valid-title"))]
+    #[validate(length(
+        min = 5,
+        max = 40,
+        code = "adventure-journey-valid-title"
+    ))]
     title: String,
 
     #[validate(url(code = "adventure-journey-valid-image_url"))]
@@ -25,7 +29,9 @@ pub struct JourneyForm {
     #[validate(custom(function = "crate::app_request::validate_source"))]
     source: u8,
 
-    #[validate(custom(function = "crate::app_request::validate_journey_destiny"))]
+    #[validate(custom(
+        function = "crate::app_request::validate_journey_destiny"
+    ))]
     journey_destiny: String,
 }
 

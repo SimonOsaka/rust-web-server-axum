@@ -1,12 +1,13 @@
 use axum::{extract::State, Json};
-use domain::{AdventuresManager, AdventuresQuery};
+use domain::{adventures::AdventuresManager, adventures::AdventuresQuery};
 use macros::router;
 use serde::Deserialize;
 use tracing::debug;
 use validator::Validate;
 
 use crate::{
-    app_request::ValidatedQuery, app_response::AppError, response::AdventuresResponse, AppState,
+    app_request::ValidatedQuery, app_response::AppError,
+    response::AdventuresResponse, AppState,
 };
 
 #[derive(Default, Deserialize, Debug, Clone, Validate)]

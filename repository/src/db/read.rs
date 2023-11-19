@@ -40,7 +40,9 @@ impl SqlReader for SqlBuilder {
         debug!("query_list sql: {}", sql);
 
         let result: Vec<T> = if let Some(tx) = transaction {
-            sqlx::query_as_with(sql, args.fetch()).fetch_all(tx).await?
+            sqlx::query_as_with(sql, args.fetch())
+                .fetch_all(&mut **tx)
+                .await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;
             sqlx::query_as_with(sql, args.fetch())
@@ -64,7 +66,7 @@ impl SqlReader for SqlBuilder {
 
         let result: Option<T> = if let Some(tx) = transaction {
             sqlx::query_as_with(sql, args.fetch())
-                .fetch_optional(tx)
+                .fetch_optional(&mut **tx)
                 .await?
         } else {
             let pool = &REPOSITORY.get().unwrap().connection_pool;

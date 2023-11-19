@@ -14,7 +14,8 @@ fn main() {
         }
 
         // '"en.toml"'
-        let origin_language_file_name = entry.path().file_name().unwrap().to_str().unwrap();
+        let origin_language_file_name =
+            entry.path().file_name().unwrap().to_str().unwrap();
         // 'en' or 'zh_CN'
         let lang_file_name = origin_language_file_name
             .replace(".toml", "")
@@ -41,7 +42,7 @@ fn main() {
 
     // src/lang.rs
     let all_lang = &all_lang.join("\n");
-    let all_c = vec![
+    let all_c = [
         "use std::collections::HashMap;",
         "use toml::Table;",
         "use once_cell::sync::Lazy;",

@@ -1,20 +1,24 @@
 use crate::{
-    database_to_domain_error, my_to_searched, search_to_domain_error, CreateAdventureError,
-    DeleteAdventureError, NewJourneyData, Users,
+    adventures::my_to_searched, adventures::Adventures,
+    adventures::AdventuresQuery, adventures::CreateAdventureError,
+    adventures::DeleteAdventureError, adventures::GetAdventureError,
+    adventures::NewJourneyData, adventures::PlayListQuery,
+    database_to_domain_error, search_to_domain_error, DomainError, Users,
 };
-use crate::{Adventures, AdventuresQuery, DomainError, GetAdventureError, PlayListQuery};
-use repository::MyAdventuresFields;
+use repository::adventures::MyAdventuresFields;
 
 use anyhow::Result;
 
 use repository::db::types::{Operation, Value};
 use repository::db::Repo;
 use repository::{
-    find_adventure_title_crypto, find_one_adventure, DeleteMyAdventure, MyAdventures,
-    MyAdventuresMyUsers, NewMyAdventuresJourney,
+    adventures::find_adventure_title_crypto, adventures::find_one_adventure,
+    adventures::DeleteMyAdventure, adventures::MyAdventures,
+    adventures::MyAdventuresMyUsers, adventures::NewMyAdventuresJourney,
 };
 use search::adventures::{
-    add_adventure, add_adventures, delete_adventure, search_by_play_list, search_latest, search_one,
+    add_adventure, add_adventures, delete_adventure, search_by_play_list,
+    search_latest, search_one,
 };
 use tracing::debug;
 use vars::ID;
@@ -58,8 +62,12 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     #[tracing::instrument(skip(self))]
-    async fn get_adventure_by_id(&self, id: ID) -> Result<Option<Adventures>, GetAdventureError> {
-        let search_results = search_one(id).await.map_err(search_to_domain_error);
+    async fn get_adventure_by_id(
+        &self,
+        id: ID,
+    ) -> Result<Option<Adventures>, GetAdventureError> {
+        let search_results =
+            search_one(id).await.map_err(search_to_domain_error);
 
         match search_results? {
             Some(my) => {
@@ -72,8 +80,12 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     #[tracing::instrument(skip(self))]
-    async fn get_adventure(&self, id: ID) -> Result<Adventures, GetAdventureError> {
-        let search_results = search_one(id).await.map_err(search_to_domain_error);
+    async fn get_adventure(
+        &self,
+        id: ID,
+    ) -> Result<Adventures, GetAdventureError> {
+        let search_results =
+            search_one(id).await.map_err(search_to_domain_error);
 
         match search_results? {
             Some(my) => {
@@ -87,7 +99,8 @@ impl super::AdventuresManager for AdventuresManagerImpl {
 
     #[tracing::instrument(skip(self))]
     async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError> {
-        let fields = vec![MyAdventuresFields::Id(Operation::Eq(Value::from(id)))];
+        let fields =
+            vec![MyAdventuresFields::Id(Operation::Eq(Value::from(id)))];
         let result = MyAdventures::get(fields, None).await;
         match result {
             Ok(opt_my) => match opt_my {
@@ -107,13 +120,19 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     #[tracing::instrument(skip(self))]
-    async fn add_journey(&self, data: NewJourneyData) -> Result<ID, CreateAdventureError> {
+    async fn add_journey(
+        &self,
+        data: NewJourneyData,
+    ) -> Result<ID, CreateAdventureError> {
         let mut transaction = Repo::transaction().await.expect("");
 
-        let my_adventures_optional =
-            find_adventure_title_crypto(data.u.id, data.nj.crypto(), Some(&mut transaction))
-                .await
-                .map_err(database_to_domain_error)?;
+        let my_adventures_optional = find_adventure_title_crypto(
+            data.u.id,
+            data.nj.crypto(),
+            Some(&mut transaction),
+        )
+        .await
+        .map_err(database_to_domain_error)?;
         if my_adventures_optional.is_some() {
             return Err(CreateAdventureError::Exist);
         }
@@ -133,7 +152,11 @@ impl super::AdventuresManager for AdventuresManagerImpl {
             Some(ad) => add_adventures(vec![my_to_searched(ad)])
                 .await
                 .map_err(search_to_domain_error)?,
-            None => return Err(CreateAdventureError::AdventureNotFound { adventure_id: id }),
+            None => {
+                return Err(CreateAdventureError::AdventureNotFound {
+                    adventure_id: id,
+                })
+            }
         };
 
         if status {
@@ -144,13 +167,20 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     #[tracing::instrument(skip(self))]
-    async fn delete_adventure(&self, id: ID, user_id: ID) -> Result<bool, DeleteAdventureError> {
+    async fn delete_adventure(
+        &self,
+        id: ID,
+        user_id: ID,
+    ) -> Result<bool, DeleteAdventureError> {
         let mut transaction = Repo::transaction().await.expect("");
 
-        let fields = vec![MyAdventuresFields::Id(Operation::Eq(Value::from(id)))];
+        let fields =
+            vec![MyAdventuresFields::Id(Operation::Eq(Value::from(id)))];
         let result = MyAdventures::get(fields, Some(&mut transaction))
             .await
-            .map_err(|e| DeleteAdventureError::DomainError(database_to_domain_error(e)))?;
+            .map_err(|e| {
+                DeleteAdventureError::DomainError(database_to_domain_error(e))
+            })?;
 
         if result.is_none() {
             debug!("adventure {} is not exist", id);
@@ -163,14 +193,16 @@ impl super::AdventuresManager for AdventuresManagerImpl {
         let is_db_del = DeleteMyAdventure { id }
             .delete(Some(&mut transaction))
             .await
-            .map_err(|e| DeleteAdventureError::DomainError(database_to_domain_error(e)))?;
+            .map_err(|e| {
+                DeleteAdventureError::DomainError(database_to_domain_error(e))
+            })?;
 
         transaction.commit().await.expect("commit error");
 
         if is_db_del {
-            let status = delete_adventure(id)
-                .await
-                .map_err(|e| DeleteAdventureError::DomainError(search_to_domain_error(e)))?;
+            let status = delete_adventure(id).await.map_err(|e| {
+                DeleteAdventureError::DomainError(search_to_domain_error(e))
+            })?;
 
             if status {
                 return Ok(true);
@@ -183,10 +215,13 @@ impl super::AdventuresManager for AdventuresManagerImpl {
     }
 
     #[tracing::instrument(skip(self))]
-    async fn find_by_user_id(&self, user_id: ID) -> Result<Vec<(Adventures, Users)>, DomainError> {
-        let ad_fields = vec![MyAdventuresFields::UserId(Operation::Eq(Value::from(
-            user_id,
-        )))];
+    async fn find_by_user_id(
+        &self,
+        user_id: ID,
+    ) -> Result<Vec<(Adventures, Users)>, DomainError> {
+        let ad_fields = vec![MyAdventuresFields::UserId(Operation::Eq(
+            Value::from(user_id),
+        ))];
         let result = MyAdventuresMyUsers::find(ad_fields, Vec::new(), None)
             .await
             .map_err(database_to_domain_error)?;

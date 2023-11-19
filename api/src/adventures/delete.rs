@@ -1,5 +1,5 @@
 use axum::extract::State;
-use domain::{DeleteAdventureError, UsersManager};
+use domain::{adventures::DeleteAdventureError, UsersManager};
 use hyper::StatusCode;
 use macros::router;
 use serde::Deserialize;
@@ -36,10 +36,16 @@ pub async fn delete_adventure(
     match result {
         Ok(_b) => Ok(StatusCode::OK),
         Err(_e) => match _e {
-            _e @ DeleteAdventureError::AdventureNotFound { .. } => Ok(StatusCode::OK),
-            _e @ DeleteAdventureError::DelDocuments => Ok(StatusCode::INTERNAL_SERVER_ERROR),
+            _e @ DeleteAdventureError::AdventureNotFound { .. } => {
+                Ok(StatusCode::OK)
+            }
+            _e @ DeleteAdventureError::DelDocuments => {
+                Ok(StatusCode::INTERNAL_SERVER_ERROR)
+            }
             _e @ DeleteAdventureError::NotOwner => Ok(StatusCode::FORBIDDEN),
-            _e @ DeleteAdventureError::DomainError(_) => Ok(StatusCode::INTERNAL_SERVER_ERROR),
+            _e @ DeleteAdventureError::DomainError(_) => {
+                Ok(StatusCode::INTERNAL_SERVER_ERROR)
+            }
         },
     }
 }

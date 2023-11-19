@@ -1,7 +1,5 @@
 mod lang;
 
-use std::ops::Deref;
-
 use self::lang::ALL_LANGUAGES;
 
 /// get i18n value for ENV `I18N_LANGUAGE` language
@@ -59,7 +57,7 @@ pub fn i18n_with_vars(key: &str, vars: Vec<String>) -> String {
 /// ```
 pub fn i18n_with_language(key: &str, language: &str) -> String {
     if let Some(v) = ALL_LANGUAGES.get(language) {
-        let lang = v.deref().to_owned();
+        let lang = v.to_owned();
         if let Some(vlang) = lang.get(key) {
             vlang.as_str().unwrap_or_default().into()
         } else {
@@ -85,7 +83,7 @@ pub fn i18n_with_language(key: &str, language: &str) -> String {
 /// ```
 pub fn i18n_with_language_vars(key: &str, language: &str, vars: Vec<String>) -> String {
     if let Some(v) = ALL_LANGUAGES.get(language) {
-        let lang = v.deref().to_owned();
+        let lang = v.to_owned();
         if let Some(vlang) = lang.get(key) {
             let mut ret = vlang.as_str().unwrap_or_default().to_string();
             for (i, v) in (0_u8..).zip(vars.into_iter()) {

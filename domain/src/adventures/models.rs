@@ -1,8 +1,11 @@
 use repository::{
     adventures::models::{AdventuresWhere, PlayListWhere},
-    MyAdventures, NewMyAdventuresJourney,
+    adventures::MyAdventures,
+    adventures::NewMyAdventuresJourney,
 };
-use search::adventures::model::{AdventuresFilter, PlayListFilter, SearchedAdventures};
+use search::adventures::model::{
+    AdventuresFilter, PlayListFilter, SearchedAdventures,
+};
 use serde::Serialize;
 use vars::{DateTime, ID};
 

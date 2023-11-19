@@ -3,7 +3,6 @@ pub mod db;
 pub mod favorites;
 pub mod users;
 
-pub use adventures::*;
 pub use sqlx::Error as SqlxError;
 pub use users::*;
 

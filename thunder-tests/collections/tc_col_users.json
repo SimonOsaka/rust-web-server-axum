@@ -1,0 +1,111 @@
+{
+    "_id": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+    "colName": "users",
+    "created": "2023-03-15T02:27:59.316Z",
+    "sortNum": 10000,
+    "folders": [],
+    "requests": [
+        {
+            "_id": "10929ba6-3ac9-40bd-8d87-2841d3dd1242",
+            "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+            "containerId": "",
+            "name": "login",
+            "url": "https://adventures.jicu.vip/api/users/login",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-03-15T02:28:24.815Z",
+            "modified": "2023-03-15T03:07:50.044Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"username\":\"Kate778\",\n    \"password\":\"1234567890abcde1234567890abcdeBB\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "2e2a649f-135f-43bc-b577-58ab1d829d8c",
+            "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+            "containerId": "",
+            "name": "me",
+            "url": "https://adventures.jicu.vip/api/users/me",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2023-03-15T02:38:15.678Z",
+            "modified": "2023-03-15T02:51:22.113Z",
+            "headers": [],
+            "params": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "496968aa-940b-40b0-981d-4250b9f6b5cb",
+            "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+            "containerId": "",
+            "name": "registry",
+            "url": "https://adventures.jicu.vip/api/users/registry",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2023-03-15T02:51:59.192Z",
+            "modified": "2023-03-15T02:55:53.875Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"username\":\"Charlotte\",\n    \"password\":\"1234567890abcde1234567890abcdeTT\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "c05693e9-6df9-4442-9ee2-fb2e2bf05162",
+            "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+            "containerId": "",
+            "name": "change_password",
+            "url": "https://adventures.jicu.vip/api/users/password",
+            "method": "PUT",
+            "sortNum": 50000,
+            "created": "2023-03-15T02:56:34.878Z",
+            "modified": "2023-03-15T02:57:23.473Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"old_password\": \"1234567890abcde1234567890abcdeTT\",\n  \"new_password\": \"1234567890abcde1234567890abcdeBB\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "2194bbe7-c78f-4faf-a72f-dc463ae705c7",
+            "colId": "175b00dc-666f-45dc-82d0-9907e4a26cfd",
+            "containerId": "",
+            "name": "change_username",
+            "url": "https://adventures.jicu.vip/api/users/username",
+            "method": "PUT",
+            "sortNum": 60000,
+            "created": "2023-03-15T02:58:31.991Z",
+            "modified": "2023-03-15T02:58:55.332Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"new_username\":\"Kate778\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{token}}"
+            },
+            "tests": []
+        }
+    ]
+}

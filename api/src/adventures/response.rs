@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
-use vars::{to_item_type_name, to_journey_destiny_name, to_source_name, DateTime, ID};
+use vars::{
+    to_item_type_name, to_journey_destiny_name, to_source_name, DateTime, ID,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -8,8 +10,8 @@ pub struct AdventuresResponse {
     pub adventures_count: u64,
 }
 
-impl From<Vec<domain::Adventures>> for AdventuresResponse {
-    fn from(ads: Vec<domain::Adventures>) -> Self {
+impl From<Vec<domain::adventures::Adventures>> for AdventuresResponse {
+    fn from(ads: Vec<domain::adventures::Adventures>) -> Self {
         let adventures_count = ads.len() as u64;
         let adventures = ads
             .into_iter()
@@ -23,7 +25,9 @@ impl From<Vec<domain::Adventures>> for AdventuresResponse {
                 link: ad.link,
                 source: ad.source,
                 source_name: to_source_name(ad.source),
-                journey_destiny_name: to_journey_destiny_name(&ad.journey_destiny),
+                journey_destiny_name: to_journey_destiny_name(
+                    &ad.journey_destiny,
+                ),
                 script_content: ad.script_content,
                 play_list: ad.play_list,
                 address: ad.address,
@@ -47,8 +51,8 @@ pub struct AdventureResponse {
     pub adventure: Adventures,
 }
 
-impl From<domain::Adventures> for AdventureResponse {
-    fn from(ad: domain::Adventures) -> Self {
+impl From<domain::adventures::Adventures> for AdventureResponse {
+    fn from(ad: domain::adventures::Adventures) -> Self {
         let adventure = Adventures {
             id: ad.id,
             title: ad.title,
@@ -97,8 +101,8 @@ pub struct Adventures {
     pub fav_count: i64,
 }
 
-impl From<domain::Adventures> for Adventures {
-    fn from(ad: domain::Adventures) -> Self {
+impl From<domain::adventures::Adventures> for Adventures {
+    fn from(ad: domain::adventures::Adventures) -> Self {
         Self {
             id: ad.id,
             title: ad.title,
@@ -174,8 +178,10 @@ impl From<domain::Users> for Users {
     }
 }
 
-impl From<Vec<(domain::Adventures, domain::Users)>> for MyAdventuresResponse {
-    fn from(vec: Vec<(domain::Adventures, domain::Users)>) -> Self {
+impl From<Vec<(domain::adventures::Adventures, domain::Users)>>
+    for MyAdventuresResponse
+{
+    fn from(vec: Vec<(domain::adventures::Adventures, domain::Users)>) -> Self {
         let adventures_count = vec.len() as u64;
         let adventures = vec
             .into_iter()
@@ -213,7 +219,10 @@ pub mod my_date_format {
     //        S: Serializer
     //
     // although it may also be generic over the input types T.
-    pub fn serialize<S>(date: &DateTime, serializer: S) -> Result<S::Ok, S::Error>
+    pub fn serialize<S>(
+        date: &DateTime,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
@@ -228,11 +237,14 @@ pub mod my_date_format {
     //        D: Deserializer<'de>
     //
     // although it may also be generic over the output types T.
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<chrono::NaiveDateTime, D::Error>
+    pub fn deserialize<'de, D>(
+        deserializer: D,
+    ) -> Result<chrono::NaiveDateTime, D::Error>
     where
         D: Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
-        chrono::NaiveDateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
+        chrono::NaiveDateTime::parse_from_str(&s, FORMAT)
+            .map_err(serde::de::Error::custom)
     }
 }

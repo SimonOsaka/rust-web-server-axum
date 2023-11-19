@@ -1,5 +1,8 @@
 use crate::app_routes;
-use domain::{adventures::AdventuresManagerImpl, FavoritesManagerImpl, UsersManagerImpl};
+use domain::{
+    adventures::AdventuresManagerImpl, favorites::FavoritesManagerImpl,
+    UsersManagerImpl,
+};
 use std::{env, net::SocketAddr, sync::Arc};
 
 #[derive(Clone, Debug)]
