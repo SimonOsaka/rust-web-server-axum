@@ -32,8 +32,9 @@ pub async fn start() {
 
     println!("listening on {}", bind_address);
 
-    axum::Server::bind(&bind_address)
-        .serve(routes.into_make_service())
+    let listener = tokio::net::TcpListener::bind(bind_address).await.unwrap();
+
+    axum::serve(listener, routes.into_make_service())
         .await
         .unwrap();
 }

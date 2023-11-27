@@ -1,8 +1,9 @@
 use axum::{
-    body::{Bytes, Full},
+    body::Bytes,
     response::{IntoResponse, Response},
     Json,
 };
+use http_body_util::Full;
 use hyper::StatusCode;
 use macros::router;
 use serde_json::json;

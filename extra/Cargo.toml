@@ -13,7 +13,7 @@ lib_authorization = ["tokio", "casbin"]
 
 [dependencies]
 # email
-lettre = { version = "0.10.2", default-features = false, features = [
+lettre = { version = "0.11.2", default-features = false, features = [
     "builder",
     "hostname",
     "smtp-transport",
@@ -23,7 +23,7 @@ lettre = { version = "0.10.2", default-features = false, features = [
 ], optional = true }
 
 # redis
-redis = { version = "0.22.3", features = [
+redis = { version = "0.23.4", features = [
     "connection-manager",
     "tokio-comp",
 ], optional = true }

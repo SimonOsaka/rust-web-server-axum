@@ -11,18 +11,20 @@ domain = { path = "../domain" }
 util = { path = "../util", features = ["excel", "jwt"] }
 macros = { path = "../macros" }
 
-axum = { version = "0.6", features = ["headers", "macros"] }
+axum = { version = "0.7", features = ["macros"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
 tokio = { version = "1", features = ["full"] }
 tower = { version = "0.4", features = ["util", "filter", "timeout"] }
-tower-http = { version = "0.4", features = ["trace", "add-extension"] }
+tower-http = { version = "0.5", features = ["trace", "add-extension"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-jsonwebtoken = "8"
-headers = "0.3"
+jsonwebtoken = "9"
+headers = "0.4"
 async-trait = "0.1"
-hyper = { version = "0.14", features = ["full"] }
+hyper = { version = "1.0", features = ["full"] }
 validator = { version = "0.16", features = ["derive"] }
-http-body = "0.4"
+http-body = "1.0"
+http-body-util = "0.1.0"
 thiserror = "1.0"
 tracing = { version = "0.1" }
 chrono = { version = "0.4", features = ["serde"] }

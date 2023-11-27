@@ -2,8 +2,8 @@ use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::quote;
 use syn::{
-    parse::Parse, parse_macro_input, Attribute, DeriveInput, FieldsNamed, FieldsUnnamed, LitStr,
-    Token,
+    parse::Parse, parse_macro_input, Attribute, DeriveInput, FieldsNamed,
+    FieldsUnnamed, LitStr, Token,
 };
 
 use crate::args::Args;
@@ -28,12 +28,16 @@ pub fn expand_from_error(input: TokenStream) -> TokenStream {
         let attr = variant_data
             .attrs
             .iter()
-            .find(|x| x.path.is_ident("from_error"))
+            .find(|x| x.path().is_ident("from_error"))
             .unwrap();
 
         let (from_token, display_token) = match &variant_data.fields {
-            syn::Fields::Named(named) => struct_parse(name, variant_name, attr, named),
-            syn::Fields::Unnamed(unnamed) => tuple_parse(name, variant_name, attr, unnamed),
+            syn::Fields::Named(named) => {
+                struct_parse(name, variant_name, attr, named)
+            }
+            syn::Fields::Unnamed(unnamed) => {
+                tuple_parse(name, variant_name, attr, unnamed)
+            }
             syn::Fields::Unit => unit_parse(name, variant_name, attr),
         };
 
@@ -114,7 +118,9 @@ fn parse_attr(attr: &Attribute) -> (Ident, LitStr) {
     let status_val = status.val;
     let function_val = match status_val.value().as_str() {
         "forbidden" => Ident::new("forbidden", Span::call_site()),
-        "internal_server_error" => Ident::new("internal_server_error", Span::call_site()),
+        "internal_server_error" => {
+            Ident::new("internal_server_error", Span::call_site())
+        }
         "not_found" => Ident::new("not_found", Span::call_site()),
         "unauthorized" => Ident::new("unauthorized", Span::call_site()),
         "bad_request" => Ident::new("bad_request", Span::call_site()),
@@ -183,7 +189,10 @@ fn struct_parse(
 
     for field in fields.named.iter() {
         let fi = field.ident.as_ref().unwrap();
-        let field_name = Ident::new(&format!("{}", fi).to_ascii_lowercase(), Span::call_site());
+        let field_name = Ident::new(
+            &format!("{}", fi).to_ascii_lowercase(),
+            Span::call_site(),
+        );
         field_names.extend(quote!(#field_name,));
     }
 

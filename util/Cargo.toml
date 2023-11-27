@@ -34,12 +34,12 @@ xlsxwriter = { version = "0.6", features = ["no-md5"], optional = true }
 uuid = { version = "1", features = ["v4"], optional = true }
 
 # jwt
-jsonwebtoken = { version = "8", optional = true }
+jsonwebtoken = { version = "9", optional = true }
 chrono = { version = "0.4", optional = true }
 serde = { version = "1.0", optional = true }
 
 # i18n
-toml = "0.7"
+toml = "0.8"
 
 # http
 reqwest = { version = "0.11", features = ["json"], optional = true }

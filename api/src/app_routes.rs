@@ -5,11 +5,13 @@ use crate::{
 use axum::{
     body::{Body, Bytes},
     error_handling::HandleErrorLayer,
+    extract::Request,
+    http::StatusCode,
     middleware::{self, Next},
     response::{IntoResponse, Response},
     Json, Router,
 };
-use hyper::{Request, StatusCode};
+use http_body_util::BodyExt;
 use serde_json::json;
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
@@ -50,8 +52,8 @@ pub fn routes(state: AppState) -> Router {
 }
 
 async fn print_request_response(
-    req: Request<Body>,
-    next: Next<Body>,
+    req: Request,
+    next: Next,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let (parts, body) = req.into_parts();
     let bytes = buffer_and_print("request", body).await?;
@@ -66,13 +68,16 @@ async fn print_request_response(
     Ok(res)
 }
 
-async fn buffer_and_print<B>(direction: &str, body: B) -> Result<Bytes, (StatusCode, String)>
+async fn buffer_and_print<B>(
+    direction: &str,
+    body: B,
+) -> Result<Bytes, (StatusCode, String)>
 where
     B: axum::body::HttpBody<Data = Bytes>,
     B::Error: std::fmt::Display,
 {
-    let bytes = match hyper::body::to_bytes(body).await {
-        Ok(bytes) => bytes,
+    let bytes = match body.collect().await {
+        Ok(collected) => collected.to_bytes(),
         Err(err) => {
             return Err((
                 StatusCode::BAD_REQUEST,

@@ -12,7 +12,7 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
 
     let struct_name_ident = &ast.ident;
 
-    let attr_opt = &ast.attrs.iter().find(|x| x.path.is_ident("from_model"));
+    let attr_opt = &ast.attrs.iter().find(|x| x.path().is_ident("from_model"));
     let attr = if let Some(a) = attr_opt {
         a
     } else {
@@ -48,16 +48,17 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
     // fields
     let struct_data_fields_len = struct_data.fields.len();
     for (i, variant_data) in struct_data.fields.iter().enumerate() {
-        let variant_name_ident = if let Some(ident) = variant_data.ident.as_ref() {
-            ident
-        } else {
-            panic!("Not tuple struct");
-        };
+        let variant_name_ident =
+            if let Some(ident) = variant_data.ident.as_ref() {
+                ident
+            } else {
+                panic!("Not tuple struct");
+            };
         // attribute
         let from_model_attr_opt = variant_data
             .attrs
             .iter()
-            .find(|x| x.path.is_ident("from_model"));
+            .find(|x| x.path().is_ident("from_model"));
 
         let variant_name_litstr = litstr(format!("{}", variant_name_ident));
 
@@ -96,7 +97,8 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
         model_fields_ts.extend(quote! {
             #model_fields_name_ident(crate::db::types::Operation),
         });
-        let struct_name_fields_ident = ident(format!("{}Fields", struct_name_ident));
+        let struct_name_fields_ident =
+            ident(format!("{}Fields", struct_name_ident));
         let table_name_variant_name_litstr = litstr(format!(
             "{}.{}",
             table_name_litstr.value(),
@@ -104,7 +106,10 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
         ));
         let ty = &variant_data.ty;
         if let Type::Path(ty) = ty {
-            if ty.path.is_ident("ID") || ty.path.is_ident("i64") || ty.path.is_ident("i16") {
+            if ty.path.is_ident("ID")
+                || ty.path.is_ident("i64")
+                || ty.path.is_ident("i16")
+            {
                 conditions_ts.extend(quote! {
                     #struct_name_fields_ident::#model_fields_name_ident(op) => match op {
                         crate::db::types::Operation::Eq(value) => {
@@ -150,7 +155,8 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
         match from_model_attr_opt {
             // from_model exist
             Some(from_model) => {
-                let from_model_ident_opt = from_model.parse_args::<Ident>().ok();
+                let from_model_ident_opt =
+                    from_model.parse_args::<Ident>().ok();
                 match from_model_ident_opt {
                     // from_model(primary_key)
                     Some(ident) => {
@@ -169,31 +175,46 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
                     }
                     // from_model(key = val, ..)
                     None => {
-                        let foreign_attr_opt = from_model.parse_args::<ForeignAttr>().ok();
+                        let foreign_attr_opt =
+                            from_model.parse_args::<ForeignAttr>().ok();
                         match foreign_attr_opt {
                             Some(foreign_attr) => {
                                 let t2_litstr = match foreign_attr.table_name {
                                     Some(k) => k.val,
                                     None => {
-                                        panic!("no table_name on {}", variant_name_litstr.value())
+                                        panic!(
+                                            "no table_name on {}",
+                                            variant_name_litstr.value()
+                                        )
                                     }
                                 };
-                                let t2_primary_key_litstr = match foreign_attr.primary_key {
-                                    Some(k) => k.val,
-                                    None => {
-                                        panic!("no primary_key on {}", variant_name_litstr.value())
-                                    }
-                                };
+                                let t2_primary_key_litstr =
+                                    match foreign_attr.primary_key {
+                                        Some(k) => k.val,
+                                        None => {
+                                            panic!(
+                                                "no primary_key on {}",
+                                                variant_name_litstr.value()
+                                            )
+                                        }
+                                    };
                                 let m2_litstr = match foreign_attr.model {
                                     Some(k) => k.val,
                                     None => {
-                                        panic!("no model on {}", variant_name_litstr.value())
+                                        panic!(
+                                            "no model on {}",
+                                            variant_name_litstr.value()
+                                        )
                                     }
                                 };
-                                let t1_primary_key_litstr = match primary_key_opt.clone() {
-                                    Some(pk) => pk,
-                                    None => panic!("no primary_key on {}", struct_name_ident),
-                                };
+                                let t1_primary_key_litstr =
+                                    match primary_key_opt.clone() {
+                                        Some(pk) => pk,
+                                        None => panic!(
+                                            "no primary_key on {}",
+                                            struct_name_ident
+                                        ),
+                                    };
                                 let me = multi_expand(
                                     struct_name_ident,
                                     m2_litstr,
@@ -221,9 +242,11 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
             }
             None => {
                 // update sets
-                non_from_model_column_names_ts.extend(quote!(#variant_name_litstr,));
-                non_from_model_column_values_ts
-                    .extend(quote!(params.add_value(&self.#variant_name_ident),));
+                non_from_model_column_names_ts
+                    .extend(quote!(#variant_name_litstr,));
+                non_from_model_column_values_ts.extend(
+                    quote!(params.add_value(&self.#variant_name_ident),),
+                );
                 update_sets_ts.extend(
                     quote!(sql_builder.set(#variant_name_litstr, params.add_value(&self.#variant_name_ident));),
                 );
@@ -247,7 +270,8 @@ pub fn expand_from_model(input: TokenStream) -> TokenStream {
     );
     let get_expand_ts = get_expand(struct_name_ident, &table_name_litstr);
     let delete_expand_ts = delete_expand(&table_name_litstr, &primary_keys_ts);
-    let update_expand_ts = update_expand(&table_name_litstr, &primary_keys_ts, &update_sets_ts);
+    let update_expand_ts =
+        update_expand(&table_name_litstr, &primary_keys_ts, &update_sets_ts);
 
     let mut struct_impl_ts = TokenStream2::new();
     if !primary_keys_ts.is_empty() {
@@ -358,7 +382,10 @@ fn insert_expand(
     }
 }
 
-fn delete_expand(table_name: &LitStr, primary_keys: &TokenStream2) -> TokenStream2 {
+fn delete_expand(
+    table_name: &LitStr,
+    primary_keys: &TokenStream2,
+) -> TokenStream2 {
     quote! {
         #[tracing::instrument(skip(transaction), err)]
         pub async fn delete<'a>(
@@ -409,11 +436,13 @@ fn update_expand(
 }
 
 fn get_expand(struct_name_ident: &Ident, table_name: &LitStr) -> TokenStream2 {
-    let fields_name = single_column_names(struct_name_ident.to_string().to_ascii_uppercase());
+    let fields_name =
+        single_column_names(struct_name_ident.to_string().to_ascii_uppercase());
 
     let fields_name_ident = ident(format!("{}Fields", struct_name_ident));
 
-    let fields_name_sqlquery_ident = fields_sqlquery_fn_name(struct_name_ident.to_string());
+    let fields_name_sqlquery_ident =
+        fields_sqlquery_fn_name(struct_name_ident.to_string());
 
     quote! {
         #[tracing::instrument(skip(transaction), err)]
@@ -446,17 +475,20 @@ fn fields_expand(
     len: usize,
 ) -> TokenStream2 {
     // MYUSERS_SINGLE_FIELDS
-    let single_name_ident = single_column_names(model_name.value().to_ascii_uppercase());
+    let single_name_ident =
+        single_column_names(model_name.value().to_ascii_uppercase());
     let size = litint(len.to_string());
 
     // MYUSERS_MULTI_FIELDS
-    let multi_name_ident = multi_column_names(model_name.value().to_ascii_uppercase());
+    let multi_name_ident =
+        multi_column_names(model_name.value().to_ascii_uppercase());
 
     // MyUsersFields
     let fields_name_ident = fields_name(model_name.value());
 
     // myusers_fields_sqlquery
-    let fields_name_sqlquery_ident = fields_sqlquery_fn_name(model_name.value());
+    let fields_name_sqlquery_ident =
+        fields_sqlquery_fn_name(model_name.value());
 
     quote! {
         pub(crate) const #single_name_ident: &[&str; #size] = &[
@@ -493,9 +525,11 @@ fn multi_expand(
     let struct_name_ident = ident(format!("{}{}", m1_ident, m2_ident));
     let t1_ident = ident(t1_litstr.value());
 
-    let t1_multi_fields_name_ident = multi_column_names(m1_ident.to_string().to_ascii_uppercase());
+    let t1_multi_fields_name_ident =
+        multi_column_names(m1_ident.to_string().to_ascii_uppercase());
     let t2_ident = ident(t2_litstr.value());
-    let t2_multi_fields_name_ident = multi_column_names(m2_litstr.value().to_ascii_uppercase());
+    let t2_multi_fields_name_ident =
+        multi_column_names(m2_litstr.value().to_ascii_uppercase());
     let on = litstr(format!(
         "{t1}.{t1_fk} = {t2}.{t2_pk} and {t2}.is_deleted = 0",
         t1 = t1_litstr.value(),
@@ -506,8 +540,10 @@ fn multi_expand(
     let m1_fields_name_ident = ident(format!("{}Fields", m1_ident));
     let m2_fields_name_ident = ident(format!("{}Fields", m2_ident));
 
-    let fields1_name_sqlquery_ident = fields_sqlquery_fn_name(m1_ident.to_string());
-    let fields2_name_sqlquery_ident = fields_sqlquery_fn_name(m2_litstr.value());
+    let fields1_name_sqlquery_ident =
+        fields_sqlquery_fn_name(m1_ident.to_string());
+    let fields2_name_sqlquery_ident =
+        fields_sqlquery_fn_name(m2_litstr.value());
 
     let t1_fields_ident = ident(format!("{}_fields", t1_ident));
     let t2_fields_ident = ident(format!("{}_fields", t2_ident));

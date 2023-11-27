@@ -6,13 +6,12 @@ use crate::{
 };
 use axum::{
     async_trait,
-    body::HttpBody,
-    extract::{FromRequest, FromRequestParts, Path, Query},
-    headers::{authorization::Bearer, Authorization},
-    http::{request::Parts, Request},
-    BoxError, Json, TypedHeader,
+    extract::{FromRequest, FromRequestParts, Path, Query, Request},
+    http::request::Parts,
+    Json,
 };
-use http_body::Body;
+use axum_extra::TypedHeader;
+use headers::{authorization::Bearer, Authorization};
 use serde::de::DeserializeOwned;
 use util::i18n::i18n;
 use util::jwt::{decode_token, Claims};
@@ -28,11 +27,16 @@ where
 {
     type Rejection = AppError;
 
-    async fn from_request_parts(req: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(
+        req: &mut Parts,
+        state: &S,
+    ) -> Result<Self, Self::Rejection> {
         let TypedHeader(Authorization(bearer)) =
-            TypedHeader::<Authorization<Bearer>>::from_request_parts(req, state)
-                .await
-                .map_err(|_| JWTError::Invalid)?;
+            TypedHeader::<Authorization<Bearer>>::from_request_parts(
+                req, state,
+            )
+            .await
+            .map_err(|_| JWTError::Invalid)?;
 
         match decode_token(bearer.token()) {
             Ok(k) => Ok(Self(k)),
@@ -45,21 +49,21 @@ where
 pub struct ValidatedQuery<T>(pub T);
 
 #[async_trait]
-impl<S, B, T> FromRequest<S, B> for ValidatedQuery<T>
+impl<S, T> FromRequest<S> for ValidatedQuery<T>
 where
     T: DeserializeOwned + Validate,
     S: Send + Sync,
-    B: Body + Send,
-    B: Send + 'static,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
 {
     type Rejection = AppError;
 
-    async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
-        let Query(value) = Query::<T>::from_request(req, state)
-            .await
-            .map_err(|e| AppError::from(ValidateError::AxumQueryRejection(e)))?;
+    async fn from_request(
+        req: Request,
+        state: &S,
+    ) -> Result<Self, Self::Rejection> {
+        let Query(value) =
+            Query::<T>::from_request(req, state).await.map_err(|e| {
+                AppError::from(ValidateError::AxumQueryRejection(e))
+            })?;
         value.validate().map_err(|e| {
             let ves = to_new_validation_errors(e);
             AppError::from(ValidateError::InvalidParam(ves))
@@ -72,18 +76,17 @@ where
 pub struct ValidatedJson<T>(pub T);
 
 #[async_trait]
-impl<S, B, T> FromRequest<S, B> for ValidatedJson<T>
+impl<S, T> FromRequest<S> for ValidatedJson<T>
 where
     T: DeserializeOwned + Validate,
     S: Send + Sync,
-    B: HttpBody + Send,
-    B: Send + 'static,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
 {
     type Rejection = AppError;
 
-    async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request(
+        req: Request,
+        state: &S,
+    ) -> Result<Self, Self::Rejection> {
         let Json(value) = Json::<T>::from_request(req, state)
             .await
             .map_err(|e| AppError::from(ValidateError::AxumJsonRejection(e)))?;
@@ -99,15 +102,17 @@ where
 pub struct ValidatedPath<T>(pub T);
 
 #[async_trait]
-impl<S, B, T> FromRequest<S, B> for ValidatedPath<T>
+impl<S, T> FromRequest<S> for ValidatedPath<T>
 where
     T: DeserializeOwned + Validate + Send,
     S: Send + Sync,
-    B: Send + 'static,
 {
     type Rejection = AppError;
 
-    async fn from_request(req: Request<B>, state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request(
+        req: Request,
+        state: &S,
+    ) -> Result<Self, Self::Rejection> {
         let Path(value) = Path::<T>::from_request(req, state)
             .await
             .map_err(|e| AppError::from(ValidateError::AxumPathRejection(e)))?;
@@ -148,7 +153,9 @@ pub fn validate_source(source: u8) -> Result<(), ValidationError> {
     Ok(())
 }
 
-pub fn validate_journey_destiny(journey_destiny: &str) -> Result<(), ValidationError> {
+pub fn validate_journey_destiny(
+    journey_destiny: &str,
+) -> Result<(), ValidationError> {
     if to_journey_destiny_name(journey_destiny).is_empty() {
         return Err(ValidationError::new(
             "adventure-journey-valid-journey_destiny",
