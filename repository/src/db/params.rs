@@ -33,7 +33,7 @@ impl SqlParams {
         self.placeholder = format!("${:?}", self.index);
         self.index += 1;
         debug!("add_value: {} = {:?}", self.placeholder, value);
-        self.args.add(value);
+        let _ = self.args.add(value);
         self.placeholder.clone()
     }
 

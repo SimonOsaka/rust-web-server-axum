@@ -3,7 +3,7 @@
     // for the documentation about the extensions.json format
     "recommendations": [
         "rust-lang.rust-analyzer",
-        "serayuzgur.crates",
+        "fill-labs.dependi",
         "tamasfe.even-better-toml",
         "vadimcn.vscode-lldb",
         "gsppvo.vscode-commandbar",
