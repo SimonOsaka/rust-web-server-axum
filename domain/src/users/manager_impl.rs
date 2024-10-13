@@ -14,10 +14,12 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct UsersManagerImpl;
 
-#[async_trait]
 impl super::UsersManager for UsersManagerImpl {
     #[tracing::instrument(skip(self,reg_user),fields(reg_user.username=%reg_user.username))]
-    async fn add_user(&self, reg_user: RegistryUsers) -> Result<Users, DomainError> {
+    async fn add_user(
+        &self,
+        reg_user: RegistryUsers,
+    ) -> Result<Users, DomainError> {
         let inserted_my_user_id = NewMyUsers {
             username: reg_user.username.clone(),
             password: hash_password(reg_user.password),
@@ -36,7 +38,10 @@ impl super::UsersManager for UsersManagerImpl {
     }
 
     #[tracing::instrument(skip(self))]
-    async fn get_user_by_username(&self, username: String) -> Result<Users, GetUserError> {
+    async fn get_user_by_username(
+        &self,
+        username: String,
+    ) -> Result<Users, GetUserError> {
         let fields = vec![MyUsersFields::Username(Operation::Eq(Value::from(
             username.clone(),
         )))];
@@ -53,7 +58,11 @@ impl super::UsersManager for UsersManagerImpl {
     }
 
     #[tracing::instrument(skip(self))]
-    async fn get_user(&self, username: String, password: String) -> Result<Users, GetUserError> {
+    async fn get_user(
+        &self,
+        username: String,
+        password: String,
+    ) -> Result<Users, GetUserError> {
         let fields = vec![MyUsersFields::Username(Operation::Eq(Value::from(
             username.clone(),
         )))];
@@ -114,9 +123,10 @@ impl super::UsersManager for UsersManagerImpl {
         username: String,
         password: String,
     ) -> Result<bool, DomainError> {
-        let success = update_user_password(username, hash_password(password), None)
-            .await
-            .map_err(database_to_domain_error)?;
+        let success =
+            update_user_password(username, hash_password(password), None)
+                .await
+                .map_err(database_to_domain_error)?;
 
         Ok(success)
     }

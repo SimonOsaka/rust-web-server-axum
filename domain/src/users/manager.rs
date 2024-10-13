@@ -1,28 +1,39 @@
+use std::future::Future;
+
 use crate::{DomainError, GetUserError, RegistryUsers, Users};
 
-#[async_trait]
 pub trait UsersManager {
-    async fn add_user(&self, reg_user: RegistryUsers) -> Result<Users, DomainError>;
+    fn add_user(
+        &self,
+        reg_user: RegistryUsers,
+    ) -> impl Future<Output = Result<Users, DomainError>> + Send;
 
-    async fn get_user_by_username(&self, username: String) -> Result<Users, GetUserError>;
-
-    async fn get_user(&self, username: String, password: String) -> Result<Users, GetUserError>;
-
-    async fn verify_user(
+    fn get_user_by_username(
         &self,
         username: String,
-        login_password: String,
-    ) -> Result<(bool, Users), GetUserError>;
+    ) -> impl Future<Output = Result<Users, GetUserError>> + Send;
 
-    async fn change_password(
+    fn get_user(
         &self,
         username: String,
         password: String,
-    ) -> Result<bool, DomainError>;
+    ) -> impl Future<Output = Result<Users, GetUserError>> + Send;
 
-    async fn change_username(
+    fn verify_user(
+        &self,
+        username: String,
+        login_password: String,
+    ) -> impl Future<Output = Result<(bool, Users), GetUserError>> + Send;
+
+    fn change_password(
+        &self,
+        username: String,
+        password: String,
+    ) -> impl Future<Output = Result<bool, DomainError>> + Send;
+
+    fn change_username(
         &self,
         old_username: String,
         new_username: String,
-    ) -> Result<bool, DomainError>;
+    ) -> impl Future<Output = Result<bool, DomainError>> + Send;
 }

@@ -1,3 +1,7 @@
+use std::future::Future;
+use std::marker::Send;
+use std::marker::Unpin;
+
 use crate::db::SqlRow;
 use crate::db::REPOSITORY;
 use sql_builder::SqlBuilder;
@@ -7,26 +11,24 @@ use tracing::debug;
 
 use super::SqlParams;
 
-#[async_trait]
 pub trait SqlReader {
-    async fn query_list<'c, T>(
+    fn query_list<'c, T>(
         &self,
         args: SqlParams,
         transaction: Option<&mut Transaction<'c, Postgres>>,
-    ) -> Result<Vec<T>, Error>
+    ) -> impl Future<Output = Result<Vec<T>, Error>>
     where
-        T: for<'r> FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin;
+        T: for<'r> FromRow<'r, SqlRow> + Send + Unpin;
 
-    async fn query_one_optinal<'c, T>(
+    fn query_one_optinal<'c, T>(
         &self,
         args: SqlParams,
         transaction: Option<&mut Transaction<'static, Postgres>>,
-    ) -> Result<Option<T>, Error>
+    ) -> impl Future<Output = Result<Option<T>, Error>>
     where
-        T: for<'r> sqlx::FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin;
+        T: for<'r> sqlx::FromRow<'r, SqlRow> + Send + Unpin;
 }
 
-#[async_trait]
 impl SqlReader for SqlBuilder {
     async fn query_list<'c, T>(
         &self,
@@ -34,7 +36,7 @@ impl SqlReader for SqlBuilder {
         transaction: Option<&mut Transaction<'c, Postgres>>,
     ) -> Result<Vec<T>, Error>
     where
-        T: for<'r> FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin,
+        T: for<'r> FromRow<'r, SqlRow> + Send + Unpin,
     {
         let sql = &self.sql().unwrap();
         debug!("query_list sql: {}", sql);
@@ -59,7 +61,7 @@ impl SqlReader for SqlBuilder {
         transaction: Option<&mut Transaction<'static, Postgres>>,
     ) -> Result<Option<T>, Error>
     where
-        T: for<'r> sqlx::FromRow<'r, SqlRow> + std::marker::Send + std::marker::Unpin,
+        T: for<'r> sqlx::FromRow<'r, SqlRow> + Send + Unpin,
     {
         let sql = &self.sql().unwrap();
         debug!("query_one sql: {}", sql);

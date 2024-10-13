@@ -43,3 +43,15 @@ pub fn hash(to_encrypt: String) -> String {
     // base64::encode(to_store)
     general_purpose::STANDARD.encode(to_store)
 }
+
+#[test]
+fn test_password() {
+    let pwd = "1234567890abcde1234567890abcdeBB";
+    let hash_result = hash(pwd.to_string());
+
+    println!("{}", hash_result);
+
+    let verify_result = verify(hash_result, pwd.to_string());
+
+    println!("{}", verify_result);
+}

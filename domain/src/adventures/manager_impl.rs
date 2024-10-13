@@ -26,7 +26,6 @@ use vars::ID;
 #[derive(Clone, Debug)]
 pub struct AdventuresManagerImpl;
 
-#[async_trait]
 impl super::AdventuresManager for AdventuresManagerImpl {
     #[tracing::instrument(skip(self))]
     async fn find_adventures(

@@ -6,6 +6,3 @@ pub mod utils;
 
 pub use errors::*;
 pub use users::*;
-
-#[macro_use]
-extern crate async_trait;

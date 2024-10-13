@@ -1,14 +1,15 @@
+use std::future::Future;
+
 use crate::favorites::{AddFavorite, DelFavorite, Favorite, FavoriteError};
 
-#[async_trait]
 pub trait FavoritesManager {
-    async fn add_favorite(
+    fn add_favorite(
         &self,
         add_favorite: AddFavorite,
-    ) -> Result<Favorite, FavoriteError>;
+    ) -> impl Future<Output = Result<Favorite, FavoriteError>>;
 
-    async fn del_favorite(
+    fn del_favorite(
         &self,
         del_favorite: DelFavorite,
-    ) -> Result<bool, FavoriteError>;
+    ) -> impl Future<Output = Result<bool, FavoriteError>>;
 }

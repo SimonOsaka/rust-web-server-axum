@@ -1,3 +1,5 @@
+use std::future::Future;
+
 use anyhow::Result;
 use vars::ID;
 
@@ -7,46 +9,49 @@ use crate::{
     adventures::GetAdventureError, adventures::NewJourneyData,
     adventures::PlayListQuery, DomainError, Users,
 };
-#[async_trait]
+
 pub trait AdventuresManager {
     /// adventure list
-    async fn find_adventures(
+    fn find_adventures(
         &self,
         query: AdventuresQuery,
-    ) -> Result<Vec<Adventures>, DomainError>;
+    ) -> impl Future<Output = Result<Vec<Adventures>, DomainError>>;
 
     /// play_list
-    async fn find_adventures_by_play_list(
+    fn find_adventures_by_play_list(
         &self,
         query: PlayListQuery,
-    ) -> Result<Vec<Adventures>, DomainError>;
+    ) -> impl Future<Output = Result<Vec<Adventures>, DomainError>>;
 
     /// one adventure
-    async fn get_adventure_by_id(
+    fn get_adventure_by_id(
         &self,
         id: ID,
-    ) -> Result<Option<Adventures>, GetAdventureError>;
+    ) -> impl Future<Output = Result<Option<Adventures>, GetAdventureError>>;
 
-    async fn get_adventure(
+    fn get_adventure(
         &self,
         id: ID,
-    ) -> Result<Adventures, GetAdventureError>;
+    ) -> impl Future<Output = Result<Adventures, GetAdventureError>> + Send;
 
-    async fn sync_db_to_documents(&self, id: ID) -> Result<bool, DomainError>;
+    fn sync_db_to_documents(
+        &self,
+        id: ID,
+    ) -> impl Future<Output = Result<bool, DomainError>>;
 
-    async fn add_journey(
+    fn add_journey(
         &self,
         data: NewJourneyData,
-    ) -> Result<ID, CreateAdventureError>;
+    ) -> impl Future<Output = Result<ID, CreateAdventureError>>;
 
-    async fn delete_adventure(
+    fn delete_adventure(
         &self,
         id: ID,
         user_id: ID,
-    ) -> Result<bool, DeleteAdventureError>;
+    ) -> impl Future<Output = Result<bool, DeleteAdventureError>>;
 
-    async fn find_by_user_id(
+    fn find_by_user_id(
         &self,
         user_id: ID,
-    ) -> Result<Vec<(Adventures, Users)>, DomainError>;
+    ) -> impl Future<Output = Result<Vec<(Adventures, Users)>, DomainError>>;
 }

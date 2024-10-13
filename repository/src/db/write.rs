@@ -1,31 +1,31 @@
+use std::future::Future;
+
 use super::{SqlParams, REPOSITORY};
 use sql_builder::SqlBuilder;
 use sqlx::{Error, Postgres, Row, Transaction};
 use tracing::debug;
 use vars::ID;
 
-#[async_trait]
 pub trait SqlWriter {
-    async fn insert_one<'a>(
+    fn insert_one<'a>(
         &self,
         args: SqlParams,
         transaction: Option<&'a mut Transaction<'static, Postgres>>,
-    ) -> Result<ID, Error>;
+    ) -> impl Future<Output = Result<ID, Error>>;
 
-    async fn update_one<'a>(
+    fn update_one<'a>(
         &self,
         args: SqlParams,
         transaction: Option<&'a mut Transaction<'static, Postgres>>,
-    ) -> Result<u64, Error>;
+    ) -> impl Future<Output = Result<u64, Error>>;
 
-    async fn delete_one<'a>(
+    fn delete_one<'a>(
         &self,
         args: SqlParams,
         transaction: Option<&'a mut Transaction<'static, Postgres>>,
-    ) -> Result<u64, Error>;
+    ) -> impl Future<Output = Result<u64, Error>>;
 }
 
-#[async_trait]
 impl SqlWriter for SqlBuilder {
     async fn insert_one<'a>(
         &self,

@@ -20,7 +20,6 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct FavoritesManagerImpl;
 
-#[async_trait]
 impl super::FavoritesManager for FavoritesManagerImpl {
     #[tracing::instrument(skip(self))]
     async fn add_favorite(
