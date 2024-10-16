@@ -1,6 +1,22 @@
 [workspace]
-members = ["server_app"]
 resolver = "2"
+members = [
+    "api",
+    "domain",
+    "extra",
+    "macros",
+    "repository",
+    "search",
+    "server_app",
+    "server_lib",
+    "util",
+    "vars",
+]
+
+[workspace.dependencies]
+tokio = "1"
+tracing = "0.1"
+once_cell = "1"
 
 [profile.dev]
 lto = false

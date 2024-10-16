@@ -27,4 +27,4 @@ server_lib = { path = "../server_lib", default-features = false, features = [
     "api_lib",
 ] }
 
-tokio = { version = "1", features = ["macros"] }
+tokio = { workspace = true, features = ["macros"] }
