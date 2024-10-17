@@ -1,3 +1,5 @@
+use std::env::var;
+
 use once_cell::sync::Lazy;
 use time::{format_description, OffsetDateTime, UtcOffset};
 use tracing_appender::non_blocking::WorkerGuard;
@@ -51,7 +53,12 @@ pub fn log_create() -> (WorkerGuard, WorkerGuard) {
     // 1. Local time required. log file append UTC time.
     // 2. no max file num
     // 3. file size
-    let file_appender = tracing_appender::rolling::hourly("/apps/log/rust", "example.log");
+    let log_path = match var("LOG_PATH") {
+        Ok(path) => path,
+        Err(_) => "/apps/logs/rust".to_string(),
+    };
+    println!("log path: {}", log_path);
+    let file_appender = tracing_appender::rolling::hourly(log_path, "example.log");
     let (file_appender_writer, _guard_file) = tracing_appender::non_blocking(file_appender);
 
     let fmt_file = tracing_subscriber::fmt::layer()
